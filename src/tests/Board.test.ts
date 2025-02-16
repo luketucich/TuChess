@@ -23,3 +23,14 @@ describe("Index to board square", () => {
     expect(board.indexToSquare([2, 2])).toBe("c6");
   });
 });
+
+describe("Board square to index", () => {
+  test("should convert square on chess board to corresponding [][] index", () => {
+    const board = new Board();
+
+    expect(board.squareToIndex("a8")).toStrictEqual([0, 0]);
+    expect(board.squareToIndex("h1")).toStrictEqual([7, 7]);
+    expect(board.squareToIndex("d4")).toStrictEqual([4, 3]);
+    expect(board.squareToIndex("e4")).toStrictEqual([4, 4]);
+  });
+});

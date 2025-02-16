@@ -33,4 +33,14 @@ export class Board {
 
     return file + rank;
   }
+
+  squareToIndex(square: string): [number, number] {
+    // Convert file to column number
+    const col: number = square.charCodeAt(0) - "a".charCodeAt(0);
+
+    // Convert rank to row number
+    const row: number = 8 - Number(square[1]);
+
+    return [row, col];
+  }
 }
