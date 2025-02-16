@@ -21,4 +21,16 @@ export class Board {
   getBoard(): string[][] {
     return this.board;
   }
+
+  indexToSquare(index: [number, number]): string {
+    const [row, col]: [number, number] = index;
+
+    // Convert row number to rank
+    const rank: string = `${8 - row}`;
+
+    // Convert column number to file
+    const file: string = String.fromCharCode(97 + col);
+
+    return file + rank;
+  }
 }
