@@ -38,3 +38,13 @@ describe("Black pawn at start", () => {
     expect(moves).toStrictEqual(["e6", "e5"]);
   });
 });
+
+describe("White pawn that has already moved", () => {
+  test("should have one possible move if path is clear", () => {
+    const pawn = new Pawn("white", "e3", true);
+    const board = new Board();
+    const moves = pawn.getMoves(board);
+
+    expect(moves).toStrictEqual(["e4"]);
+  });
+});

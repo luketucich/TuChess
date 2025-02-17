@@ -1,32 +1,46 @@
+import { Pawn } from "./Pawn";
+
+// Define generic type for board squares
+type BoardSquare = null | Pawn;
+
 export class Board {
-  private board: string[][];
+  private board: BoardSquare[][];
 
   constructor() {
     this.board = this.initializeBoard();
   }
 
-  private initializeBoard(): string[][] {
+  private initializeBoard(): BoardSquare[][] {
     return [
       ["r", "n", "b", "q", "k", "b", "n", "r"],
-      ["p", "p", "p", "p", "p", "p", "p", "p"],
-      ["*", "*", "*", "*", "*", "*", "*", "*"],
-      ["*", "*", "*", "*", "*", "*", "*", "*"],
-      ["*", "*", "*", "*", "*", "*", "*", "*"],
-      ["*", "*", "*", "*", "*", "*", "*", "*"],
-      ["P", "P", "P", "P", "P", "P", "P", "P"],
+      ["a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"].map(
+        (square) => new Pawn("black", square)
+      ),
+      Array(8).fill(null),
+      Array(8).fill(null),
+      Array(8).fill(null),
+      Array(8).fill(null),
+      ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"].map(
+        (square) => new Pawn("white", square)
+      ),
       ["R", "N", "B", "Q", "K", "B", "N", "R"],
     ];
   }
 
-  getBoard(): string[][] {
+  getBoard(): BoardSquare[][] {
     return this.board;
   }
 
   displayBoard(): void {
-    console.log("  a b c d e f g h");
-    for (let i = 0; i < this.board.length; i++) {
-      const row = this.board[i];
-      console.log(8 - i + " " + row.join(" "));
+    for (let row = 0; row < 8; row++) {
+      const displayRow = this.board[row].map((square) => {
+        if (square instanceof Pawn) {
+          return square.getColor() === "white" ? "P" : "p";
+        } else {
+          return square;
+        }
+      });
+      console.log(displayRow.join(" "));
     }
   }
 
@@ -72,7 +86,7 @@ export class Board {
     return true;
   }
 
-  getSquare(square: string): string {
+  getSquare(square: string): BoardSquare {
     if (!this.squareIsValid(square)) {
       throw new Error("Invalid square");
     }
@@ -89,12 +103,12 @@ export class Board {
     const [fromRow, fromCol]: [number, number] = this.squareToIndex(from);
     const [toRow, toCol]: [number, number] = this.squareToIndex(to);
 
-    if (this.board[fromRow][fromCol] === "*") {
+    if (this.board[fromRow][fromCol] === null) {
       throw new Error("No piece at from square");
     }
 
-    const piece: string = this.board[fromRow][fromCol];
-    this.board[fromRow][fromCol] = "*";
+    const piece: BoardSquare = this.board[fromRow][fromCol];
+    this.board[fromRow][fromCol] = null;
     this.board[toRow][toCol] = piece;
   }
 }

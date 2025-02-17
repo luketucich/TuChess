@@ -18,14 +18,14 @@ export class Pawn extends Piece {
     // White pawns
     if (this.color === "white") {
       // Check if pawn can move forawrd one square
-      if (currBoard[row - 1][col] === "*") {
+      if (currBoard[row - 1][col] === null) {
         moves.push(board.indexToSquare([row - 1, col]));
       }
       // Check if pawn can move forward two squares
       if (
         !this.hasMoved &&
-        currBoard[row - 2][col] === "*" &&
-        currBoard[row - 1][col] === "*"
+        currBoard[row - 2][col] === null &&
+        currBoard[row - 1][col] === null
       ) {
         moves.push(board.indexToSquare([row - 2, col]));
       }
@@ -34,14 +34,14 @@ export class Pawn extends Piece {
     // Black pawns
     if (this.color === "black") {
       // Check if pawn can move forward one square
-      if (currBoard[row + 1][col] === "*") {
+      if (currBoard[row + 1][col] === null) {
         moves.push(board.indexToSquare([row + 1, col]));
       }
       // Check if pawn can move forward two squares
       if (
         !this.hasMoved &&
-        currBoard[row + 2][col] === "*" &&
-        currBoard[row + 1][col] === "*"
+        currBoard[row + 2][col] === null &&
+        currBoard[row + 1][col] === null
       ) {
         moves.push(board.indexToSquare([row + 2, col]));
       }

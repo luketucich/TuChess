@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { Board } from "../game/Board.ts";
+import { Pawn } from "../game/Pawn.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -8,8 +9,8 @@ describe("Chess Board Initialization", () => {
 
     expect(initialSetup[7][4]).toBe("K"); // White king at e1
     expect(initialSetup[0][4]).toBe("k"); // Black king at e8
-    expect(initialSetup[6][0]).toBe("P"); // White pawn at a2
-    expect(initialSetup[1][0]).toBe("p"); // Black pawn at a7
+    expect(initialSetup[6][0]).toBeInstanceOf(Pawn); // White pawn at a2
+    expect(initialSetup[1][0]).toBeInstanceOf(Pawn); // Black pawn at a7
   });
 });
 
@@ -67,10 +68,10 @@ describe("Get piece at square", () => {
   test("should return the piece at a given square", () => {
     const board = new Board();
 
-    expect(board.getSquare("a8")).toBe("r");
-    expect(board.getSquare("e4")).toBe("*");
-    expect(board.getSquare("h1")).toBe("R");
-    expect(board.getSquare("a1")).toBe("R");
+    expect(board.getSquare("a8")).toBe("r"); // Black rook
+    expect(board.getSquare("e4")).toBe(null);
+    expect(board.getSquare("h1")).toBe("R"); // White rook
+    expect(board.getSquare("a1")).toBe("R"); // White rook
   });
 });
 
@@ -79,21 +80,21 @@ describe("Move piece", () => {
     const board = new Board();
 
     // Move white pawn from e2 to e4
-    expect(board.getSquare("e2")).toBe("P");
-    expect(board.getSquare("e4")).toBe("*");
+    expect(board.getSquare("e2")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("e4")).toBe(null);
 
     board.movePiece("e2", "e4");
 
-    expect(board.getSquare("e2")).toBe("*");
-    expect(board.getSquare("e4")).toBe("P");
+    expect(board.getSquare("e2")).toBe(null);
+    expect(board.getSquare("e4")).toBeInstanceOf(Pawn);
 
     // Move black knight from g8 to f6
     expect(board.getSquare("g8")).toBe("n");
-    expect(board.getSquare("f6")).toBe("*");
+    expect(board.getSquare("f6")).toBe(null);
 
     board.movePiece("g8", "f6");
 
-    expect(board.getSquare("g8")).toBe("*");
+    expect(board.getSquare("g8")).toBe(null);
     expect(board.getSquare("f6")).toBe("n");
   });
 });
