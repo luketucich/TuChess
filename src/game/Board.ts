@@ -9,10 +9,10 @@ export class Board {
     return [
       ["r", "n", "b", "q", "k", "b", "n", "r"],
       ["p", "p", "p", "p", "p", "p", "p", "p"],
-      ["", "", "", "", "", "", "", ""],
-      ["", "", "", "", "", "", "", ""],
-      ["", "", "", "", "", "", "", ""],
-      ["", "", "", "", "", "", "", ""],
+      ["*", "*", "*", "*", "*", "*", "*", "*"],
+      ["*", "*", "*", "*", "*", "*", "*", "*"],
+      ["*", "*", "*", "*", "*", "*", "*", "*"],
+      ["*", "*", "*", "*", "*", "*", "*", "*"],
       ["P", "P", "P", "P", "P", "P", "P", "P"],
       ["R", "N", "B", "Q", "K", "B", "N", "R"],
     ];
@@ -20,6 +20,14 @@ export class Board {
 
   getBoard(): string[][] {
     return this.board;
+  }
+
+  displayBoard(): void {
+    console.log("  a b c d e f g h");
+    for (let i = 0; i < this.board.length; i++) {
+      const row = this.board[i];
+      console.log(8 - i + " " + row.join(" "));
+    }
   }
 
   indexToSquare(index: [number, number]): string {
@@ -81,12 +89,12 @@ export class Board {
     const [fromRow, fromCol]: [number, number] = this.squareToIndex(from);
     const [toRow, toCol]: [number, number] = this.squareToIndex(to);
 
-    if (this.board[fromRow][fromCol] === "") {
+    if (this.board[fromRow][fromCol] === "*") {
       throw new Error("No piece at from square");
     }
 
     const piece: string = this.board[fromRow][fromCol];
-    this.board[fromRow][fromCol] = "";
+    this.board[fromRow][fromCol] = "*";
     this.board[toRow][toCol] = piece;
   }
 }
