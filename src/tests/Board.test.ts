@@ -62,3 +62,38 @@ describe("Check index validity", () => {
     expect(board.indexIsValid([8, -1])).toBeFalsy();
   });
 });
+
+describe("Get piece at square", () => {
+  test("should return the piece at a given square", () => {
+    const board = new Board();
+
+    expect(board.getSquare("a8")).toBe("r");
+    expect(board.getSquare("e4")).toBe("");
+    expect(board.getSquare("h1")).toBe("R");
+    expect(board.getSquare("a1")).toBe("R");
+  });
+});
+
+describe("Move piece", () => {
+  test("should move a piece from one square to another", () => {
+    const board = new Board();
+
+    // Move white pawn from e2 to e4
+    expect(board.getSquare("e2")).toBe("P");
+    expect(board.getSquare("e4")).toBe("");
+
+    board.movePiece("e2", "e4");
+
+    expect(board.getSquare("e2")).toBe("");
+    expect(board.getSquare("e4")).toBe("P");
+
+    // Move black knight from g8 to f6
+    expect(board.getSquare("g8")).toBe("n");
+    expect(board.getSquare("f6")).toBe("");
+
+    board.movePiece("g8", "f6");
+
+    expect(board.getSquare("g8")).toBe("");
+    expect(board.getSquare("f6")).toBe("n");
+  });
+});

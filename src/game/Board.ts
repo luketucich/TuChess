@@ -63,4 +63,30 @@ export class Board {
 
     return true;
   }
+
+  getSquare(square: string): string {
+    if (!this.squareIsValid(square)) {
+      throw new Error("Invalid square");
+    }
+
+    const [row, col]: [number, number] = this.squareToIndex(square);
+    return this.board[row][col];
+  }
+
+  movePiece(from: string, to: string): void {
+    if (!this.squareIsValid(from) || !this.squareIsValid(to)) {
+      throw new Error("Invalid square");
+    }
+
+    const [fromRow, fromCol]: [number, number] = this.squareToIndex(from);
+    const [toRow, toCol]: [number, number] = this.squareToIndex(to);
+
+    if (this.board[fromRow][fromCol] === "") {
+      throw new Error("No piece at from square");
+    }
+
+    const piece: string = this.board[fromRow][fromCol];
+    this.board[fromRow][fromCol] = "";
+    this.board[toRow][toCol] = piece;
+  }
 }
