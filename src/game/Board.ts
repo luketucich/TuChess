@@ -96,19 +96,29 @@ export class Board {
   }
 
   movePiece(from: string, to: string): void {
+    // Check if squares are valid
     if (!this.squareIsValid(from) || !this.squareIsValid(to)) {
       throw new Error("Invalid square");
     }
 
-    const [fromRow, fromCol]: [number, number] = this.squareToIndex(from);
-    const [toRow, toCol]: [number, number] = this.squareToIndex(to);
+    // Check if from square has a piece
+    const currPiece: BoardSquare = this.getSquare(from);
 
-    if (this.board[fromRow][fromCol] === null) {
+    if (currPiece === null) {
       throw new Error("No piece at from square");
     }
 
-    const piece: BoardSquare = this.board[fromRow][fromCol];
+    // Check if move is legal
+    const legalMoves: string[] = currPiece.getMoves(this);
+    if (!legalMoves.includes(to)) {
+      throw new Error("Illegal move");
+    }
+
+    // If all checks pass, move the piece
+    const [fromRow, fromCol]: [number, number] = this.squareToIndex(from);
+    const [toRow, toCol]: [number, number] = this.squareToIndex(to);
+
     this.board[fromRow][fromCol] = null;
-    this.board[toRow][toCol] = piece;
+    this.board[toRow][toCol] = currPiece;
   }
 }

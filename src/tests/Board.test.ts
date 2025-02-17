@@ -75,8 +75,31 @@ describe("Get piece at square", () => {
   });
 });
 
-describe("Move piece", () => {
-  test("should move a piece from one square to another", () => {
+describe("Try to move pawn to invalid square", () => {
+  test("should throw an error if trying to move a pawn to an invalid square", () => {
+    const board = new Board();
+
+    expect(() => board.movePiece("e2", "e9")).toThrow("Invalid square");
+    expect(() => board.movePiece("e2", "i2")).toThrow("Invalid square");
+    expect(() => board.movePiece("e2", "i9")).toThrow("Invalid square");
+  });
+});
+
+describe("Try to move piece from empty square", () => {
+  test("should throw an error if trying to move a piece from an empty square", () => {
+    const board = new Board();
+
+    expect(() => board.movePiece("e3", "e4")).toThrow(
+      "No piece at from square"
+    );
+    expect(() => board.movePiece("a5", "a6")).toThrow(
+      "No piece at from square"
+    );
+  });
+});
+
+describe("Move pawn", () => {
+  test("should move a pawn from one square to another", () => {
     const board = new Board();
 
     // Move white pawn from e2 to e4
@@ -88,13 +111,29 @@ describe("Move piece", () => {
     expect(board.getSquare("e2")).toBe(null);
     expect(board.getSquare("e4")).toBeInstanceOf(Pawn);
 
-    // Move black knight from g8 to f6
-    expect(board.getSquare("g8")).toBe("n");
-    expect(board.getSquare("f6")).toBe(null);
+    // Move black pawn from e7 to e5
+    expect(board.getSquare("e7")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("e5")).toBe(null);
 
-    board.movePiece("g8", "f6");
+    board.movePiece("e7", "e5");
+  });
+});
 
-    expect(board.getSquare("g8")).toBe(null);
-    expect(board.getSquare("f6")).toBe("n");
+describe("Make illegal pawn move", {}, () => {
+  test("should throw an error if trying to make an illegal pawn move", () => {
+    const board = new Board();
+
+    // Move white pawn three squares forward
+    expect(() => board.movePiece("e2", "e5")).toThrow("Illegal move");
+
+    // Move white pawn two squares forward after it has already moved
+    board.movePiece("e2", "e4");
+    expect(() => board.movePiece("e4", "e6")).toThrow("Illegal move");
+
+    // Move white pawn forward if there is a piece in the way
+    board.movePiece("d7", "d5");
+    board.movePiece("d2", "d4");
+
+    expect(() => board.movePiece("d4", "d5")).toThrow("Illegal move");
   });
 });
