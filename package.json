@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "play": "tsx src/game.ts"
+    "play": "tsx src/game.ts",
+    "test": "vitest"
   },
   "dependencies": {
     "react": "^19.0.0",
