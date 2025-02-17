@@ -43,4 +43,24 @@ export class Board {
 
     return [row, col];
   }
+
+  squareIsValid(square: string): boolean {
+    if (square.length !== 2) return false;
+
+    const [file, rank]: [string, string] = [square[0], square[1]];
+
+    if (file < "a" || file > "h") return false;
+    if (rank < "1" || rank > "8") return false;
+
+    return true;
+  }
+
+  indexIsValid(index: [number, number]): boolean {
+    const [row, col]: [number, number] = index;
+
+    if (row < 0 || row > 7) return false;
+    if (col < 0 || col > 7) return false;
+
+    return true;
+  }
 }

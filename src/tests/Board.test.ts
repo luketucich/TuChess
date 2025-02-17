@@ -34,3 +34,31 @@ describe("Board square to index", () => {
     expect(board.squareToIndex("e4")).toStrictEqual([4, 4]);
   });
 });
+
+describe("Check square validity", () => {
+  test("should ensure a square is an actual square on the chess board", () => {
+    const board = new Board();
+
+    expect(board.squareIsValid("a8")).toBeTruthy();
+    expect(board.squareIsValid("e4")).toBeTruthy();
+    expect(board.squareIsValid("h1")).toBeTruthy();
+    expect(board.squareIsValid("a9")).toBeFalsy();
+    expect(board.squareIsValid("i8")).toBeFalsy();
+    expect(board.squareIsValid("a")).toBeFalsy();
+    expect(board.squareIsValid("")).toBeFalsy();
+  });
+});
+
+describe("Check index validity", () => {
+  test("should ensure an index is a valid index on the chess board", () => {
+    const board = new Board();
+
+    expect(board.indexIsValid([0, 0])).toBeTruthy();
+    expect(board.indexIsValid([4, 4])).toBeTruthy();
+    expect(board.indexIsValid([7, 7])).toBeTruthy();
+    expect(board.indexIsValid([-1, 0])).toBeFalsy();
+    expect(board.indexIsValid([0, 8])).toBeFalsy();
+    expect(board.indexIsValid([8, 8])).toBeFalsy();
+    expect(board.indexIsValid([8, -1])).toBeFalsy();
+  });
+});
