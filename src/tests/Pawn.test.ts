@@ -48,3 +48,27 @@ describe("White pawn that has already moved", () => {
     expect(moves).toStrictEqual(["e4"]);
   });
 });
+
+describe("Update pawn properties after moving", () => {
+  test("should update pawn properties after moving", () => {
+    const board = new Board();
+    const pawn = board.getSquare("e2") as Pawn;
+    board.movePiece("e2", "e4");
+
+    // Check that pawn has moved
+    expect(pawn.getHasMoved()).toBeTruthy();
+    expect(pawn.getPosition()).toBe("e4");
+
+    // Check that pawn is no longer at e2
+    expect(board.getSquare("e2")).toBe(null);
+
+    // Check that pawn is now at e4
+    expect(board.getSquare("e4")).toBeInstanceOf(Pawn);
+
+    // Check that unmoved black pawn at e7 can move two squares
+    const pawn2 = board.getSquare("e7") as Pawn;
+    const moves = pawn2.getMoves(board);
+    expect(moves).toStrictEqual(["e6", "e5"]);
+    expect(pawn2.getHasMoved()).toBeFalsy();
+  });
+});

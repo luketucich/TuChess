@@ -59,6 +59,6 @@ export class Pawn extends Piece {
 
   move(position: string): void {
     this.position = position;
-    this.hasMoved = true;
+    if (this.hasMoved === false) this.hasMoved = true;
   }
 }
