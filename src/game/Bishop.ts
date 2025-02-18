@@ -1,7 +1,7 @@
 import { Piece } from "../game/Piece.ts";
 import { Board } from "../game/Board.ts";
 
-export class Knight extends Piece {
+export class Bishop extends Piece {
   constructor(color: "white" | "black", position: string) {
     super(color, position, 3);
   }
@@ -10,20 +10,16 @@ export class Knight extends Piece {
     const moves: string[] = [];
     const [row, col]: number[] = board.squareToIndex(this.position);
     const directions: number[][] = [
-      [-2, -1], // Up left
-      [-2, 1], // Up right
-      [2, -1], // Down left
-      [2, 1], // Down right
-      [-1, -2], // Left up
-      [1, -2], // Left down
-      [-1, 2], // Right up
-      [1, 2], // Right down
+      [-1, -1], // Up left
+      [-1, 1], // Up right
+      [1, -1], // Down left
+      [1, 1], // Down right
     ];
 
     directions.forEach(([rowOffset, colOffset]) => {
       const move = board.indexToSquare([row + rowOffset, col + colOffset]);
 
-      if (board.squareIsValid(move) && board.getSquare(move) === null) {
+      while (board.squareIsValid(move) && board.getSquare(move) === null) {
         moves.push(move);
       }
     });
