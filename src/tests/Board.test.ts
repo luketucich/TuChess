@@ -213,3 +213,34 @@ describe("Make illegal bishop move", () => {
     expect(() => board.movePiece("f1", "c4")).toThrow("Illegal move");
   });
 });
+
+describe("Move rook", () => {
+  test("should move a rook from one square to another", () => {
+    // Move white rook from a1 to a3
+    const board = new Board();
+    board.movePiece("a2", "a4");
+
+    expect(board.getSquare("a1")).toBeInstanceOf(Rook);
+    expect(board.getSquare("a3")).toBe(null);
+
+    board.movePiece("a1", "a3");
+
+    expect(board.getSquare("a1")).toBe(null);
+    expect(board.getSquare("a3")).toBeInstanceOf(Rook);
+  });
+});
+
+describe("Make illegal rook move", () => {
+  test("should throw an error if trying to make an illegal rook move", () => {
+    const board = new Board();
+
+    // Attempt to make illegal rook moves
+    expect(() => board.movePiece("a1", "a4")).toThrow("Illegal move");
+
+    // Occupied square
+    expect(() => board.movePiece("a1", "a2")).toThrow("Illegal move");
+
+    // Invalid square
+    expect(() => board.movePiece("a1", "z")).toThrow("Invalid square");
+  });
+});
