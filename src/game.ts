@@ -13,7 +13,13 @@ function gameLoop() {
   console.log(board.displayBoard());
   rl.question(`${currentPlayer} to move (start-end): `, (move) => {
     const [start, end] = move.split("-");
-    board.movePiece(start, end);
+    try {
+      board.movePiece(start, end);
+    } catch (error) {
+      console.log("Invalid move! Try again.");
+      gameLoop();
+      return;
+    }
     currentPlayer = currentPlayer === "White" ? "Black" : "White";
     gameLoop();
   });

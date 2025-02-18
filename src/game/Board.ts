@@ -36,6 +36,8 @@ export class Board {
       const displayRow = this.board[row].map((square) => {
         if (square instanceof Pawn) {
           return square.getColor() === "white" ? "P" : "p";
+        } else if (square === null) {
+          return "-";
         } else {
           return square;
         }
