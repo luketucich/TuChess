@@ -15,7 +15,7 @@ function gameLoop() {
     const [start, end] = move.split("-");
     try {
       board.movePiece(start, end);
-    } catch (error) {
+    } catch {
       console.log("Invalid move! Try again.");
       gameLoop();
       return;

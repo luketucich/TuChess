@@ -2,12 +2,19 @@ import { Piece } from "../game/Piece.ts";
 import { Board } from "../game/Board.ts";
 
 export class Pawn extends Piece {
+  private hasMoved: boolean;
+
   constructor(
     color: "white" | "black",
     position: string,
     hasMoved: boolean = false
   ) {
-    super(color, position, hasMoved, 1);
+    super(color, position, 1);
+    this.hasMoved = hasMoved;
+  }
+
+  getHasMoved(): boolean {
+    return this.hasMoved;
   }
 
   getMoves(board: Board): string[] {
@@ -48,5 +55,10 @@ export class Pawn extends Piece {
     }
 
     return moves;
+  }
+
+  move(position: string): void {
+    this.position = position;
+    this.hasMoved = true;
   }
 }

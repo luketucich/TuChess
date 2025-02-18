@@ -103,14 +103,14 @@ export class Board {
       throw new Error("Invalid square");
     }
 
-    // Check if from square has a piece
     const currPiece: BoardSquare = this.getSquare(from);
 
+    // Check if there is a piece at the from square
     if (currPiece === null) {
       throw new Error("No piece at from square");
     }
 
-    // Check if move is legal
+    // Check if the move is legal
     const legalMoves: string[] = currPiece.getMoves(this);
     if (!legalMoves.includes(to)) {
       throw new Error("Illegal move");
@@ -120,7 +120,11 @@ export class Board {
     const [fromRow, fromCol]: [number, number] = this.squareToIndex(from);
     const [toRow, toCol]: [number, number] = this.squareToIndex(to);
 
+    // Move piece on board
     this.board[fromRow][fromCol] = null;
     this.board[toRow][toCol] = currPiece;
+
+    // Update piece position and any other properties
+    currPiece.move(to);
   }
 }

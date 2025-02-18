@@ -2,19 +2,12 @@ import { Board } from "../game/Board.ts";
 
 export abstract class Piece {
   protected color: "white" | "black";
-  protected hasMoved: boolean;
   protected position: string;
   protected value: number;
 
-  constructor(
-    color: "white" | "black",
-    position: string,
-    hasMoved: boolean = false,
-    value: number
-  ) {
+  constructor(color: "white" | "black", position: string, value: number) {
     this.color = color;
     this.position = position;
-    this.hasMoved = hasMoved;
     this.value = value;
   }
 
@@ -32,7 +25,11 @@ export abstract class Piece {
     return this.value;
   }
 
-  getHasMoved(): boolean {
-    return this.hasMoved;
+  setPosition(position: string): void {
+    this.position = position;
+  }
+
+  move(position: string): void {
+    this.position = position;
   }
 }
