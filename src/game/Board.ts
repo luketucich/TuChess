@@ -43,7 +43,7 @@ export class Board {
         "K",
         new Bishop("white", "f1"),
         new Knight("white", "g1"),
-        new Rook("black", "h1"),
+        new Rook("white", "h1"),
       ],
     ];
   }
@@ -53,16 +53,22 @@ export class Board {
   }
 
   displayBoard(): void {
-    for (let row = 0; row < 8; row++) {
-      const displayRow = this.board[row].map((square) => {
-        if (square instanceof Pawn) {
-          return square.getColor() === "white" ? "P" : "p";
-        } else if (square === null) {
-          return "-";
-        } else {
-          return square;
-        }
+    const pieceSymbols: { [key: string]: string } = {
+      Pawn: "P",
+      Knight: "N",
+      Bishop: "B",
+      Rook: "R",
+    };
+
+    for (const row of this.board) {
+      const displayRow: string[] = row.map((square) => {
+        if (square === null) return "-";
+        if (typeof square === "string") return square;
+        if (square.getColor() === "black")
+          return pieceSymbols[square.constructor.name].toLowerCase();
+        return pieceSymbols[square.constructor.name];
       });
+
       console.log(displayRow.join(" "));
     }
   }
