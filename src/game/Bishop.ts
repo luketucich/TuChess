@@ -27,6 +27,8 @@ export class Bishop extends Piece {
         board.getSquare(moveAsSquare) === null
       ) {
         moves.push(moveAsSquare);
+
+        // Move to next square in direction
         move = [move[0] + rowOffset, move[1] + colOffset];
         moveAsSquare = board.indexToSquare([move[0], move[1]]);
       }
