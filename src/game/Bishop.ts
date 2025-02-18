@@ -16,11 +16,19 @@ export class Bishop extends Piece {
       [1, 1], // Down right
     ];
 
-    directions.forEach(([rowOffset, colOffset]) => {
-      const move = board.indexToSquare([row + rowOffset, col + colOffset]);
+    directions.forEach((direction) => {
+      const [rowOffset, colOffset] = direction;
 
-      while (board.squareIsValid(move) && board.getSquare(move) === null) {
-        moves.push(move);
+      let move: number[] = [row + rowOffset, col + colOffset];
+      let moveAsSquare = board.indexToSquare([move[0], move[1]]);
+
+      while (
+        board.squareIsValid(moveAsSquare) &&
+        board.getSquare(moveAsSquare) === null
+      ) {
+        moves.push(moveAsSquare);
+        move = [move[0] + rowOffset, move[1] + colOffset];
+        moveAsSquare = board.indexToSquare([move[0], move[1]]);
       }
     });
 
