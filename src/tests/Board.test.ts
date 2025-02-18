@@ -2,17 +2,24 @@ import { describe, expect, test } from "vitest";
 import { Board } from "../game/Board.ts";
 import { Pawn } from "../game/Pawn.ts";
 import { Knight } from "../game/Knight.ts";
+import { Bishop } from "../game/Bishop.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
     const board = new Board();
     const initialSetup = board.getBoard();
 
+    // Check initial positions of kings
     expect(initialSetup[7][4]).toBe("K"); // White king at e1
     expect(initialSetup[0][4]).toBe("k"); // Black king at e8
+
+    // Check initial positions of pawns
     expect(initialSetup[6][0]).toBeInstanceOf(Pawn); // White pawn at a2
     expect(initialSetup[1][0]).toBeInstanceOf(Pawn); // Black pawn at a7
+
+    // Check initial positions of knights and bishops
     expect(initialSetup[0][1]).toBeInstanceOf(Knight); // Black knight at b8
+    expect(initialSetup[0][2]).toBeInstanceOf(Bishop); // Black bishop at c8
   });
 });
 
@@ -20,6 +27,7 @@ describe("Index to board square", () => {
   test("should convert [][] index to corresponding square on chess board", () => {
     const board = new Board();
 
+    // Convert board indices to chess notation
     expect(board.indexToSquare([0, 0])).toBe("a8");
     expect(board.indexToSquare([4, 4])).toBe("e4");
     expect(board.indexToSquare([7, 7])).toBe("h1");
@@ -31,6 +39,7 @@ describe("Board square to index", () => {
   test("should convert square on chess board to corresponding [][] index", () => {
     const board = new Board();
 
+    // Convert chess notation to board indices
     expect(board.squareToIndex("a8")).toStrictEqual([0, 0]);
     expect(board.squareToIndex("h1")).toStrictEqual([7, 7]);
     expect(board.squareToIndex("d4")).toStrictEqual([4, 3]);
@@ -42,6 +51,7 @@ describe("Check square validity", () => {
   test("should ensure a square is an actual square on the chess board", () => {
     const board = new Board();
 
+    // Validate chess board squares
     expect(board.squareIsValid("a8")).toBeTruthy();
     expect(board.squareIsValid("e4")).toBeTruthy();
     expect(board.squareIsValid("h1")).toBeTruthy();
@@ -56,6 +66,7 @@ describe("Check index validity", () => {
   test("should ensure an index is a valid index on the chess board", () => {
     const board = new Board();
 
+    // Validate board indices
     expect(board.indexIsValid([0, 0])).toBeTruthy();
     expect(board.indexIsValid([4, 4])).toBeTruthy();
     expect(board.indexIsValid([7, 7])).toBeTruthy();
@@ -70,11 +81,13 @@ describe("Get piece at square", () => {
   test("should return the piece at a given square", () => {
     const board = new Board();
 
+    // Get pieces at specific squares
     expect(board.getSquare("a8")).toBe("r"); // Black rook
     expect(board.getSquare("e4")).toBe(null);
     expect(board.getSquare("h1")).toBe("R"); // White rook
     expect(board.getSquare("a1")).toBe("R"); // White rook
     expect(board.getSquare("g8")).toBeInstanceOf(Knight); // Black knight
+    expect(board.getSquare("c8")).toBeInstanceOf(Bishop); // Black bishop
   });
 });
 
@@ -82,6 +95,7 @@ describe("Try to move pawn to invalid square", () => {
   test("should throw an error if trying to move a pawn to an invalid square", () => {
     const board = new Board();
 
+    // Attempt to move pawn to invalid squares
     expect(() => board.movePiece("e2", "e9")).toThrow("Invalid square");
     expect(() => board.movePiece("e2", "i2")).toThrow("Invalid square");
     expect(() => board.movePiece("e2", "i9")).toThrow("Invalid square");
@@ -92,6 +106,7 @@ describe("Try to move piece from empty square", () => {
   test("should throw an error if trying to move a piece from an empty square", () => {
     const board = new Board();
 
+    // Attempt to move piece from empty squares
     expect(() => board.movePiece("e3", "e4")).toThrow(
       "No piece at from square"
     );
@@ -138,5 +153,50 @@ describe("Make illegal pawn move", {}, () => {
     board.movePiece("d2", "d4");
 
     expect(() => board.movePiece("d4", "d5")).toThrow("Illegal move");
+  });
+});
+
+describe("Move knight", () => {
+  test("should move a knight from one square to another", () => {
+    const board = new Board();
+
+    // Move white knight from b1 to c3
+    expect(board.getSquare("b1")).toBeInstanceOf(Knight);
+    expect(board.getSquare("c3")).toBe(null);
+
+    board.movePiece("b1", "c3");
+
+    expect(board.getSquare("b1")).toBe(null);
+    expect(board.getSquare("c3")).toBeInstanceOf(Knight);
+
+    // Move black knight from g8 to f6
+    expect(board.getSquare("g8")).toBeInstanceOf(Knight);
+    expect(board.getSquare("f6")).toBe(null);
+
+    board.movePiece("g8", "f6");
+  });
+});
+
+describe("Make illegal knight move", () => {
+  test("should throw an error if trying to make an illegal knight move", () => {
+    const board = new Board();
+
+    // Attempt to make illegal knight moves
+    expect(() => board.movePiece("b1", "b3")).toThrow("Illegal move");
+
+    // Occupied square
+    expect(() => board.movePiece("b1", "d2")).toThrow("Illegal move");
+  });
+});
+
+describe("Move bishop", () => {
+  test("should move a bishop from one square to another", () => {
+    // Move white bishop from f1 to c4
+    const board = new Board();
+    board.movePiece("e2", "e4");
+    expect(board.getSquare("f1")).toBeInstanceOf(Bishop);
+    expect(board.getSquare("c4")).toBe(null);
+
+    board.movePiece("f1", "c4");
   });
 });
