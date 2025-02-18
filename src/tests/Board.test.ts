@@ -3,6 +3,7 @@ import { Board } from "../game/Board.ts";
 import { Pawn } from "../game/Pawn.ts";
 import { Knight } from "../game/Knight.ts";
 import { Bishop } from "../game/Bishop.ts";
+import { Rook } from "../game/Rook.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -82,10 +83,10 @@ describe("Get piece at square", () => {
     const board = new Board();
 
     // Get pieces at specific squares
-    expect(board.getSquare("a8")).toBe("r"); // Black rook
+    expect(board.getSquare("a8")).toBeInstanceOf(Rook); // Black rook
     expect(board.getSquare("e4")).toBe(null);
-    expect(board.getSquare("h1")).toBe("R"); // White rook
-    expect(board.getSquare("a1")).toBe("R"); // White rook
+    expect(board.getSquare("h1")).toBeInstanceOf(Rook); // White rook
+    expect(board.getSquare("a1")).toBeInstanceOf(Rook); // White rook
     expect(board.getSquare("g8")).toBeInstanceOf(Knight); // Black knight
     expect(board.getSquare("c8")).toBeInstanceOf(Bishop); // Black bishop
   });
@@ -198,5 +199,17 @@ describe("Move bishop", () => {
     expect(board.getSquare("c4")).toBe(null);
 
     board.movePiece("f1", "c4");
+  });
+});
+
+describe("Make illegal bishop move", () => {
+  test("should throw an error if trying to make an illegal bishop move", () => {
+    const board = new Board();
+
+    // Attempt to make illegal bishop moves
+    expect(() => board.movePiece("f1", "f4")).toThrow("Illegal move");
+
+    // Occupied square
+    expect(() => board.movePiece("f1", "c4")).toThrow("Illegal move");
   });
 });
