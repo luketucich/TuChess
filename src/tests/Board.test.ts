@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { Board } from "../game/Board.ts";
 import { Pawn } from "../game/Pawn.ts";
+import { Knight } from "../game/Knight.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -11,6 +12,7 @@ describe("Chess Board Initialization", () => {
     expect(initialSetup[0][4]).toBe("k"); // Black king at e8
     expect(initialSetup[6][0]).toBeInstanceOf(Pawn); // White pawn at a2
     expect(initialSetup[1][0]).toBeInstanceOf(Pawn); // Black pawn at a7
+    expect(initialSetup[0][1]).toBeInstanceOf(Knight); // Black knight at b8
   });
 });
 
@@ -72,6 +74,7 @@ describe("Get piece at square", () => {
     expect(board.getSquare("e4")).toBe(null);
     expect(board.getSquare("h1")).toBe("R"); // White rook
     expect(board.getSquare("a1")).toBe("R"); // White rook
+    expect(board.getSquare("g8")).toBeInstanceOf(Knight); // Black knight
   });
 });
 

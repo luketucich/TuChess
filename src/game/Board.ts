@@ -1,7 +1,8 @@
+import { Knight } from "./Knight";
 import { Pawn } from "./Pawn";
 
 // Define generic type for board squares
-type BoardSquare = null | Pawn;
+type BoardSquare = null | Pawn | Knight;
 
 export class Board {
   private board: BoardSquare[][];
@@ -12,7 +13,16 @@ export class Board {
 
   private initializeBoard(): BoardSquare[][] {
     return [
-      ["r", "n", "b", "q", "k", "b", "n", "r"],
+      [
+        "r",
+        new Knight("black", "b8"),
+        "b",
+        "q",
+        "k",
+        "b",
+        new Knight("black", "g8"),
+        "r",
+      ],
       ["a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"].map(
         (square) => new Pawn("black", square)
       ),
@@ -23,7 +33,16 @@ export class Board {
       ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"].map(
         (square) => new Pawn("white", square)
       ),
-      ["R", "N", "B", "Q", "K", "B", "N", "R"],
+      [
+        "R",
+        new Knight("white", "b1"),
+        "B",
+        "Q",
+        "K",
+        "B",
+        new Knight("white", "g1"),
+        "R",
+      ],
     ];
   }
 

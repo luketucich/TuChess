@@ -8,18 +8,26 @@ export class Knight extends Piece {
 
   getMoves(board: Board): string[] {
     const moves: string[] = [];
-    const [row, col] = board.squareToIndex(this.position);
-    const directions = [
-      // Up
+    const [row, col]: number[] = board.squareToIndex(this.position);
+    const directions: number[][] = [
       [-2, -1], // Up left
-      [2, -1], // Up right
+      [-2, 1], // Up right
+      [2, -1], // Down left
+      [2, 1], // Down right
+      [-1, -2], // Left up
+      [1, -2], // Left down
+      [-1, 2], // Right up
+      [1, 2], // Right down
     ];
 
     directions.forEach(([rowOffset, colOffset]) => {
-      moves.push(board.indexToSquare([row + rowOffset, col + colOffset]));
+      const move = board.indexToSquare([row + rowOffset, col + colOffset]);
+      if (board.squareIsValid(move) && board.getSquare(move) === null) {
+        moves.push(move);
+      }
     });
 
-    return moves.filter((move) => board.squareIsValid(move));
+    return moves;
   }
 
   move(position: string): void {
