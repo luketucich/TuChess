@@ -5,6 +5,7 @@ import { Knight } from "../game/Knight.ts";
 import { Bishop } from "../game/Bishop.ts";
 import { Rook } from "../game/Rook.ts";
 import { Queen } from "../game/Queen.ts";
+import { King } from "../game/King.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -12,8 +13,8 @@ describe("Chess Board Initialization", () => {
     const initialSetup = board.getBoard();
 
     // Check initial positions of kings
-    expect(initialSetup[7][4]).toBe("K"); // White king at e1
-    expect(initialSetup[0][4]).toBe("k"); // Black king at e8
+    expect(initialSetup[7][4]).toBeInstanceOf(King); // White king at e1
+    expect(initialSetup[0][4]).toBeInstanceOf(King); // Black king at e8
 
     // Check initial positions of pawns
     expect(initialSetup[6][0]).toBeInstanceOf(Pawn); // White pawn at a2
@@ -94,6 +95,8 @@ describe("Get piece at square", () => {
     expect(board.getSquare("a1")).toBeInstanceOf(Rook); // White rook
     expect(board.getSquare("g8")).toBeInstanceOf(Knight); // Black knight
     expect(board.getSquare("c8")).toBeInstanceOf(Bishop); // Black bishop
+    expect(board.getSquare("d8")).toBeInstanceOf(Queen); // Black queen
+    expect(board.getSquare("e8")).toBeInstanceOf(King); // Black king
   });
 });
 
