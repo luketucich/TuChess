@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { Pawn } from "../game/Pawn.ts";
+import { King } from "../game/King.ts";
 import { Board } from "../game/Board.ts";
 
 describe("Pawn properties", () => {
@@ -83,5 +84,38 @@ describe("Update pawn properties after moving", () => {
     expect(moves).toStrictEqual(["e6", "e5"]);
     // Check if black pawn has not moved
     expect(pawn2.getHasMoved()).toBeFalsy();
+  });
+});
+
+describe("White pawn captures", () => {
+  test("should have two possible captures", () => {
+    const board = new Board();
+    board.setSquare("d3", new Pawn("black", "d3"));
+    board.setSquare("f3", new Pawn("black", "f3"));
+
+    const pawn = board.getSquare("e2") as Pawn;
+    const captures = pawn.getCaptures(board);
+
+    // Check possible captures for white pawn
+    expect(captures).toStrictEqual(["d3", "f3"]);
+
+    // Check that white pawn can't capture its own piece
+    board.setSquare("d3", new Pawn("white", "d3"));
+    const capturesAfterMove = pawn.getCaptures(board);
+    expect(capturesAfterMove).toStrictEqual(["f3"]);
+
+    // Check that white pawn can't capture an empty square
+    board.setSquare("d3", null);
+    const capturesAfterMove2 = pawn.getCaptures(board);
+    expect(capturesAfterMove2).toStrictEqual(["f3"]);
+
+    // Check that white pawn can't capture king
+    const board2 = new Board();
+    board2.setSquare("e4", new Pawn("white", "e4"));
+    board2.setSquare("f5", new King("black", "f5"));
+
+    const pawn2 = board2.getSquare("e4") as Pawn;
+    const captures2 = pawn2.getCaptures(board2);
+    expect(captures2).toStrictEqual([]);
   });
 });

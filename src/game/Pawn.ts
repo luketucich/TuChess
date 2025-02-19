@@ -1,5 +1,6 @@
 import { Piece } from "../game/Piece.ts";
 import { Board } from "../game/Board.ts";
+import { King } from "./King.ts";
 
 export class Pawn extends Piece {
   private hasMoved: boolean;
@@ -60,5 +61,59 @@ export class Pawn extends Piece {
   move(position: string): void {
     this.position = position;
     if (this.hasMoved === false) this.hasMoved = true;
+  }
+
+  getCaptures(board: Board): string[] {
+    const [row, col] = board.squareToIndex(this.position);
+    const currBoard = board.getBoard();
+    const captures: string[] = [];
+
+    if (this.color === "white") {
+      const left = currBoard[row - 1][col - 1];
+      const right = currBoard[row - 1][col + 1];
+
+      // Check if pawn can capture to the left
+      if (
+        left &&
+        left.getColor() === "black" &&
+        left instanceof King === false
+      ) {
+        captures.push(board.indexToSquare([row - 1, col - 1]));
+      }
+
+      // Check if pawn can capture to the right
+      if (
+        right &&
+        right.getColor() === "black" &&
+        right instanceof King === false
+      ) {
+        captures.push(board.indexToSquare([row - 1, col + 1]));
+      }
+    }
+
+    if (this.color === "black") {
+      const left = currBoard[row + 1][col + 1];
+      const right = currBoard[row + 1][col - 1];
+
+      // Check if pawn can capture to the left
+      if (
+        left &&
+        left.getColor() === "white" &&
+        left instanceof King === false
+      ) {
+        captures.push(board.indexToSquare([row + 1, col + 1]));
+      }
+
+      // Check if pawn can capture to the right
+      if (
+        right &&
+        right.getColor() === "white" &&
+        right instanceof King === false
+      ) {
+        captures.push(board.indexToSquare([row + 1, col - 1]));
+      }
+    }
+
+    return captures;
   }
 }
