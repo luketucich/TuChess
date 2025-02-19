@@ -50,3 +50,29 @@ describe("King moves", () => {
     );
   });
 });
+
+describe("King collision checker", () => {
+  test("should prevent the king from moving to a square adjacent to enemy king", () => {
+    // Create a board with a white king at e4 and a black king at g4
+    const board = new Board();
+    board.setSquare("e4", new King("white", "e4"));
+
+    const king = board.getSquare("e4") as King;
+
+    board.setSquare("g4", new King("black", "g4"));
+
+    const moves = king.getMoves(board);
+
+    expect(moves.sort()).toStrictEqual(["d3", "d4", "d5", "e3", "e5"].sort());
+
+    // Should allow the king to move to a square not adjacent to enemy king
+    const board2 = new Board();
+    board2.setSquare("e1", null);
+    board2.setSquare("e2", new King("white", "e2"));
+
+    const king2 = board2.getSquare("e2") as King;
+    const moves2 = king2.getMoves(board2);
+
+    expect(moves2.sort()).toStrictEqual(["e1", "e3", "d3", "f3"].sort());
+  });
+});

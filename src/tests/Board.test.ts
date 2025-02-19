@@ -66,6 +66,7 @@ describe("Check square validity", () => {
     expect(board.squareIsValid("i8")).toBeFalsy();
     expect(board.squareIsValid("a")).toBeFalsy();
     expect(board.squareIsValid("")).toBeFalsy();
+    expect(board.squareIsValid("f3")).toBeTruthy();
   });
 });
 
@@ -284,5 +285,41 @@ describe("Make illegal queen move", () => {
 
     // Invalid square
     expect(() => board.movePiece("d1", "z")).toThrow("Invalid square");
+  });
+});
+
+describe("Set square", () => {
+  test("should set a square to a piece", () => {
+    const board = new Board();
+
+    board.setSquare("a1", new Pawn("white", "a1"));
+    board.setSquare("e4", new King("white", "e4"));
+
+    expect(board.getSquare("a1")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("e4")).toBeInstanceOf(King);
+  });
+});
+
+describe("Move king", () => {
+  test("should move a king from one square to another", () => {
+    // Move white king from e1 to e2
+    const board = new Board();
+
+    expect(board.getSquare("e1")).toBeInstanceOf(King);
+    expect(board.getSquare("e2")).toBeInstanceOf(Pawn);
+
+    board.movePiece("e2", "e4");
+    board.movePiece("e1", "e2");
+
+    expect(board.getSquare("f3")).toBe(null);
+
+    const king = board.getSquare("e2") as King;
+
+    expect(king.getPosition()).toBe("e2");
+
+    board.movePiece("e2", "f3");
+
+    expect(board.getSquare("e2")).toBe(null);
+    expect(board.getSquare("f3")).toBeInstanceOf(King);
   });
 });

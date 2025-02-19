@@ -137,13 +137,22 @@ export class Board {
     return this.board[row][col];
   }
 
+  setSquare(square: string, piece: BoardSquare): void {
+    if (!this.squareIsValid(square)) {
+      throw new Error("Invalid square");
+    }
+
+    const [row, col]: [number, number] = this.squareToIndex(square);
+    this.board[row][col] = piece;
+  }
+
   movePiece(from: string, to: string): void {
+    const currPiece: BoardSquare = this.getSquare(from);
+
     // Check if squares are valid
     if (!this.squareIsValid(from) || !this.squareIsValid(to)) {
       throw new Error("Invalid square");
     }
-
-    const currPiece: BoardSquare = this.getSquare(from);
 
     // Check if there is a piece at the from square
     if (currPiece === null) {

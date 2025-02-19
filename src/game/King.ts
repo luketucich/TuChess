@@ -6,7 +6,7 @@ export class King extends Piece {
     super(color, position, Infinity);
   }
 
-  checkKingCollision(board: Board, move: number[]): boolean {
+  kingCollisionCheck(board: Board, move: number[]): boolean {
     const directions: number[][] = [
       [-1, 0], // Up
       [1, 0], // Down
@@ -18,17 +18,22 @@ export class King extends Piece {
       [1, 1], // Down right
     ];
 
-    directions.forEach((direction) => {
-      const [rowOffset, colOffset] = direction;
-      const adjacentSquare = board.indexToSquare([
+    for (const [rowOffset, colOffset] of directions) {
+      const square = board.indexToSquare([
+        // Get square
         move[0] + rowOffset,
         move[1] + colOffset,
       ]);
 
-      if (board.getSquare(adjacentSquare) instanceof King) {
-        return true;
+      if (board.squareIsValid(square)) {
+        const piece = board.getSquare(square); // Get piece at square
+
+        if (piece !== this && piece instanceof King) {
+          // Check if piece is a king, and not the current king
+          return true;
+        }
       }
-    });
+    }
 
     return false;
   }
@@ -53,9 +58,9 @@ export class King extends Piece {
       const moveAsSquare = board.indexToSquare([move[0], move[1]]);
 
       if (
-        board.squareIsValid(moveAsSquare) &&
-        board.getSquare(moveAsSquare) === null &&
-        this.checkKingCollision(board, move) === false
+        board.squareIsValid(moveAsSquare) && // Check if square is valid
+        board.getSquare(moveAsSquare) === null && // Check if square is empty
+        !this.kingCollisionCheck(board, move) // Check if king is colliding with another king
       ) {
         moves.push(moveAsSquare);
       }

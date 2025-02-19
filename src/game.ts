@@ -3,7 +3,7 @@ import * as readline from "readline";
 
 // Initialize the board and set the starting player
 const board = new Board();
-let currentPlayer = "White";
+let currentPlayer = "white";
 const blackMessage = `\n\x1b[31m${"Black to move (start-end): \n"}\x1b[0m`;
 const whiteMessage = `\n\x1b[37m${"White to move (start-end): \n"}\x1b[0m`;
 
@@ -20,7 +20,7 @@ function gameLoop() {
 
   // Prompt the current player for their move
   rl.question(
-    currentPlayer === "White" ? whiteMessage : blackMessage,
+    currentPlayer === "white" ? whiteMessage : blackMessage,
     (move) => {
       const [start, end] = move.split("-");
       try {
@@ -28,13 +28,13 @@ function gameLoop() {
         board.movePiece(start, end);
       } catch {
         // If the move is invalid, notify the player and restart the loop
-        console.log("Invalid move! Try again.");
+        console.log("\n\x1b[33mInvalid move! Try again.\x1b[0m\n");
         gameLoop();
         return;
       }
 
       // Swap the current player
-      currentPlayer = currentPlayer === "White" ? "Black" : "White";
+      currentPlayer = currentPlayer === "white" ? "black" : "white";
 
       // Continue the game loop
       gameLoop();
