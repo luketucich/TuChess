@@ -22,15 +22,28 @@ function gameLoop() {
   rl.question(
     currentPlayer === "white" ? whiteMessage : blackMessage,
     (move) => {
-      const [start, end] = move.split("-");
-      try {
-        // Attempt to move the piece
-        board.movePiece(start, end);
-      } catch {
-        // If the move is invalid, notify the player and restart the loop
-        console.log("\n\x1b[33mInvalid move! Try again.\x1b[0m\n");
-        gameLoop();
-        return;
+      if (move.includes("-")) {
+        const [start, end] = move.split("-");
+        try {
+          // Attempt to move the piece
+          board.movePiece(start, end);
+        } catch {
+          // If the move is invalid, notify the player and restart the loop
+          console.log("\n\x1b[33mInvalid move! Try again.\x1b[0m\n");
+          gameLoop();
+          return;
+        }
+      } else if (move.includes("x")) {
+        const [start, end] = move.split("x");
+        try {
+          // Attempt to capture the piece
+          board.capturePiece(start, end);
+        } catch {
+          // If the move is invalid, notify the player and restart the loop
+          console.log("\n\x1b[33mInvalid capture! Try again.\x1b[0m\n");
+          gameLoop();
+          return;
+        }
       }
 
       // Swap the current player
