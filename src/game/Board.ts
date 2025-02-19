@@ -66,11 +66,20 @@ export class Board {
 
     for (const row of this.board) {
       const displayRow: string[] = row.map((square) => {
-        if (square === null) return "-";
-        if (typeof square === "string") return square;
-        if (square.getColor() === "black")
-          return pieceSymbols[square.constructor.name].toLowerCase();
-        return pieceSymbols[square.constructor.name];
+        // If square is empty, display a hypen
+        if (square === null) {
+          return "-";
+
+          // If square is occupied by black piece, display piece symbol in red
+        } else if (square.getColor() === "black") {
+          return `\x1b[31m${
+            pieceSymbols[square.constructor.name]
+          }\x1b[0m`.toLowerCase();
+
+          // If square is occupied by white piece, display piece symbol in white
+        } else {
+          return `\x1b[37m${pieceSymbols[square.constructor.name]}\x1b[0m`;
+        }
       });
 
       console.log(displayRow.join(" "));
