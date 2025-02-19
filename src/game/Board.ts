@@ -2,9 +2,10 @@ import { Bishop } from "./Bishop";
 import { Knight } from "./Knight";
 import { Pawn } from "./Pawn";
 import { Rook } from "./Rook";
+import { Queen } from "./Queen";
 
 // Define generic type for board squares
-type BoardSquare = null | Pawn | Knight | Bishop | Rook;
+type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen;
 
 export class Board {
   private board: BoardSquare[][];
@@ -19,7 +20,7 @@ export class Board {
         new Rook("black", "a8"),
         new Knight("black", "b8"),
         new Bishop("black", "c8"),
-        "q",
+        new Queen("black", "d8"),
         "k",
         new Bishop("black", "f8"),
         new Knight("black", "g8"),
@@ -39,7 +40,7 @@ export class Board {
         new Rook("white", "a1"),
         new Knight("white", "b1"),
         new Bishop("white", "c1"),
-        "Q",
+        new Queen("white", "d1"),
         "K",
         new Bishop("white", "f1"),
         new Knight("white", "g1"),

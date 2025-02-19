@@ -6,15 +6,23 @@ describe("Pawn properties", () => {
   test("should have the correct properties", () => {
     const pawn = new Pawn("white", "a2");
 
+    // Check pawn color
     expect(pawn.getColor()).toBe("white");
+    // Check pawn position
     expect(pawn.getPosition()).toBe("a2");
+    // Check if pawn has moved
     expect(pawn.getHasMoved()).toBeFalsy();
+    // Check pawn value
     expect(pawn.getValue()).toBe(1);
 
     const pawn2 = new Pawn("black", "h7", true);
+    // Check pawn color
     expect(pawn2.getColor()).toBe("black");
+    // Check pawn position
     expect(pawn2.getPosition()).toBe("h7");
+    // Check if pawn has moved
     expect(pawn2.getHasMoved()).toBeTruthy();
+    // Check pawn value
     expect(pawn2.getValue()).toBe(1);
   });
 });
@@ -25,6 +33,7 @@ describe("White pawn at start", () => {
     const board = new Board();
     const moves = pawn.getMoves(board);
 
+    // Check possible moves for white pawn at start
     expect(moves).toStrictEqual(["e3", "e4"]);
   });
 });
@@ -35,6 +44,7 @@ describe("Black pawn at start", () => {
     const board = new Board();
     const moves = pawn.getMoves(board);
 
+    // Check possible moves for black pawn at start
     expect(moves).toStrictEqual(["e6", "e5"]);
   });
 });
@@ -45,6 +55,7 @@ describe("White pawn that has already moved", () => {
     const board = new Board();
     const moves = pawn.getMoves(board);
 
+    // Check possible move for white pawn that has already moved
     expect(moves).toStrictEqual(["e4"]);
   });
 });
@@ -57,6 +68,7 @@ describe("Update pawn properties after moving", () => {
 
     // Check that pawn has moved
     expect(pawn.getHasMoved()).toBeTruthy();
+    // Check new position of pawn
     expect(pawn.getPosition()).toBe("e4");
 
     // Check that pawn is no longer at e2
@@ -69,6 +81,7 @@ describe("Update pawn properties after moving", () => {
     const pawn2 = board.getSquare("e7") as Pawn;
     const moves = pawn2.getMoves(board);
     expect(moves).toStrictEqual(["e6", "e5"]);
+    // Check if black pawn has not moved
     expect(pawn2.getHasMoved()).toBeFalsy();
   });
 });
