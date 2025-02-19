@@ -59,6 +59,7 @@ export class Board {
       Knight: "N",
       Bishop: "B",
       Rook: "R",
+      Queen: "Q",
     };
 
     for (const row of this.board) {

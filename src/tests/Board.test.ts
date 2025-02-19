@@ -4,6 +4,7 @@ import { Pawn } from "../game/Pawn.ts";
 import { Knight } from "../game/Knight.ts";
 import { Bishop } from "../game/Bishop.ts";
 import { Rook } from "../game/Rook.ts";
+import { Queen } from "../game/Queen.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -21,6 +22,10 @@ describe("Chess Board Initialization", () => {
     // Check initial positions of knights and bishops
     expect(initialSetup[0][1]).toBeInstanceOf(Knight); // Black knight at b8
     expect(initialSetup[0][2]).toBeInstanceOf(Bishop); // Black bishop at c8
+
+    // Check initial positions of rooks and queens
+    expect(initialSetup[0][0]).toBeInstanceOf(Rook); // Black rook at a8
+    expect(initialSetup[0][3]).toBeInstanceOf(Queen); // Black queen at d8
   });
 });
 
@@ -242,5 +247,39 @@ describe("Make illegal rook move", () => {
 
     // Invalid square
     expect(() => board.movePiece("a1", "z")).toThrow("Invalid square");
+  });
+});
+
+describe("Move queen", () => {
+  test("should move a queen from one square to another", () => {
+    // Move white queen from d1 to d3
+    const board = new Board();
+    board.movePiece("d2", "d4");
+
+    expect(board.getSquare("d1")).toBeInstanceOf(Queen);
+    expect(board.getSquare("d3")).toBe(null);
+
+    board.movePiece("d1", "d3");
+
+    expect(board.getSquare("d1")).toBe(null);
+    expect(board.getSquare("d3")).toBeInstanceOf(Queen);
+
+    // Move queen from d3 to a6
+    board.movePiece("d3", "a6");
+  });
+});
+
+describe("Make illegal queen move", () => {
+  test("should throw an error if trying to make an illegal queen move", () => {
+    const board = new Board();
+
+    // Attempt to make illegal queen moves
+    expect(() => board.movePiece("d1", "d4")).toThrow("Illegal move");
+
+    // Occupied square
+    expect(() => board.movePiece("d1", "d2")).toThrow("Illegal move");
+
+    // Invalid square
+    expect(() => board.movePiece("d1", "z")).toThrow("Invalid square");
   });
 });
