@@ -1,5 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { Knight } from "../game/Knight.ts";
+import { Pawn } from "../game/Pawn.ts";
+import { King } from "../game/King.ts";
 import { Board } from "../game/Board.ts";
 
 describe("Knight properties", () => {
@@ -45,5 +47,30 @@ describe("Knight moves", () => {
 
     // Check the possible moves for the knight at g8
     expect(moves3.sort()).toStrictEqual(["h6", "f6"].sort());
+  });
+});
+
+describe("Knight captures", () => {
+  test("should have the correct captures", () => {
+    const board = new Board();
+    const knight = new Knight("white", "b1");
+    const knight2 = new Knight("black", "c3");
+    board.setSquare("b1", knight);
+    board.setSquare("c3", knight2);
+
+    const captures = knight.getCaptures(board);
+
+    // Check the possible captures for the white knight at b1
+    expect(captures).toStrictEqual(["c3"]);
+
+    // Do not let the knight capture its own piece or a King
+    board.setSquare("c3", new Knight("white", "c3"));
+    board.setSquare("d5", new King("black", "d5"));
+    board.setSquare("b5", new Pawn("white", "b5"));
+
+    const knight3 = board.getSquare("c3") as Knight;
+    const captures2 = knight3.getCaptures(board);
+
+    expect(captures2).toStrictEqual([]);
   });
 });
