@@ -29,13 +29,13 @@ describe("Knight moves", () => {
   test("should have the correct moves", () => {
     const board = new Board();
     const knight = board.getSquare("b1") as Knight;
-    const moves = knight.getMoves(board);
+    const moves = knight.getMoves(board).moves;
 
     // Check the possible moves for the knight at b1
     expect(moves).toStrictEqual(["a3", "c3"]);
 
     const knight2 = new Knight("black", "e4");
-    const moves2 = knight2.getMoves(board);
+    const moves2 = knight2.getMoves(board).moves;
 
     // Check the possible moves for the knight at e4
     expect(moves2.sort()).toStrictEqual(
@@ -43,7 +43,7 @@ describe("Knight moves", () => {
     );
 
     const knight3 = board.getSquare("g8") as Knight;
-    const moves3 = knight3.getMoves(board);
+    const moves3 = knight3.getMoves(board).moves;
 
     // Check the possible moves for the knight at g8
     expect(moves3.sort()).toStrictEqual(["h6", "f6"].sort());
@@ -58,7 +58,7 @@ describe("Knight captures", () => {
     board.setSquare("b1", knight);
     board.setSquare("c3", knight2);
 
-    const captures = knight.getCaptures(board);
+    const captures = knight.getMoves(board).captures;
 
     // Check the possible captures for the white knight at b1
     expect(captures).toStrictEqual(["c3"]);
@@ -69,7 +69,7 @@ describe("Knight captures", () => {
     board.setSquare("b5", new Pawn("white", "b5"));
 
     const knight3 = board.getSquare("c3") as Knight;
-    const captures2 = knight3.getCaptures(board);
+    const captures2 = knight3.getMoves(board).captures;
 
     expect(captures2).toStrictEqual([]);
   });

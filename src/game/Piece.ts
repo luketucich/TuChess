@@ -11,7 +11,11 @@ export abstract class Piece {
     this.value = value;
   }
 
-  abstract getMoves(board: Board): string[];
+  abstract getMoves(board: Board): {
+    moves: string[];
+    captures: string[];
+    checks: string[];
+  };
 
   getColor(): "white" | "black" {
     return this.color;

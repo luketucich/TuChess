@@ -7,8 +7,21 @@ export class Knight extends Piece {
     super(color, position, 3);
   }
 
-  getMoves(board: Board): string[] {
-    const moves: string[] = [];
+  getMoves(board: Board): {
+    moves: string[];
+    captures: string[];
+    checks: string[];
+  } {
+    const validMoves: {
+      moves: string[];
+      captures: string[];
+      checks: string[];
+    } = {
+      moves: [],
+      captures: [],
+      checks: [],
+    };
+
     const [row, col]: number[] = board.squareToIndex(this.position);
     const directions: number[][] = [
       [-2, -1], // Up left
@@ -24,48 +37,28 @@ export class Knight extends Piece {
     directions.forEach(([rowOffset, colOffset]) => {
       const move = board.indexToSquare([row + rowOffset, col + colOffset]);
 
-      if (board.squareIsValid(move) && board.getSquare(move) === null) {
-        moves.push(move);
-      }
-    });
+      if (board.squareIsValid(move)) {
+        const piece = board.getSquare(move);
 
-    return moves;
-  }
-
-  move(position: string): void {
-    this.position = position;
-  }
-
-  getCaptures(board: Board): string[] {
-    const captures: string[] = [];
-    const [row, col]: number[] = board.squareToIndex(this.position);
-    const directions: number[][] = [
-      [-2, -1], // Up left
-      [-2, 1], // Up right
-      [2, -1], // Down left
-      [2, 1], // Down right
-      [-1, -2], // Left up
-      [1, -2], // Left down
-      [-1, 2], // Right up
-      [1, 2], // Right down
-    ];
-
-    directions.forEach(([rowOffset, colOffset]) => {
-      const capture = board.indexToSquare([row + rowOffset, col + colOffset]);
-
-      if (board.squareIsValid(capture)) {
-        const captureContent = board.getSquare(capture);
-
-        if (
-          captureContent !== null &&
-          captureContent.getColor() !== this.color &&
-          captureContent instanceof King === false
-        ) {
-          captures.push(capture);
+        // Get moves
+        if (piece === null) {
+          validMoves.moves.push(move);
+        } else if (piece.getColor() !== this.color) {
+          // Get checks
+          if (piece instanceof King) {
+            validMoves.checks.push(move);
+            // Get captures
+          } else {
+            validMoves.captures.push(move);
+          }
         }
       }
     });
 
-    return captures;
+    return validMoves;
+  }
+
+  move(position: string): void {
+    this.position = position;
   }
 }
