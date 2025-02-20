@@ -18,40 +18,38 @@ export class Pawn extends Piece {
     return this.hasMoved;
   }
 
-  getMoves(board: Board): string[] {
-    const currBoard = board.getBoard();
+  private getForwardMoves(board: Board): string[] {
+    const isWhite = this.color === "white";
+    const [currentRow, currentCol] = board.squareToIndex(this.position);
     const moves: string[] = [];
-    const [row, col] = board.squareToIndex(this.position);
 
-    // White pawns
-    if (this.color === "white") {
-      // Check if pawn can move forawrd one square
-      if (currBoard[row - 1][col] === null) {
-        moves.push(board.indexToSquare([row - 1, col]));
-      }
-      // Check if pawn can move forward two squares
-      if (
-        !this.hasMoved &&
-        currBoard[row - 2][col] === null &&
-        currBoard[row - 1][col] === null
-      ) {
-        moves.push(board.indexToSquare([row - 2, col]));
-      }
+    // One-step move
+    const oneStepRow = isWhite ? currentRow - 1 : currentRow + 1;
+    const oneStepSquare = board.indexToSquare([oneStepRow, currentCol]);
+    if (
+      board.squareIsValid(oneStepSquare) &&
+      board.getSquare(oneStepSquare) === null
+    ) {
+      moves.push(oneStepSquare);
     }
 
-    // Black pawns
-    if (this.color === "black") {
-      // Check if pawn can move forward one square
-      if (currBoard[row + 1][col] === null) {
-        moves.push(board.indexToSquare([row + 1, col]));
-      }
-      // Check if pawn can move forward two squares
+    // Two-step move (only from starting position)
+    const startingRow = isWhite ? 6 : 1;
+    if (currentRow === startingRow && !this.hasMoved) {
+      const twoStepRow = isWhite ? currentRow - 2 : currentRow + 2;
+      const twoStepSquare = board.indexToSquare([twoStepRow, currentCol]);
+      const intermediateRow = isWhite ? currentRow - 1 : currentRow + 1;
+      const intermediateSquare = board.indexToSquare([
+        intermediateRow,
+        currentCol,
+      ]);
+
       if (
-        !this.hasMoved &&
-        currBoard[row + 2][col] === null &&
-        currBoard[row + 1][col] === null
+        board.squareIsValid(twoStepSquare) &&
+        board.getSquare(twoStepSquare) === null &&
+        board.getSquare(intermediateSquare) === null
       ) {
-        moves.push(board.indexToSquare([row + 2, col]));
+        moves.push(twoStepSquare);
       }
     }
 
@@ -60,60 +58,6 @@ export class Pawn extends Piece {
 
   move(position: string): void {
     this.position = position;
-    if (this.hasMoved === false) this.hasMoved = true;
-  }
-
-  getCaptures(board: Board): string[] {
-    const [row, col] = board.squareToIndex(this.position);
-    const currBoard = board.getBoard();
-    const captures: string[] = [];
-
-    if (this.color === "white") {
-      const left = currBoard[row - 1][col - 1];
-      const right = currBoard[row - 1][col + 1];
-
-      // Check if pawn can capture to the left
-      if (
-        left &&
-        left.getColor() === "black" &&
-        left instanceof King === false
-      ) {
-        captures.push(board.indexToSquare([row - 1, col - 1]));
-      }
-
-      // Check if pawn can capture to the right
-      if (
-        right &&
-        right.getColor() === "black" &&
-        right instanceof King === false
-      ) {
-        captures.push(board.indexToSquare([row - 1, col + 1]));
-      }
-    }
-
-    if (this.color === "black") {
-      const left = currBoard[row + 1][col + 1];
-      const right = currBoard[row + 1][col - 1];
-
-      // Check if pawn can capture to the left
-      if (
-        left &&
-        left.getColor() === "white" &&
-        left instanceof King === false
-      ) {
-        captures.push(board.indexToSquare([row + 1, col + 1]));
-      }
-
-      // Check if pawn can capture to the right
-      if (
-        right &&
-        right.getColor() === "white" &&
-        right instanceof King === false
-      ) {
-        captures.push(board.indexToSquare([row + 1, col - 1]));
-      }
-    }
-
-    return captures;
+    this.hasMoved = true;
   }
 }

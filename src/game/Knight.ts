@@ -43,14 +43,11 @@ export class Knight extends Piece {
         // Get moves
         if (piece === null) {
           validMoves.moves.push(move);
-        } else if (piece.getColor() !== this.color) {
-          // Get checks
-          if (piece instanceof King) {
-            validMoves.checks.push(move);
-            // Get captures
-          } else {
-            validMoves.captures.push(move);
-          }
+        } else if (
+          piece.getColor() !== this.color &&
+          piece instanceof King === false
+        ) {
+          validMoves.captures.push(move);
         }
       }
     });
