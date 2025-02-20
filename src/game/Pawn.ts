@@ -18,6 +18,23 @@ export class Pawn extends Piece {
     return this.hasMoved;
   }
 
+  getMoves(board: Board): {
+    moves: string[];
+    captures: string[];
+    checks: string[];
+  } {
+    const moves: string[] = this.getForwardMoves(board);
+    const captures: string[] = this.getCaptures(board);
+    const checks: string[] = moves.flatMap((move) =>
+      this.getChecks(board, move)
+    );
+
+    return {
+      moves: moves,
+      captures: captures,
+      checks: checks,
+    };
+  }
   private getForwardMoves(board: Board): string[] {
     const isWhite = this.color === "white";
     const [currentRow, currentCol] = board.squareToIndex(this.position);
@@ -54,6 +71,64 @@ export class Pawn extends Piece {
     }
 
     return moves;
+  }
+
+  private getCaptures(board: Board): string[] {
+    const isWhite = this.color === "white";
+    const [row, col] = board.squareToIndex(this.position);
+    const captures: string[] = [];
+    const directions = [-1, 1];
+    const rowOffset = isWhite ? -1 : 1;
+
+    directions.forEach((colOffset) => {
+      const captureSquare = board.indexToSquare([
+        row + rowOffset,
+        col + colOffset,
+      ]);
+
+      if (board.squareIsValid(captureSquare)) {
+        const piece = board.getSquare(captureSquare);
+
+        if (
+          piece !== null &&
+          piece.getColor() !== this.color &&
+          piece instanceof King === false
+        ) {
+          captures.push(captureSquare);
+        }
+      }
+    });
+
+    return captures;
+  }
+
+  private getChecks(board: Board, move: string): string[] {
+    const isWhite = this.color === "white";
+    const [row, col] = board.squareToIndex(move);
+    const checks: string[] = [];
+    const directions = [-1, 1];
+    const rowOffset = isWhite ? -1 : 1;
+
+    directions.forEach((colOffset) => {
+      const checkSquare = board.indexToSquare([
+        row + rowOffset,
+        col + colOffset,
+      ]);
+
+      if (board.squareIsValid(checkSquare)) {
+        const piece = board.getSquare(checkSquare);
+
+        if (
+          piece !== null &&
+          piece.getColor() !== this.color &&
+          piece instanceof King === true
+        ) {
+          checks.push(move);
+        }
+      }
+    });
+
+    return checks;
   }
 
   move(position: string): void {

@@ -160,7 +160,7 @@ export class Board {
     }
 
     // Check if the move is legal
-    const legalMoves: string[] = currPiece.getMoves(this);
+    const legalMoves: string[] = currPiece.getMoves(this).moves;
     if (!legalMoves.includes(to)) {
       throw new Error("Illegal move");
     }
