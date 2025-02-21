@@ -1,5 +1,3 @@
-import { Board } from "../game/Board.ts";
-
 export abstract class Piece {
   protected color: "white" | "black";
   protected position: string;
@@ -10,12 +8,6 @@ export abstract class Piece {
     this.position = position;
     this.value = value;
   }
-
-  abstract getMoves(board: Board): {
-    moves: string[];
-    captures: string[];
-    checks: string[];
-  };
 
   getColor(): "white" | "black" {
     return this.color;
