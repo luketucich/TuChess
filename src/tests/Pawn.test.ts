@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Pawn } from "../game/Pawn.ts";
+import { Pawn } from "../game/Pieces/Pawn.ts";
 
 describe("Pawn properties", () => {
   test("should have the correct properties", () => {

@@ -1,9 +1,9 @@
-import { Bishop } from "./Bishop";
-import { Knight } from "./Knight";
-import { Pawn } from "./Pawn";
-import { Rook } from "./Rook";
-import { Queen } from "./Queen";
-import { King } from "./King";
+import { Bishop } from "./Pieces/Bishop";
+import { Knight } from "./Pieces/Knight";
+import { Pawn } from "./Pieces/Pawn";
+import { Rook } from "../Rook";
+import { Queen } from "../Queen";
+import { King } from "./Pieces/King";
 
 // Define generic type for board squares
 type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen | King;

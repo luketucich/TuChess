@@ -1,4 +1,4 @@
-import { Piece } from "../game/Piece.ts";
+import { Piece } from "./Piece.ts";
 
 export class Bishop extends Piece {
   constructor(color: "white" | "black", position: string) {

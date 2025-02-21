@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { Board } from "../game/Board.ts";
-import { Pawn } from "../game/Pawn.ts";
-import { Knight } from "../game/Knight.ts";
-import { Bishop } from "../game/Bishop.ts";
+import { Pawn } from "../game/Pieces/Pawn.ts";
+import { Knight } from "../game/Pieces/Knight.ts";
+import { Bishop } from "../game/Pieces/Bishop.ts";
 import { Rook } from "../game/Rook.ts";
 import { Queen } from "../game/Queen.ts";
-import { King } from "../game/King.ts";
+import { King } from "../game/Pieces/King.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {

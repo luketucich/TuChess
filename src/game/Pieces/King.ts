@@ -1,8 +1,8 @@
-import { Piece } from "../game/Piece.ts";
+import { Piece } from "./Piece.ts";
 
-export class Knight extends Piece {
+export class King extends Piece {
   constructor(color: "white" | "black", position: string) {
-    super(color, position, 3);
+    super(color, position, Infinity);
   }
 
   move(position: string): void {
