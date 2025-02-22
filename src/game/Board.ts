@@ -1,12 +1,12 @@
 import { Bishop } from "./Pieces/Bishop";
 import { Knight } from "./Pieces/Knight";
 import { Pawn } from "./Pieces/Pawn";
-import { Rook } from "../Rook";
-import { Queen } from "../Queen";
+import { Rook } from "./Pieces/Rook";
+import { Queen } from "./Pieces/Queen";
 import { King } from "./Pieces/King";
 
 // Define generic type for board squares
-type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen | King;
+export type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen | King;
 
 export class Board {
   private board: BoardSquare[][];
@@ -108,7 +108,7 @@ export class Board {
     return [row, col];
   }
 
-  squareIsValid(square: string): boolean {
+  isValidSquare(square: string): boolean {
     if (square.length !== 2) return false;
 
     const [file, rank]: [string, string] = [square[0], square[1]];
@@ -119,7 +119,7 @@ export class Board {
     return true;
   }
 
-  indexIsValid(index: [number, number]): boolean {
+  isValidIndex(index: [number, number]): boolean {
     const [row, col]: [number, number] = index;
 
     if (row < 0 || row > 7) return false;
@@ -129,7 +129,7 @@ export class Board {
   }
 
   getSquare(square: string): BoardSquare {
-    if (!this.squareIsValid(square)) {
+    if (!this.isValidSquare(square)) {
       throw new Error("Invalid square");
     }
 
@@ -138,7 +138,7 @@ export class Board {
   }
 
   setSquare(square: string, piece: BoardSquare): void {
-    if (!this.squareIsValid(square)) {
+    if (!this.isValidSquare(square)) {
       throw new Error("Invalid square");
     }
 

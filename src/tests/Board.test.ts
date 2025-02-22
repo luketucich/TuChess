@@ -59,14 +59,14 @@ describe("Check square validity", () => {
     const board = new Board();
 
     // Validate chess board squares
-    expect(board.squareIsValid("a8")).toBeTruthy();
-    expect(board.squareIsValid("e4")).toBeTruthy();
-    expect(board.squareIsValid("h1")).toBeTruthy();
-    expect(board.squareIsValid("a9")).toBeFalsy();
-    expect(board.squareIsValid("i8")).toBeFalsy();
-    expect(board.squareIsValid("a")).toBeFalsy();
-    expect(board.squareIsValid("")).toBeFalsy();
-    expect(board.squareIsValid("f3")).toBeTruthy();
+    expect(board.isValidSquare("a8")).toBeTruthy();
+    expect(board.isValidSquare("e4")).toBeTruthy();
+    expect(board.isValidSquare("h1")).toBeTruthy();
+    expect(board.isValidSquare("a9")).toBeFalsy();
+    expect(board.isValidSquare("i8")).toBeFalsy();
+    expect(board.isValidSquare("a")).toBeFalsy();
+    expect(board.isValidSquare("")).toBeFalsy();
+    expect(board.isValidSquare("f3")).toBeTruthy();
   });
 });
 
@@ -75,13 +75,13 @@ describe("Check index validity", () => {
     const board = new Board();
 
     // Validate board indices
-    expect(board.indexIsValid([0, 0])).toBeTruthy();
-    expect(board.indexIsValid([4, 4])).toBeTruthy();
-    expect(board.indexIsValid([7, 7])).toBeTruthy();
-    expect(board.indexIsValid([-1, 0])).toBeFalsy();
-    expect(board.indexIsValid([0, 8])).toBeFalsy();
-    expect(board.indexIsValid([8, 8])).toBeFalsy();
-    expect(board.indexIsValid([8, -1])).toBeFalsy();
+    expect(board.isValidIndex([0, 0])).toBeTruthy();
+    expect(board.isValidIndex([4, 4])).toBeTruthy();
+    expect(board.isValidIndex([7, 7])).toBeTruthy();
+    expect(board.isValidIndex([-1, 0])).toBeFalsy();
+    expect(board.isValidIndex([0, 8])).toBeFalsy();
+    expect(board.isValidIndex([8, 8])).toBeFalsy();
+    expect(board.isValidIndex([8, -1])).toBeFalsy();
   });
 });
 
