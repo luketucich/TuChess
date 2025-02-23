@@ -3,8 +3,8 @@ import { Board } from "../game/Board.ts";
 import { Pawn } from "../game/Pieces/Pawn.ts";
 import { Knight } from "../game/Pieces/Knight.ts";
 import { Bishop } from "../game/Pieces/Bishop.ts";
-import { Rook } from "../game/Rook.ts";
-import { Queen } from "../game/Queen.ts";
+import { Rook } from "../game/Pieces/Rook.ts";
+import { Queen } from "../game/Pieces/Queen.ts";
 import { King } from "../game/Pieces/King.ts";
 
 describe("Chess Board Initialization", () => {

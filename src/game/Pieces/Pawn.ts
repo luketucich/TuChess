@@ -33,17 +33,29 @@ export class Pawn extends Piece {
     const isWhite: boolean = this.color === "white";
 
     // Determine move direction based on color (white moves up, black moves down)
-    const up: number = isWhite ? -1 : 1;
+    const rowOffset: number = isWhite ? -1 : 1;
 
     // Check forward move (1 square)
-    if (currBoard[row + up][col] === null) {
-      // See if check
-      // Create PawnMove object and add to validMoves array
+    if (currBoard[row + rowOffset][col] === null) {
+      const move: PawnMove = {
+        square: board.indexToSquare([row + rowOffset, col]),
+        isCapture: false,
+        isCheck: this.isCheck(board, [row + rowOffset, col], isWhite),
+        isPromotion: this.isPromotion([row + rowOffset, col], isWhite),
+      };
+
+      validMoves.push(move);
 
       // Check double move (2 squares)
-      if (currBoard[row + up * 2][col] === null && !this.hasMoved) {
-        // See if check
-        // Create PawnMove object and add to validMoves array
+      if (currBoard[row + rowOffset * 2][col] === null && !this.hasMoved) {
+        const move: PawnMove = {
+          square: board.indexToSquare([row + rowOffset * 2, col]),
+          isCapture: false,
+          isCheck: this.isCheck(board, [row + rowOffset, col], isWhite),
+          isPromotion: false,
+        };
+
+        validMoves.push(move);
       }
     }
 
@@ -72,7 +84,7 @@ export class Pawn extends Piece {
 
     for (const [r, c] of diagonals) {
       if (board.isValidIndex([r, c])) {
-        const square = board.getSquare(board.indexToSquare([r, c])); // Get contents of square
+        const square = board.getBoard()[r][c]; // Get contents of square
         if (square instanceof King && square.getColor() !== this.color) {
           return true;
         }
@@ -80,5 +92,9 @@ export class Pawn extends Piece {
     }
 
     return false;
+  }
+
+  private isPromotion(move: [number, number], isWhite: boolean) {
+    return isWhite ? move[0] === 0 : move[0] === 7;
   }
 }
