@@ -51,7 +51,7 @@ export class Pawn extends Piece {
         const move: PawnMove = {
           square: board.indexToSquare([row + rowOffset * 2, col]),
           isCapture: false,
-          isCheck: this.isCheck(board, [row + rowOffset, col], isWhite),
+          isCheck: this.isCheck(board, [row + rowOffset * 2, col], isWhite),
           isPromotion: false,
         };
 
