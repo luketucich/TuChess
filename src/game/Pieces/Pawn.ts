@@ -36,7 +36,10 @@ export class Pawn extends Piece {
     const rowOffset: number = isWhite ? -1 : 1;
 
     // Check forward move (1 square)
-    if (currBoard[row + rowOffset][col] === null) {
+    if (
+      board.isValidIndex([row + rowOffset, col]) &&
+      currBoard[row + rowOffset][col] === null
+    ) {
       const move: PawnMove = {
         square: board.indexToSquare([row + rowOffset, col]),
         isCapture: false,
@@ -47,7 +50,11 @@ export class Pawn extends Piece {
       validMoves.push(move);
 
       // Check double move (2 squares)
-      if (currBoard[row + rowOffset * 2][col] === null && !this.hasMoved) {
+      if (
+        board.isValidIndex([row + rowOffset * 2, col]) &&
+        currBoard[row + rowOffset * 2][col] === null &&
+        !this.hasMoved
+      ) {
         const move: PawnMove = {
           square: board.indexToSquare([row + rowOffset * 2, col]),
           isCapture: false,
@@ -60,6 +67,29 @@ export class Pawn extends Piece {
     }
 
     // Check diagonal captures (left and right)
+    // Left capture
+    if (this.isCapture(board, [row + rowOffset, col - 1])) {
+      const move: PawnMove = {
+        square: board.indexToSquare([row + rowOffset, col - 1]),
+        isCapture: true,
+        isCheck: this.isCheck(board, [row + rowOffset, col - 1], isWhite),
+        isPromotion: this.isPromotion([row + rowOffset, col - 1], isWhite),
+      };
+
+      validMoves.push(move);
+    }
+
+    // Right capture
+    if (this.isCapture(board, [row + rowOffset, col + 1])) {
+      const move: PawnMove = {
+        square: board.indexToSquare([row + rowOffset, col + 1]),
+        isCapture: true,
+        isCheck: this.isCheck(board, [row + rowOffset, col + 1], isWhite),
+        isPromotion: this.isPromotion([row + rowOffset, col + 1], isWhite),
+      };
+
+      validMoves.push(move);
+    }
 
     // Check en passant (special capture rule)
 
@@ -92,6 +122,20 @@ export class Pawn extends Piece {
     }
 
     return false;
+  }
+
+  private isCapture(board: Board, move: [number, number]): boolean {
+    const [row, col]: [number, number] = move;
+
+    if (!board.isValidIndex([row, col])) return false; // Out-of-bounds check
+
+    const square = board.getBoard()[row][col];
+
+    return (
+      square !== null &&
+      square.getColor() !== this.color &&
+      !(square instanceof King)
+    );
   }
 
   private isPromotion(move: [number, number], isWhite: boolean) {
