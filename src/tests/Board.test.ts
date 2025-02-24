@@ -7,6 +7,7 @@ import { Rook } from "../game/Pieces/Rook.ts";
 import { Queen } from "../game/Pieces/Queen.ts";
 import { King } from "../game/Pieces/King.ts";
 import { Player } from "../game/Player.ts";
+import exp from "constants";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -156,20 +157,24 @@ describe("Pawn moves", () => {
     board5.setSquare("a5", new Pawn("white", "a5"));
     board5.movePiece("b7", "b5", player3);
     const pawn5 = board5.getSquare("a5") as Pawn;
+    const pawn6 = board5.getSquare("b5") as Pawn;
     board5.movePiece("a5", "b6", player3);
     expect(board5.getSquare("b6")).toBe(pawn5);
     expect(board5.getSquare("b5")).toBe(null);
     expect(board5.getSquare("a5")).toBe(null);
+    expect(player3.getPieces()).toContain(pawn6);
 
     // En passant move for black pawn
     const board6 = new Board();
     const player4 = new Player("black", true);
     board6.setSquare("a4", new Pawn("black", "a4"));
     board6.movePiece("b2", "b4", player4);
-    const pawn6 = board6.getSquare("a4") as Pawn;
+    const pawn7 = board6.getSquare("a4") as Pawn;
+    const pawn8 = board6.getSquare("b4") as Pawn;
     board6.movePiece("a4", "b3", player4);
-    expect(board6.getSquare("b3")).toBe(pawn6);
+    expect(board6.getSquare("b3")).toBe(pawn7);
     expect(board6.getSquare("b4")).toBe(null);
     expect(board6.getSquare("a4")).toBe(null);
+    expect(player4.getPieces()).toContain(pawn8);
   });
 });

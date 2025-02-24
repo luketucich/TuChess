@@ -184,21 +184,28 @@ export class Board {
         // Capture piece if move is a capture
         if (move.isCapture) {
           const capturedPiece: Piece = this.getSquare(to)!;
-          player.addPiece(capturedPiece);
+
+          // To square is null in en passant
+          if (capturedPiece !== null) {
+            player.addPiece(capturedPiece);
+          }
+        }
+
+        // Capture piece if move is an en passant
+        if ("isEnPassant" in move && move.isEnPassant) {
+          const rowOffset: number = move.color === "white" ? -1 : 1;
+          const [row, col]: [number, number] = this.squareToIndex(move.square);
+          const capturedPawn: BoardSquare = this.board[row - rowOffset][
+            col
+          ] as Pawn;
+          player.addPiece(capturedPawn);
+          this.board[row - rowOffset][col] = null;
         }
 
         // Move piece to new square
         this.setSquare(from, null);
         this.setSquare(to, piece);
         piece.move(to);
-
-        // Set square beneath move to null if en passant
-        if ("isEnPassant" in move && move.isEnPassant) {
-          const rowOffset: number = move.color === "white" ? -1 : 1;
-          const [row, col]: [number, number] = this.squareToIndex(move.square);
-
-          this.board[row - rowOffset][col] = null;
-        }
 
         // Add move to history
         this.setHistory(move);
