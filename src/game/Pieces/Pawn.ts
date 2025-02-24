@@ -52,6 +52,7 @@ export class Pawn extends Piece {
       // Check double move (2 squares)
       if (
         board.isValidIndex([row + rowOffset * 2, col]) &&
+        row === (isWhite ? 6 : 1) &&
         currBoard[row + rowOffset * 2][col] === null &&
         !this.hasMoved
       ) {
