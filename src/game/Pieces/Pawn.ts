@@ -94,8 +94,6 @@ export class Pawn extends Piece {
 
     // Check en passant (special capture rule)
 
-    // Check if the pawn reaches the last rank (promotion)
-
     return validMoves;
   }
 

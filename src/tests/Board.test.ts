@@ -6,6 +6,7 @@ import { Bishop } from "../game/Pieces/Bishop.ts";
 import { Rook } from "../game/Pieces/Rook.ts";
 import { Queen } from "../game/Pieces/Queen.ts";
 import { King } from "../game/Pieces/King.ts";
+import { Player } from "../game/Player.ts";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -98,5 +99,56 @@ describe("Get piece at square", () => {
     expect(board.getSquare("c8")).toBeInstanceOf(Bishop); // Black bishop
     expect(board.getSquare("d8")).toBeInstanceOf(Queen); // Black queen
     expect(board.getSquare("e8")).toBeInstanceOf(King); // Black king
+  });
+});
+
+describe("Pawn moves", () => {
+  test("should correctly move pawns on the board", () => {
+    // Single move
+    const board = new Board();
+    const pawn = board.getSquare("a2") as Pawn;
+    board.movePiece("a2", "a3");
+    expect(board.getSquare("a3")).toBe(pawn);
+    expect(board.getSquare("a2")).toBe(null);
+    expect(pawn.getHasMoved()).toBeTruthy();
+    expect(pawn.getPosition()).toBe("a3");
+
+    // Double move
+    const board2 = new Board();
+    const pawn2 = board2.getSquare("a2") as Pawn;
+    board2.movePiece("a2", "a4");
+    expect(board2.getSquare("a4")).toBe(pawn2);
+    expect(board2.getSquare("a2")).toBe(null);
+    expect(pawn2.getHasMoved()).toBeTruthy();
+    expect(pawn2.getPosition()).toBe("a4");
+
+    // Capture move (one option)
+    const board3 = new Board();
+    const player1 = new Player("white", true);
+    board3.setSquare("e4", new Pawn("white", "e4"));
+    board3.setSquare("d5", new Queen("black", "d5"));
+    const pawn3 = board3.getSquare("e4") as Pawn;
+    const queen = board3.getSquare("d5") as Queen;
+    board3.movePiece("e4", "d5", player1);
+    expect(board3.getSquare("d5")).toBe(pawn3);
+    expect(board3.getSquare("e4")).toBe(null);
+    expect(player1.getPieces()).toContain(queen);
+
+    // Capture move (two options)
+    const board4 = new Board();
+    const player2 = new Player("white", true);
+    board4.setSquare("e4", new Pawn("white", "e4"));
+    board4.setSquare("d5", new Queen("black", "d5"));
+    board4.setSquare("f5", new Rook("black", "f5"));
+    const pawn4 = board4.getSquare("e4") as Pawn;
+    const queen2 = board4.getSquare("d5") as Queen;
+    const rook = board4.getSquare("f5") as Rook;
+    board4.movePiece("e4", "d5", player2);
+    expect(board4.getSquare("d5")).toBe(pawn4);
+    expect(board4.getSquare("e4")).toBe(null);
+    expect(player2.getPieces()).toContain(queen2);
+
+    // Promotion move
+    // En passant move
   });
 });

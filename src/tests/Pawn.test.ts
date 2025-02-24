@@ -77,7 +77,7 @@ describe("Pawn capture", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a3", true);
 
-    // Place black pawn at a4
+    // Place black pawn at b4
     board.setSquare("b4", new Pawn("black", "b4"));
 
     // Check valid moves for white pawn to capture black pawn
@@ -125,6 +125,46 @@ describe("Pawn capture", () => {
       { square: "e4", isCapture: false, isCheck: false, isPromotion: false },
       { square: "d4", isCapture: true, isCheck: false, isPromotion: false },
       { square: "f4", isCapture: true, isCheck: false, isPromotion: false },
+    ]);
+  });
+});
+
+describe("Pawn check", () => {
+  test("should allow pawn to check opponent King", () => {
+    const board = new Board();
+    board.setSquare("b4", new King("black", "b4"));
+
+    const pawn = board.getSquare("a2") as Pawn;
+    // Check valid moves for white pawn to check black King
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
+      { square: "a3", isCapture: false, isCheck: true, isPromotion: false },
+      { square: "a4", isCapture: false, isCheck: false, isPromotion: false },
+    ]);
+  });
+});
+
+describe("Pawn promotion", () => {
+  test("should allow pawn to promote", () => {
+    const board = new Board();
+    const pawn = new Pawn("white", "a7");
+    board.setSquare("a8", null);
+
+    // Check valid moves for white pawn at promotion rank
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
+      { square: "a8", isCapture: false, isCheck: false, isPromotion: true },
+      { square: "b8", isCapture: true, isCheck: false, isPromotion: true },
+    ]);
+
+    const pawn2 = new Pawn("black", "h2");
+    board.setSquare("h1", null);
+
+    // Check valid moves for black pawn at promotion rank
+    const validMoves2 = pawn2.getMoves(board);
+    expect(validMoves2).toEqual([
+      { square: "h1", isCapture: false, isCheck: false, isPromotion: true },
+      { square: "g1", isCapture: true, isCheck: false, isPromotion: true },
     ]);
   });
 });

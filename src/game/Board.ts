@@ -4,15 +4,20 @@ import { Pawn } from "./Pieces/Pawn";
 import { Rook } from "./Pieces/Rook";
 import { Queen } from "./Pieces/Queen";
 import { King } from "./Pieces/King";
+import { Move } from "./Moves/Move";
+import { Player } from "./Player";
+import { Piece } from "./Pieces/Piece";
 
 // Define generic type for board squares
 export type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen | King;
 
 export class Board {
   private board: BoardSquare[][];
+  private history: Move[];
 
   constructor() {
     this.board = this.initializeBoard();
+    this.history = [];
   }
 
   private initializeBoard(): BoardSquare[][] {
@@ -144,5 +149,55 @@ export class Board {
 
     const [row, col]: [number, number] = this.squareToIndex(square);
     this.board[row][col] = piece;
+  }
+
+  setHistory(move: Move): void {
+    this.history.push(move);
+  }
+
+  getHistory(): Move[] {
+    return this.history;
+  }
+
+  movePiece(from: string, to: string, player: Player): void {
+    // Check if move is valid
+    if (!this.isValidSquare(from) || !this.isValidSquare(to)) {
+      throw new Error("Invalid square");
+    }
+
+    if (from === to) {
+      throw new Error("Cannot move piece to same square");
+    }
+
+    const piece: BoardSquare | null = this.getSquare(from);
+    if (!piece) {
+      throw new Error("No piece at from square");
+    }
+
+    const moves: Move[] = piece.getMoves(this);
+
+    // Loop through valid moves to find matching move
+    for (const move of moves) {
+      if (move.square === to) {
+        // Capture piece if move is a capture
+        if (move.isCapture) {
+          const capturedPiece: Piece = this.getSquare(to)!;
+          player.addPiece(capturedPiece);
+        }
+
+        // Move piece to new square
+        this.setSquare(from, null);
+        this.setSquare(to, piece);
+        piece.move(to);
+
+        // Add move to history
+        this.setHistory(move);
+
+        return;
+      }
+    }
+
+    // If no valid move was found, throw an error
+    throw new Error("Invalid move");
   }
 }
