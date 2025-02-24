@@ -38,16 +38,46 @@ describe("Pawn movement at start", () => {
     // Check valid moves for white pawn at start position
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
-      { square: "a3", isCapture: false, isCheck: false, isPromotion: false },
-      { square: "a4", isCapture: false, isCheck: false, isPromotion: false },
+      {
+        square: "a3",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "white",
+      },
+      {
+        square: "a4",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        isDoubleMove: true,
+        piece: "pawn",
+        color: "white",
+      },
     ]);
 
     const pawn2 = new Pawn("black", "h7");
     // Check valid moves for black pawn at start position
     const validMoves2 = pawn2.getMoves(board);
     expect(validMoves2).toEqual([
-      { square: "h6", isCapture: false, isCheck: false, isPromotion: false },
-      { square: "h5", isCapture: false, isCheck: false, isPromotion: false },
+      {
+        square: "h6",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
+      {
+        square: "h5",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        isDoubleMove: true,
+        piece: "pawn",
+        color: "black",
+      },
     ]);
   });
 });
@@ -60,14 +90,28 @@ describe("Pawn movement after start", () => {
     // Check valid moves for white pawn after moving 1 square
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
-      { square: "a4", isCapture: false, isCheck: false, isPromotion: false },
+      {
+        square: "a4",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "white",
+      },
     ]);
 
     const pawn2 = new Pawn("black", "h6", true);
     // Check valid moves for black pawn after moving 1 square
     const validMoves2 = pawn2.getMoves(board);
     expect(validMoves2).toEqual([
-      { square: "h5", isCapture: false, isCheck: false, isPromotion: false },
+      {
+        square: "h5",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
     ]);
   });
 });
@@ -83,8 +127,22 @@ describe("Pawn capture", () => {
     // Check valid moves for white pawn to capture black pawn
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
-      { square: "a4", isCapture: false, isCheck: false, isPromotion: false },
-      { square: "b4", isCapture: true, isCheck: false, isPromotion: false },
+      {
+        square: "a4",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "white",
+      },
+      {
+        square: "b4",
+        isCapture: true,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "white",
+      },
     ]);
 
     const pawn2 = new Pawn("black", "h6", true);
@@ -95,22 +153,50 @@ describe("Pawn capture", () => {
     // Check valid moves for black pawn to capture white pawn
     const validMoves2 = pawn2.getMoves(board);
     expect(validMoves2).toEqual([
-      { square: "h5", isCapture: false, isCheck: false, isPromotion: false },
-      { square: "g5", isCapture: true, isCheck: false, isPromotion: false },
+      {
+        square: "h5",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
+      {
+        square: "g5",
+        isCapture: true,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
     ]);
 
     // Prevent pawn from capturing own piece
     board.setSquare("g5", new Pawn("black", "g5"));
     const validMoves3 = pawn2.getMoves(board);
     expect(validMoves3).toEqual([
-      { square: "h5", isCapture: false, isCheck: false, isPromotion: false },
+      {
+        square: "h5",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
     ]);
 
     // Prevent pawn from capturing King
     board.setSquare("g5", new King("white", "g5"));
     const validMoves4 = pawn2.getMoves(board);
     expect(validMoves4).toEqual([
-      { square: "h5", isCapture: false, isCheck: false, isPromotion: false },
+      {
+        square: "h5",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
     ]);
 
     // Ensure pawn can capture multiple pieces
@@ -122,9 +208,30 @@ describe("Pawn capture", () => {
     const pawn3 = board2.getSquare("e5") as Pawn;
     const validMoves5 = pawn3.getMoves(board2);
     expect(validMoves5).toEqual([
-      { square: "e4", isCapture: false, isCheck: false, isPromotion: false },
-      { square: "d4", isCapture: true, isCheck: false, isPromotion: false },
-      { square: "f4", isCapture: true, isCheck: false, isPromotion: false },
+      {
+        square: "e4",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
+      {
+        square: "d4",
+        isCapture: true,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
+      {
+        square: "f4",
+        isCapture: true,
+        isCheck: false,
+        isPromotion: false,
+        piece: "pawn",
+        color: "black",
+      },
     ]);
   });
 });
@@ -138,8 +245,23 @@ describe("Pawn check", () => {
     // Check valid moves for white pawn to check black King
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
-      { square: "a3", isCapture: false, isCheck: true, isPromotion: false },
-      { square: "a4", isCapture: false, isCheck: false, isPromotion: false },
+      {
+        square: "a3",
+        isCapture: false,
+        isCheck: true,
+        isPromotion: false,
+        piece: "pawn",
+        color: "white",
+      },
+      {
+        square: "a4",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: false,
+        isDoubleMove: true,
+        piece: "pawn",
+        color: "white",
+      },
     ]);
   });
 });
@@ -153,8 +275,22 @@ describe("Pawn promotion", () => {
     // Check valid moves for white pawn at promotion rank
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
-      { square: "a8", isCapture: false, isCheck: false, isPromotion: true },
-      { square: "b8", isCapture: true, isCheck: false, isPromotion: true },
+      {
+        square: "a8",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: true,
+        piece: "pawn",
+        color: "white",
+      },
+      {
+        square: "b8",
+        isCapture: true,
+        isCheck: false,
+        isPromotion: true,
+        piece: "pawn",
+        color: "white",
+      },
     ]);
 
     const pawn2 = new Pawn("black", "h2");
@@ -163,8 +299,22 @@ describe("Pawn promotion", () => {
     // Check valid moves for black pawn at promotion rank
     const validMoves2 = pawn2.getMoves(board);
     expect(validMoves2).toEqual([
-      { square: "h1", isCapture: false, isCheck: false, isPromotion: true },
-      { square: "g1", isCapture: true, isCheck: false, isPromotion: true },
+      {
+        square: "h1",
+        isCapture: false,
+        isCheck: false,
+        isPromotion: true,
+        piece: "pawn",
+        color: "black",
+      },
+      {
+        square: "g1",
+        isCapture: true,
+        isCheck: false,
+        isPromotion: true,
+        piece: "pawn",
+        color: "black",
+      },
     ]);
   });
 });

@@ -7,13 +7,15 @@ import { King } from "./Pieces/King";
 import { Move } from "./Moves/Move";
 import { Player } from "./Player";
 import { Piece } from "./Pieces/Piece";
+import { PawnMove } from "./Moves/PawnMove";
 
 // Define generic type for board squares
 export type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen | King;
+export type BoardMove = Move | PawnMove;
 
 export class Board {
   private board: BoardSquare[][];
-  private history: Move[];
+  private history: BoardMove[];
 
   constructor() {
     this.board = this.initializeBoard();
@@ -174,7 +176,7 @@ export class Board {
       throw new Error("No piece at from square");
     }
 
-    const moves: Move[] = piece.getMoves(this);
+    const moves: BoardMove[] = piece.getMoves(this);
 
     // Loop through valid moves to find matching move
     for (const move of moves) {
@@ -189,6 +191,14 @@ export class Board {
         this.setSquare(from, null);
         this.setSquare(to, piece);
         piece.move(to);
+
+        // Set square beneath move to null if en passant
+        if ("isEnPassant" in move && move.isEnPassant) {
+          const rowOffset: number = move.color === "white" ? -1 : 1;
+          const [row, col]: [number, number] = this.squareToIndex(move.square);
+
+          this.board[row - rowOffset][col] = null;
+        }
 
         // Add move to history
         this.setHistory(move);

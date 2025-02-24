@@ -1,7 +1,7 @@
 import { Piece } from "./Piece.ts";
 import { PawnMove } from "../Moves/PawnMove.ts";
 import { King } from "./King.ts";
-import { BoardSquare } from "../Board.ts";
+import { BoardMove, BoardSquare } from "../Board.ts";
 import { Board } from "../Board.ts";
 
 export class Pawn extends Piece {
@@ -42,6 +42,8 @@ export class Pawn extends Piece {
     ) {
       const move: PawnMove = {
         square: board.indexToSquare([row + rowOffset, col]),
+        piece: "pawn",
+        color: this.color,
         isCapture: false,
         isCheck: this.isCheck(board, [row + rowOffset, col], isWhite),
         isPromotion: this.isPromotion([row + rowOffset, col], isWhite),
@@ -58,7 +60,10 @@ export class Pawn extends Piece {
       ) {
         const move: PawnMove = {
           square: board.indexToSquare([row + rowOffset * 2, col]),
+          piece: "pawn",
+          color: this.color,
           isCapture: false,
+          isDoubleMove: true,
           isCheck: this.isCheck(board, [row + rowOffset * 2, col], isWhite),
           isPromotion: false,
         };
@@ -72,6 +77,8 @@ export class Pawn extends Piece {
     if (this.isCapture(board, [row + rowOffset, col - 1])) {
       const move: PawnMove = {
         square: board.indexToSquare([row + rowOffset, col - 1]),
+        piece: "pawn",
+        color: this.color,
         isCapture: true,
         isCheck: this.isCheck(board, [row + rowOffset, col - 1], isWhite),
         isPromotion: this.isPromotion([row + rowOffset, col - 1], isWhite),
@@ -84,6 +91,8 @@ export class Pawn extends Piece {
     if (this.isCapture(board, [row + rowOffset, col + 1])) {
       const move: PawnMove = {
         square: board.indexToSquare([row + rowOffset, col + 1]),
+        piece: "pawn",
+        color: this.color,
         isCapture: true,
         isCheck: this.isCheck(board, [row + rowOffset, col + 1], isWhite),
         isPromotion: this.isPromotion([row + rowOffset, col + 1], isWhite),
@@ -93,6 +102,23 @@ export class Pawn extends Piece {
     }
 
     // Check en passant (special capture rule)
+    if (this.canEnPassant(board)) {
+      const [lastMoveRow, lastMoveCol]: [number, number] = board.squareToIndex(
+        board.getHistory()[board.getHistory().length - 1].square
+      );
+
+      const move: PawnMove = {
+        square: board.indexToSquare([lastMoveRow + rowOffset, lastMoveCol]),
+        piece: "pawn",
+        color: this.color,
+        isCapture: true,
+        isEnPassant: true,
+        isCheck: this.isCheck(board, [row + rowOffset, lastMoveCol], isWhite),
+        isPromotion: false,
+      };
+
+      validMoves.push(move);
+    }
 
     return validMoves;
   }
@@ -139,5 +165,36 @@ export class Pawn extends Piece {
 
   private isPromotion(move: [number, number], isWhite: boolean) {
     return isWhite ? move[0] === 0 : move[0] === 7;
+  }
+
+  private canEnPassant(board: Board) {
+    // Get last move from history
+    const history = board.getHistory();
+    if (history.length === 0) return false;
+
+    // Check if last move was a pawn move and an enemy move
+    const lastMove: BoardMove = history[history.length - 1];
+    if (lastMove.piece !== "pawn") return false;
+    if (lastMove.color === this.color) return false;
+
+    // Initialize double move criteria
+    const [lastMoveRow, lastMoveCol]: [number, number] = board.squareToIndex(
+      lastMove.square
+    );
+    const [currPosRow, currPosCol]: [number, number] = board.squareToIndex(
+      this.position
+    );
+
+    // Check if last move aligns with en passant criteria
+    if (
+      "isDoubleMove" in lastMove &&
+      lastMove.isDoubleMove && // Check if last move was a double move
+      lastMoveRow === currPosRow && // Check if last move was on the same row as current pawn
+      (lastMoveCol === currPosCol - 1 || lastMoveCol === currPosCol + 1) // Check if last move was adjacent to current pawn
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }
