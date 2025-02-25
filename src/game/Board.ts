@@ -61,7 +61,7 @@ export class Board {
     return this.board;
   }
 
-  displayBoard(): void {
+  displayBoard(player: Player): void {
     const pieceSymbols: { [key: string]: string } = {
       Pawn: "P",
       Knight: "N",
@@ -71,15 +71,19 @@ export class Board {
       King: "K",
     };
 
-    for (const row of this.board) {
+    // Display board based off player's perspective
+    const board =
+      player.getColor() === "black" ? [...this.board].reverse() : this.board;
+
+    for (const row of board) {
       const displayRow: string[] = row.map((square) => {
-        // If square is empty, display a hypen
+        // If square is empty, display a hyphen
         if (square === null) {
           return "-";
 
           // If square is occupied by black piece, display piece symbol in red
         } else if (square.getColor() === "black") {
-          return `\x1b[31m${
+          return `\x1b[34m${
             pieceSymbols[square.constructor.name]
           }\x1b[0m`.toLowerCase();
 

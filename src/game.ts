@@ -12,18 +12,23 @@ const player1 = new Player("white", true);
 const player2 = new Player("black", false);
 
 function gameLoop() {
-  board.displayBoard();
   const turn = player1.getIsTurn() ? player1 : player2;
+  board.displayBoard(turn);
 
-  console.log(`${turn.getColor()}'s turn`);
+  const color = turn.getColor() === "white" ? "\x1b[37m" : "\x1b[34m";
+  console.log(
+    `\n${color}${
+      turn.getColor().charAt(0).toUpperCase() + turn.getColor().slice(1)
+    } to move!\x1b[0m`
+  );
 
-  rl.question("Enter your move (format: start end): ", (move) => {
+  rl.question("\x1b[33mEnter as 'start end': \x1b[0m", (move) => {
     const [moveStart, moveEnd] = move.split(" ");
 
     try {
       board.movePiece(moveStart, moveEnd, turn);
 
-      // **Corrected Turn Switching**
+      // Update player turn
       player1.setIsTurn(turn === player2);
       player2.setIsTurn(turn === player1);
     } catch (error) {
