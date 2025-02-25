@@ -7,7 +7,6 @@ import { Rook } from "../game/Pieces/Rook.ts";
 import { Queen } from "../game/Pieces/Queen.ts";
 import { King } from "../game/Pieces/King.ts";
 import { Player } from "../game/Player.ts";
-import exp from "constants";
 
 describe("Chess Board Initialization", () => {
   test("should initialize with the correct pieces", () => {
@@ -108,7 +107,8 @@ describe("Pawn moves", () => {
     // Single move
     const board = new Board();
     const pawn = board.getSquare("a2") as Pawn;
-    board.movePiece("a2", "a3");
+    const player = new Player("white", true);
+    board.movePiece("a2", "a3", player);
     expect(board.getSquare("a3")).toBe(pawn);
     expect(board.getSquare("a2")).toBe(null);
     expect(pawn.getHasMoved()).toBeTruthy();
@@ -117,7 +117,8 @@ describe("Pawn moves", () => {
     // Double move
     const board2 = new Board();
     const pawn2 = board2.getSquare("a2") as Pawn;
-    board2.movePiece("a2", "a4");
+    const player2 = new Player("white", true);
+    board2.movePiece("a2", "a4", player2);
     expect(board2.getSquare("a4")).toBe(pawn2);
     expect(board2.getSquare("a2")).toBe(null);
     expect(pawn2.getHasMoved()).toBeTruthy();
@@ -125,56 +126,55 @@ describe("Pawn moves", () => {
 
     // Capture move (one option)
     const board3 = new Board();
-    const player1 = new Player("white", true);
+    const player3 = new Player("white", true);
     board3.setSquare("e4", new Pawn("white", "e4"));
     board3.setSquare("d5", new Queen("black", "d5"));
     const pawn3 = board3.getSquare("e4") as Pawn;
     const queen = board3.getSquare("d5") as Queen;
-    board3.movePiece("e4", "d5", player1);
+    board3.movePiece("e4", "d5", player3);
     expect(board3.getSquare("d5")).toBe(pawn3);
     expect(board3.getSquare("e4")).toBe(null);
-    expect(player1.getPieces()).toContain(queen);
+    expect(player3.getPieces()).toContain(queen);
 
     // Capture move (two options)
     const board4 = new Board();
-    const player2 = new Player("white", true);
+    const player4 = new Player("white", true);
     board4.setSquare("e4", new Pawn("white", "e4"));
     board4.setSquare("d5", new Queen("black", "d5"));
     board4.setSquare("f5", new Rook("black", "f5"));
     const pawn4 = board4.getSquare("e4") as Pawn;
     const queen2 = board4.getSquare("d5") as Queen;
-    const rook = board4.getSquare("f5") as Rook;
-    board4.movePiece("e4", "d5", player2);
+    board4.movePiece("e4", "d5", player4);
     expect(board4.getSquare("d5")).toBe(pawn4);
     expect(board4.getSquare("e4")).toBe(null);
-    expect(player2.getPieces()).toContain(queen2);
+    expect(player4.getPieces()).toContain(queen2);
 
     // Promotion move
 
     // En passant move for white pawn
     const board5 = new Board();
-    const player3 = new Player("white", true);
+    const player5 = new Player("white", true);
     board5.setSquare("a5", new Pawn("white", "a5"));
-    board5.movePiece("b7", "b5", player3);
+    board5.movePiece("b7", "b5", player5);
     const pawn5 = board5.getSquare("a5") as Pawn;
     const pawn6 = board5.getSquare("b5") as Pawn;
-    board5.movePiece("a5", "b6", player3);
+    board5.movePiece("a5", "b6", player5);
     expect(board5.getSquare("b6")).toBe(pawn5);
     expect(board5.getSquare("b5")).toBe(null);
     expect(board5.getSquare("a5")).toBe(null);
-    expect(player3.getPieces()).toContain(pawn6);
+    expect(player5.getPieces()).toContain(pawn6);
 
     // En passant move for black pawn
     const board6 = new Board();
-    const player4 = new Player("black", true);
+    const player6 = new Player("black", true);
     board6.setSquare("a4", new Pawn("black", "a4"));
-    board6.movePiece("b2", "b4", player4);
+    board6.movePiece("b2", "b4", player6);
     const pawn7 = board6.getSquare("a4") as Pawn;
     const pawn8 = board6.getSquare("b4") as Pawn;
-    board6.movePiece("a4", "b3", player4);
+    board6.movePiece("a4", "b3", player6);
     expect(board6.getSquare("b3")).toBe(pawn7);
     expect(board6.getSquare("b4")).toBe(null);
     expect(board6.getSquare("a4")).toBe(null);
-    expect(player4.getPieces()).toContain(pawn8);
+    expect(player6.getPieces()).toContain(pawn8);
   });
 });

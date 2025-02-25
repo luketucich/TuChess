@@ -162,18 +162,30 @@ export class Board {
   }
 
   movePiece(from: string, to: string, player: Player): void {
+    // Check if it's the player's turn
+    if (player.getIsTurn() === false) {
+      throw new Error("Not your turn");
+    }
+
     // Check if move is valid
     if (!this.isValidSquare(from) || !this.isValidSquare(to)) {
       throw new Error("Invalid square");
     }
 
+    // Check if from square is the same as to square
     if (from === to) {
       throw new Error("Cannot move piece to same square");
     }
 
+    // Check if from square is empty
     const piece: BoardSquare | null = this.getSquare(from);
     if (!piece) {
       throw new Error("No piece at from square");
+    }
+
+    // Check if piece belongs to player
+    if (piece.getColor() !== player.getColor()) {
+      throw new Error("Cannot move opponent's piece");
     }
 
     const moves: BoardMove[] = piece.getMoves(this);
