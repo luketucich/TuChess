@@ -13,6 +13,7 @@ const player2 = new Player("black", false);
 
 function gameLoop() {
   const turn = player1.getIsTurn() ? player1 : player2;
+  console.log("\n");
   board.displayBoard(turn);
 
   const color = turn.getColor() === "white" ? "\x1b[37m" : "\x1b[34m";
