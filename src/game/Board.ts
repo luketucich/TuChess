@@ -60,7 +60,6 @@ export class Board {
   getBoard(): BoardSquare[][] {
     return this.board;
   }
-
   displayBoard(player: Player): void {
     const pieceSymbols: { [key: string]: string } = {
       Pawn: "P",
@@ -73,7 +72,9 @@ export class Board {
 
     // Display board based off player's perspective
     const board =
-      player.getColor() === "black" ? [...this.board].reverse() : this.board;
+      player.getColor() === "black"
+        ? this.board.map((row) => [...row].reverse()).reverse()
+        : this.board;
 
     for (const row of board) {
       const displayRow: string[] = row.map((square) => {
