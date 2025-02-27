@@ -102,6 +102,14 @@ describe("Get piece at square", () => {
   });
 });
 
+describe("Get piece at index", () => {
+  test("should correctly retrieve square contents from index", () => {
+    const board = new Board();
+
+    expect(board.getIndex([0, 0])).toBeInstanceOf(Rook);
+  });
+});
+
 describe("Pawn moves", () => {
   test("should correctly move pawns on the board", () => {
     // Single move
@@ -153,11 +161,14 @@ describe("Pawn moves", () => {
 
     // En passant move for white pawn
     const board5 = new Board();
-    const player5 = new Player("white", true);
+    const player5 = new Player("white", false);
+    const player5_2 = new Player("black", true);
     board5.setSquare("a5", new Pawn("white", "a5"));
-    board5.movePiece("b7", "b5", player5);
+    board5.movePiece("b7", "b5", player5_2);
     const pawn5 = board5.getSquare("a5") as Pawn;
     const pawn6 = board5.getSquare("b5") as Pawn;
+    player5.setIsTurn(true);
+    player5_2.setIsTurn(false);
     board5.movePiece("a5", "b6", player5);
     expect(board5.getSquare("b6")).toBe(pawn5);
     expect(board5.getSquare("b5")).toBe(null);
@@ -166,11 +177,14 @@ describe("Pawn moves", () => {
 
     // En passant move for black pawn
     const board6 = new Board();
-    const player6 = new Player("black", true);
+    const player6 = new Player("black", false);
+    const player7 = new Player("white", true);
     board6.setSquare("a4", new Pawn("black", "a4"));
-    board6.movePiece("b2", "b4", player6);
+    board6.movePiece("b2", "b4", player7);
     const pawn7 = board6.getSquare("a4") as Pawn;
     const pawn8 = board6.getSquare("b4") as Pawn;
+    player7.setIsTurn(false);
+    player6.setIsTurn(true);
     board6.movePiece("a4", "b3", player6);
     expect(board6.getSquare("b3")).toBe(pawn7);
     expect(board6.getSquare("b4")).toBe(null);

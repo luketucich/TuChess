@@ -140,6 +140,14 @@ export class Board {
     return true;
   }
 
+  getIndex(index: [number, number]) {
+    if (!this.isValidIndex(index)) {
+      throw new Error("Invalid index");
+    }
+    const [row, col]: [number, number] = [index[0], index[1]];
+    return this.board[row][col];
+  }
+
   getSquare(square: string): BoardSquare {
     if (!this.isValidSquare(square)) {
       throw new Error("Invalid square");
