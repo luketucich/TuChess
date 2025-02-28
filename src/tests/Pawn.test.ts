@@ -6,36 +6,28 @@ import { Queen } from "../game/Pieces/Queen.ts";
 import { Board } from "../game/Board.ts";
 
 describe("Pawn properties", () => {
-  test("should have the correct properties", () => {
+  test("should have correct properties for white pawn", () => {
     const pawn = new Pawn("white", "a2");
-
-    // Check pawn color
     expect(pawn.getColor()).toBe("white");
-    // Check pawn position
     expect(pawn.getPosition()).toBe("a2");
-    // Check if pawn has moved
     expect(pawn.getHasMoved()).toBeFalsy();
-    // Check pawn value
     expect(pawn.getValue()).toBe(1);
+  });
 
-    const pawn2 = new Pawn("black", "h7", true);
-    // Check pawn color
-    expect(pawn2.getColor()).toBe("black");
-    // Check pawn position
-    expect(pawn2.getPosition()).toBe("h7");
-    // Check if pawn has moved
-    expect(pawn2.getHasMoved()).toBeTruthy();
-    // Check pawn value
-    expect(pawn2.getValue()).toBe(1);
+  test("should have correct properties for black pawn", () => {
+    const pawn = new Pawn("black", "h7", true);
+    expect(pawn.getColor()).toBe("black");
+    expect(pawn.getPosition()).toBe("h7");
+    expect(pawn.getHasMoved()).toBeTruthy();
+    expect(pawn.getValue()).toBe(1);
   });
 });
 
 describe("Pawn movement at start", () => {
-  test("should allow pawn to move 1 or 2 squares forward", () => {
+  test("should allow white pawn to move 1 or 2 squares forward", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a2");
 
-    // Check valid moves for white pawn at start position
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
       {
@@ -56,11 +48,14 @@ describe("Pawn movement at start", () => {
         color: "white",
       },
     ]);
+  });
 
-    const pawn2 = new Pawn("black", "h7");
-    // Check valid moves for black pawn at start position
-    const validMoves2 = pawn2.getMoves(board);
-    expect(validMoves2).toEqual([
+  test("should allow black pawn to move 1 or 2 squares forward", () => {
+    const board = new Board();
+    const pawn = new Pawn("black", "h7");
+
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
       {
         square: "h6",
         isCapture: false,
@@ -83,11 +78,10 @@ describe("Pawn movement at start", () => {
 });
 
 describe("Pawn movement after start", () => {
-  test("should allow pawn to move 1 square forward", () => {
+  test("should allow white pawn to move 1 square forward", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a3", true);
 
-    // Check valid moves for white pawn after moving 1 square
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
       {
@@ -99,11 +93,14 @@ describe("Pawn movement after start", () => {
         color: "white",
       },
     ]);
+  });
 
-    const pawn2 = new Pawn("black", "h6", true);
-    // Check valid moves for black pawn after moving 1 square
-    const validMoves2 = pawn2.getMoves(board);
-    expect(validMoves2).toEqual([
+  test("should allow black pawn to move 1 square forward", () => {
+    const board = new Board();
+    const pawn = new Pawn("black", "h6", true);
+
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
       {
         square: "h5",
         isCapture: false,
@@ -117,14 +114,11 @@ describe("Pawn movement after start", () => {
 });
 
 describe("Pawn capture", () => {
-  test("should allow pawn to capture diagonally", () => {
+  test("should allow white pawn to capture diagonally", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a3", true);
-
-    // Place black pawn at b4
     board.setSquare("b4", new Pawn("black", "b4"));
 
-    // Check valid moves for white pawn to capture black pawn
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
       {
@@ -144,15 +138,15 @@ describe("Pawn capture", () => {
         color: "white",
       },
     ]);
+  });
 
-    const pawn2 = new Pawn("black", "h6", true);
-
-    // Place white pawn at g5
+  test("should allow black pawn to capture diagonally", () => {
+    const board = new Board();
+    const pawn = new Pawn("black", "h6", true);
     board.setSquare("g5", new Pawn("white", "g5"));
 
-    // Check valid moves for black pawn to capture white pawn
-    const validMoves2 = pawn2.getMoves(board);
-    expect(validMoves2).toEqual([
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
       {
         square: "h5",
         isCapture: false,
@@ -170,11 +164,15 @@ describe("Pawn capture", () => {
         color: "black",
       },
     ]);
+  });
 
-    // Prevent pawn from capturing own piece
+  test("should prevent pawn from capturing its own piece", () => {
+    const board = new Board();
+    const pawn = new Pawn("black", "h6", true);
     board.setSquare("g5", new Pawn("black", "g5"));
-    const validMoves3 = pawn2.getMoves(board);
-    expect(validMoves3).toEqual([
+
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
       {
         square: "h5",
         isCapture: false,
@@ -184,11 +182,15 @@ describe("Pawn capture", () => {
         color: "black",
       },
     ]);
+  });
 
-    // Prevent pawn from capturing King
+  test("should prevent pawn from capturing King", () => {
+    const board = new Board();
+    const pawn = new Pawn("black", "h6", true);
     board.setSquare("g5", new King("white", "g5"));
-    const validMoves4 = pawn2.getMoves(board);
-    expect(validMoves4).toEqual([
+
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
       {
         square: "h5",
         isCapture: false,
@@ -198,16 +200,17 @@ describe("Pawn capture", () => {
         color: "black",
       },
     ]);
+  });
 
-    // Ensure pawn can capture multiple pieces
-    const board2 = new Board();
-    board2.setSquare("e5", new Pawn("black", "e5"));
-    board2.setSquare("d4", new Queen("white", "d4"));
-    board2.setSquare("f4", new Rook("white", "f4"));
+  test("should allow pawn to capture multiple pieces", () => {
+    const board = new Board();
+    board.setSquare("e5", new Pawn("black", "e5"));
+    board.setSquare("d4", new Queen("white", "d4"));
+    board.setSquare("f4", new Rook("white", "f4"));
 
-    const pawn3 = board2.getSquare("e5") as Pawn;
-    const validMoves5 = pawn3.getMoves(board2);
-    expect(validMoves5).toEqual([
+    const pawn = board.getSquare("e5") as Pawn;
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
       {
         square: "e4",
         isCapture: false,
@@ -242,7 +245,6 @@ describe("Pawn check", () => {
     board.setSquare("b4", new King("black", "b4"));
 
     const pawn = board.getSquare("a2") as Pawn;
-    // Check valid moves for white pawn to check black King
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
       {
@@ -267,12 +269,11 @@ describe("Pawn check", () => {
 });
 
 describe("Pawn promotion", () => {
-  test("should allow pawn to promote", () => {
+  test("should allow white pawn to promote", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a7");
     board.setSquare("a8", null);
 
-    // Check valid moves for white pawn at promotion rank
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
       {
@@ -292,13 +293,15 @@ describe("Pawn promotion", () => {
         color: "white",
       },
     ]);
+  });
 
-    const pawn2 = new Pawn("black", "h2");
+  test("should allow black pawn to promote", () => {
+    const board = new Board();
+    const pawn = new Pawn("black", "h2");
     board.setSquare("h1", null);
 
-    // Check valid moves for black pawn at promotion rank
-    const validMoves2 = pawn2.getMoves(board);
-    expect(validMoves2).toEqual([
+    const validMoves = pawn.getMoves(board);
+    expect(validMoves).toEqual([
       {
         square: "h1",
         isCapture: false,

@@ -2,27 +2,31 @@ import { describe, expect, test } from "vitest";
 import { Player } from "../game/Player.ts";
 
 describe("Player properties", () => {
-  test("should have the correct properties", () => {
+  test("should have the correct color", () => {
     const player = new Player("white", true);
-
-    // Check player color
     expect(player.getColor()).toBe("white");
-    // Check player turn
+  });
+
+  test("should have the correct turn status", () => {
+    const player = new Player("white", true);
     expect(player.getIsTurn()).toBeTruthy();
-    // Check player pieces
+  });
+
+  test("should initialize with empty pieces array", () => {
+    const player = new Player("white", true);
     expect(player.getPieces()).toEqual([]);
   });
 });
 
 describe("Update player turn", () => {
-  test("should update player turn correctly", () => {
+  test("should initially have the assigned turn value", () => {
     const player = new Player("white", true);
-
-    // Check player turn
     expect(player.getIsTurn()).toBeTruthy();
-    // Update player turn
+  });
+
+  test("should update player turn when changed", () => {
+    const player = new Player("white", true);
     player.setIsTurn(false);
-    // Check player turn
     expect(player.getIsTurn()).toBeFalsy();
   });
 });
