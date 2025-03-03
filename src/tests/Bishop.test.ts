@@ -92,6 +92,43 @@ describe("Bishop movement", () => {
       ])
     );
   });
+
+  test("should allow the bishop to only move on clear diagnols", () => {
+    const board = new Board();
+
+    board.setSquare("e4", new Bishop("white", "e4"));
+    board.setSquare("f5", new Pawn("white", "f5"));
+    board.setSquare("d5", new Pawn("black", "d5"));
+    board.setSquare("f3", new Pawn("black", "f3"));
+    const bishop = board.getSquare("e4") as Bishop;
+    const moves = bishop.getMoves(board);
+
+    expect(moves).toEqual(
+      expect.arrayContaining([
+        {
+          square: "d3",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "d5",
+          isCapture: true,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "f3",
+          isCapture: true,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+      ])
+    );
+  });
 });
 
 describe("Bishop checks", () => {
@@ -169,5 +206,68 @@ describe("Bishop checks", () => {
     const index = board.squareToIndex("d4");
 
     expect(bishop.isCheck(board, [index[0], index[1]])).toBeTruthy();
+  });
+
+  test("should detect capture check", () => {
+    const board = new Board();
+    board.setSquare("d5", new Bishop("white", "d5"));
+    board.setSquare("e4", new Pawn("black", "e4"));
+
+    const bishop: Bishop = board.getSquare("d5") as Bishop;
+    const moves = bishop.getMoves(board);
+
+    expect(moves).toEqual(
+      expect.arrayContaining([
+        {
+          square: "e4",
+          isCapture: true,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "c4",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "b3",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "c6",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "b7",
+          isCapture: true,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "e6",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "f7",
+          isCapture: true,
+          isCheck: true,
+          piece: "bishop",
+          color: "white",
+        },
+      ])
+    );
   });
 });
