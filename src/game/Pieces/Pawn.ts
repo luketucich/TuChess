@@ -26,13 +26,12 @@ export class Pawn extends Piece {
   }
 
   getMoves(board: Board): PawnMove[] {
-    // Initialize array to store valid moves & get current board state
     const validMoves: PawnMove[] = [];
     const currBoard: BoardSquare[][] = board.getBoard();
     const [row, col]: [number, number] = board.squareToIndex(this.position);
     const isWhite: boolean = this.color === "white";
 
-    // Determine move direction based on color (white moves up, black moves down)
+    // White moves up, black moves down
     const rowOffset: number = isWhite ? -1 : 1;
 
     // Check forward move (1 square)
@@ -139,7 +138,7 @@ export class Pawn extends Piece {
 
     for (const [r, c] of diagonals) {
       if (board.isValidIndex([r, c])) {
-        const square = board.getBoard()[r][c]; // Get contents of square
+        const square = board.getBoard()[r][c];
         if (square instanceof King && square.getColor() !== this.color) {
           return true;
         }
@@ -149,26 +148,11 @@ export class Pawn extends Piece {
     return false;
   }
 
-  private isCapture(board: Board, move: [number, number]): boolean {
-    const [row, col]: [number, number] = move;
-
-    if (!board.isValidIndex([row, col])) return false; // Out-of-bounds check
-
-    const square = board.getBoard()[row][col];
-
-    return (
-      square !== null &&
-      square.getColor() !== this.color &&
-      !(square instanceof King)
-    );
-  }
-
   private isPromotion(move: [number, number], isWhite: boolean) {
     return isWhite ? move[0] === 0 : move[0] === 7;
   }
 
   private canEnPassant(board: Board) {
-    // Get last move from history
     const history = board.getHistory();
     if (history.length === 0) return false;
 
@@ -177,7 +161,6 @@ export class Pawn extends Piece {
     if (lastMove.piece !== "pawn") return false;
     if (lastMove.color === this.color) return false;
 
-    // Initialize double move criteria
     const [lastMoveRow, lastMoveCol]: [number, number] = board.squareToIndex(
       lastMove.square
     );

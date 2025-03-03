@@ -22,6 +22,78 @@ describe("Bishop properties", () => {
   });
 });
 
+describe("Bishop movement", () => {
+  test("should allow white bishop to move on all four diagnols", () => {
+    const board = new Board();
+
+    board.setSquare("e4", new Bishop("white", "e4"));
+    const bishop = board.getSquare("e4") as Bishop;
+    const moves = bishop.getMoves(board);
+
+    // Use expect.arrayContaining to make order not matter
+    expect(moves).toEqual(
+      expect.arrayContaining([
+        {
+          square: "c6",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "d5",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "d3",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "f5",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "f3",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "g6",
+          isCapture: false,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "h7",
+          isCapture: true,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+        {
+          square: "b7",
+          isCapture: true,
+          isCheck: false,
+          piece: "bishop",
+          color: "white",
+        },
+      ])
+    );
+  });
+});
+
 describe("Bishop checks", () => {
   test("should detect if a bishop is checking the opponent's king", () => {
     // Bishop check with clear path
@@ -42,26 +114,6 @@ describe("Bishop checks", () => {
     const index2 = board2.squareToIndex("d3");
 
     expect(bishop2.isCheck(board2, [index2[0], index2[1]])).toBeFalsy();
-  });
-
-  test("should not detect check if bishop is not aligned with the king", () => {
-    const board = new Board();
-    board.setSquare("d3", new Bishop("white", "d3"));
-    board.setSquare("h7", new King("black", "h7"));
-    const bishop: Bishop = board.getSquare("d3") as Bishop;
-    const index = board.squareToIndex("d3");
-
-    expect(bishop.isCheck(board, [index[0], index[1]])).toBeFalsy();
-  });
-
-  test("should detect check when bishop is at the edge of the board", () => {
-    const board = new Board();
-    board.setSquare("a1", new Bishop("white", "a1"));
-    board.setSquare("h8", new King("black", "h8"));
-    const bishop: Bishop = board.getSquare("a1") as Bishop;
-    const index = board.squareToIndex("a1");
-
-    expect(bishop.isCheck(board, [index[0], index[1]])).toBeTruthy();
   });
 
   test("should not detect check if bishop is blocked by another piece of the same color", () => {

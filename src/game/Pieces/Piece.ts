@@ -1,3 +1,5 @@
+import { Board } from "../Board.ts";
+
 export abstract class Piece {
   protected color: "white" | "black";
   protected position: string;
@@ -27,5 +29,21 @@ export abstract class Piece {
 
   move(position: string): void {
     this.position = position;
+  }
+
+  isKing(): boolean {
+    return false;
+  }
+
+  isCapture(board: Board, move: [number, number]): boolean {
+    const [row, col] = move;
+
+    if (!board.isValidIndex([row, col])) return false; // Out-of-bounds check
+
+    const square = board.getBoard()[row][col];
+
+    return (
+      square !== null && square.getColor() !== this.color && !square.isKing()
+    );
   }
 }

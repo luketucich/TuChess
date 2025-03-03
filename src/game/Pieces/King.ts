@@ -8,4 +8,8 @@ export class King extends Piece {
   move(position: string): void {
     this.position = position;
   }
+
+  isKing(): boolean {
+    return true;
+  }
 }
