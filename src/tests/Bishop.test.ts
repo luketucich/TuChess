@@ -12,6 +12,7 @@ describe("Bishop properties", () => {
     expect(bishop.getColor()).toBe("white");
     expect(bishop.getPosition()).toBe("c1");
     expect(bishop.getValue()).toBe(3);
+    expect(bishop.getName()).toBe("bishop");
 
     const bishop2 = new Bishop("black", "f8");
 
@@ -19,6 +20,7 @@ describe("Bishop properties", () => {
     expect(bishop2.getColor()).toBe("black");
     expect(bishop2.getPosition()).toBe("f8");
     expect(bishop2.getValue()).toBe(3);
+    expect(bishop.getName()).toBe("bishop");
   });
 });
 

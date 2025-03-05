@@ -12,6 +12,7 @@ describe("Pawn properties", () => {
     expect(pawn.getPosition()).toBe("a2");
     expect(pawn.getHasMoved()).toBeFalsy();
     expect(pawn.getValue()).toBe(1);
+    expect(pawn.getName()).toBe("pawn");
   });
 
   test("should have correct properties for black pawn", () => {
@@ -20,6 +21,7 @@ describe("Pawn properties", () => {
     expect(pawn.getPosition()).toBe("h7");
     expect(pawn.getHasMoved()).toBeTruthy();
     expect(pawn.getValue()).toBe(1);
+    expect(pawn.getName()).toBe("pawn");
   });
 });
 

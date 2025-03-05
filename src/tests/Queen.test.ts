@@ -12,6 +12,7 @@ describe("Queen properties", () => {
     expect(queen.getColor()).toBe("white");
     expect(queen.getPosition()).toBe("d1");
     expect(queen.getValue()).toBe(9);
+    expect(queen.getName()).toBe("queen");
   });
 
   test("black queen should have the correct properties", () => {
@@ -21,6 +22,7 @@ describe("Queen properties", () => {
     expect(queen.getColor()).toBe("black");
     expect(queen.getPosition()).toBe("d8");
     expect(queen.getValue()).toBe(9);
+    expect(queen.getName()).toBe("queen");
   });
 });
 

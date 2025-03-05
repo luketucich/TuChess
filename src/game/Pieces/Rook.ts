@@ -5,7 +5,7 @@ import { Move } from "../Moves/Move.ts";
 
 export class Rook extends Piece {
   constructor(color: "white" | "black", position: string) {
-    super(color, position, 5);
+    super(color, position, 5, "rook");
   }
 
   move(position: string): void {

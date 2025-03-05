@@ -10,6 +10,7 @@ describe("Knight properties", () => {
     expect(knight.getColor()).toBe("white");
     expect(knight.getPosition()).toBe("b1");
     expect(knight.getValue()).toBe(3);
+    expect(knight.getName()).toBe("knight");
   });
 
   test("should have correct properties for black knight", () => {
@@ -17,6 +18,7 @@ describe("Knight properties", () => {
     expect(knight2.getColor()).toBe("black");
     expect(knight2.getPosition()).toBe("g8");
     expect(knight2.getValue()).toBe(3);
+    expect(knight2.getName()).toBe("knight");
   });
 });
 

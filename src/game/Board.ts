@@ -60,6 +60,7 @@ export class Board {
   getBoard(): BoardSquare[][] {
     return this.board;
   }
+
   displayBoard(player: Player): void {
     const pieceSymbols: { [key: string]: string } = {
       Pawn: "P",
@@ -191,7 +192,7 @@ export class Board {
     }
 
     // Check if from square is empty
-    const piece: BoardSquare | null = this.getSquare(from);
+    const piece: BoardSquare = this.getSquare(from);
     if (!piece) {
       throw new Error("No piece at from square");
     }
@@ -241,5 +242,156 @@ export class Board {
 
     // If no valid move was found, throw an error
     throw new Error("Invalid move");
+  }
+
+  isSquareAttacked(position: string, attackedKingColor: string): boolean {
+    if (!this.isValidSquare(position)) {
+      throw new Error("Invalid position");
+    }
+
+    const [targetRow, targetCol] = this.squareToIndex(position);
+
+    // Define all attack patterns
+    const pawnOffsets =
+      attackedKingColor === "black"
+        ? [
+            [1, -1],
+            [1, 1],
+          ]
+        : [
+            [-1, -1],
+            [-1, 1],
+          ];
+
+    const kingOffsets = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+      [-1, -1],
+      [-1, 1],
+      [1, -1],
+      [1, 1],
+    ];
+
+    const knightOffsets = [
+      [-2, -1],
+      [-2, 1],
+      [-1, -2],
+      [-1, 2],
+      [1, -2],
+      [1, 2],
+      [2, -1],
+      [2, 1],
+    ];
+
+    const diagonalDirections = [
+      [-1, -1],
+      [-1, 1],
+      [1, -1],
+      [1, 1],
+    ];
+
+    const straightDirections = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+    ];
+
+    // Check for pawn attacks
+    for (const [rowOffset, colOffset] of pawnOffsets) {
+      const checkRow = targetRow + rowOffset;
+      const checkCol = targetCol + colOffset;
+
+      if (this.isValidIndex([checkRow, checkCol])) {
+        const piece = this.board[checkRow][checkCol];
+        if (
+          piece &&
+          piece.getName() === "pawn" &&
+          piece.getColor() !== attackedKingColor
+        ) {
+          return true;
+        }
+      }
+    }
+
+    // Check for king attacks
+    for (const [rowOffset, colOffset] of kingOffsets) {
+      const checkRow = targetRow + rowOffset;
+      const checkCol = targetCol + colOffset;
+
+      if (this.isValidIndex([checkRow, checkCol])) {
+        const piece = this.board[checkRow][checkCol];
+        if (
+          piece &&
+          piece.getName() === "king" &&
+          piece.getColor() !== attackedKingColor
+        ) {
+          return true;
+        }
+      }
+    }
+
+    // Check for knight attacks
+    for (const [rowOffset, colOffset] of knightOffsets) {
+      const checkRow = targetRow + rowOffset;
+      const checkCol = targetCol + colOffset;
+
+      if (this.isValidIndex([checkRow, checkCol])) {
+        const piece = this.board[checkRow][checkCol];
+        if (
+          piece &&
+          piece.getName() === "knight" &&
+          piece.getColor() !== attackedKingColor
+        ) {
+          return true;
+        }
+      }
+    }
+
+    // Check diagonal attacks (bishop and queen)
+    for (const [rowDir, colDir] of diagonalDirections) {
+      let checkRow = targetRow + rowDir;
+      let checkCol = targetCol + colDir;
+
+      while (this.isValidIndex([checkRow, checkCol])) {
+        const piece = this.board[checkRow][checkCol];
+        if (piece) {
+          if (
+            (piece.getName() === "bishop" || piece.getName() === "queen") &&
+            piece.getColor() !== attackedKingColor
+          ) {
+            return true;
+          }
+          break; // Stop if we hit any piece
+        }
+        checkRow += rowDir;
+        checkCol += colDir;
+      }
+    }
+
+    // Check straight attacks (rook and queen)
+    for (const [rowDir, colDir] of straightDirections) {
+      let checkRow = targetRow + rowDir;
+      let checkCol = targetCol + colDir;
+
+      while (this.isValidIndex([checkRow, checkCol])) {
+        const piece = this.board[checkRow][checkCol];
+        if (piece) {
+          if (
+            (piece.getName() === "rook" || piece.getName() === "queen") &&
+            piece.getColor() !== attackedKingColor
+          ) {
+            return true;
+          }
+          break; // Stop if we hit any piece
+        }
+        checkRow += rowDir;
+        checkCol += colDir;
+      }
+    }
+
+    return false;
   }
 }

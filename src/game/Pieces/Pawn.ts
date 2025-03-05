@@ -12,7 +12,7 @@ export class Pawn extends Piece {
     position: string,
     hasMoved: boolean = false
   ) {
-    super(color, position, 1);
+    super(color, position, 1, "pawn");
     this.hasMoved = hasMoved;
   }
 

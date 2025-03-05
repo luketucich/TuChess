@@ -5,7 +5,7 @@ import { Move } from "../Moves/Move.ts";
 
 export class Queen extends Piece {
   constructor(color: "white" | "black", position: string) {
-    super(color, position, 9);
+    super(color, position, 9, "queen");
   }
 
   move(position: string): void {

@@ -11,6 +11,7 @@ describe("Rook properties", () => {
     expect(rook.getColor()).toBe("white");
     expect(rook.getPosition()).toBe("a1");
     expect(rook.getValue()).toBe(5);
+    expect(rook.getName()).toBe("rook");
   });
 
   test("black rook should have the correct properties", () => {
@@ -19,6 +20,7 @@ describe("Rook properties", () => {
     expect(rook.getColor()).toBe("black");
     expect(rook.getPosition()).toBe("h8");
     expect(rook.getValue()).toBe(5);
+    expect(rook.getName()).toBe("rook");
   });
 });
 

@@ -5,7 +5,7 @@ import { King } from "./King.ts";
 
 export class Knight extends Piece {
   constructor(color: "white" | "black", position: string) {
-    super(color, position, 3);
+    super(color, position, 3, "knight");
   }
 
   move(position: string): void {

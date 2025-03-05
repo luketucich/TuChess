@@ -230,3 +230,263 @@ describe("Pawn moves", () => {
     expect(player1.getPieces()).toContain(pawn2);
   });
 });
+
+describe("Bishop moves", () => {
+  test("should move diagonally", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("c4", new Bishop("white", "c4"));
+    board.movePiece("c4", "a6", player);
+    expect(board.getSquare("a6")).toBeInstanceOf(Bishop);
+    expect(board.getSquare("c4")).toBe(null);
+  });
+
+  test("should capture enemy pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("c4", new Bishop("white", "c4"));
+    board.setSquare("e6", new Pawn("black", "e6"));
+    board.movePiece("c4", "e6", player);
+    expect(board.getSquare("e6")).toBeInstanceOf(Bishop);
+    expect(board.getSquare("c4")).toBe(null);
+    expect(player.getPieces().length).toBe(1);
+  });
+
+  test("should not move through other pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("c4", new Bishop("white", "c4"));
+    board.setSquare("d5", new Pawn("white", "d5"));
+    expect(() => board.movePiece("c4", "e6", player)).toThrow();
+  });
+});
+
+describe("Knight moves", () => {
+  test("should move in L-shape", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Knight("white", "d4"));
+    board.movePiece("d4", "e6", player);
+    expect(board.getSquare("e6")).toBeInstanceOf(Knight);
+    expect(board.getSquare("d4")).toBe(null);
+  });
+
+  test("should capture enemy pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Knight("white", "d4"));
+    board.setSquare("f5", new Pawn("black", "f5"));
+    board.movePiece("d4", "f5", player);
+    expect(board.getSquare("f5")).toBeInstanceOf(Knight);
+    expect(player.getPieces().length).toBe(1);
+  });
+
+  test("should jump over other pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Knight("white", "d4"));
+    // Place pieces in the way
+    board.setSquare("d5", new Pawn("white", "d5"));
+    board.setSquare("e4", new Pawn("black", "e4"));
+    board.movePiece("d4", "e6", player);
+    expect(board.getSquare("e6")).toBeInstanceOf(Knight);
+    expect(board.getSquare("d5")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("e4")).toBeInstanceOf(Pawn);
+  });
+});
+
+describe("Rook moves", () => {
+  test("should move horizontally and vertically", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Rook("white", "d4"));
+    board.movePiece("d4", "d6", player);
+    expect(board.getSquare("d6")).toBeInstanceOf(Rook);
+    expect(board.getSquare("d4")).toBe(null);
+
+    const board2 = new Board();
+    board2.setSquare("d4", new Rook("white", "d4"));
+    board2.movePiece("d4", "h4", player);
+    expect(board2.getSquare("h4")).toBeInstanceOf(Rook);
+    expect(board2.getSquare("d4")).toBe(null);
+  });
+
+  test("should capture enemy pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Rook("white", "d4"));
+    board.setSquare("d7", new Pawn("black", "d7"));
+    board.movePiece("d4", "d7", player);
+    expect(board.getSquare("d7")).toBeInstanceOf(Rook);
+    expect(player.getPieces().length).toBe(1);
+  });
+
+  test("should not move through other pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Rook("white", "d4"));
+    board.setSquare("d6", new Pawn("white", "d6"));
+    expect(() => board.movePiece("d4", "d8", player)).toThrow();
+  });
+});
+
+describe("Queen moves", () => {
+  test("should move diagonally, horizontally, and vertically", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Queen("white", "d4"));
+
+    // Diagonal move
+    board.movePiece("d4", "f6", player);
+    expect(board.getSquare("f6")).toBeInstanceOf(Queen);
+    expect(board.getSquare("d4")).toBe(null);
+
+    // Horizontal move
+    const board2 = new Board();
+    board2.setSquare("d4", new Queen("white", "d4"));
+    board2.movePiece("d4", "h4", player);
+    expect(board2.getSquare("h4")).toBeInstanceOf(Queen);
+
+    // Vertical move
+    const board3 = new Board();
+    board3.setSquare("d4", new Queen("white", "d4"));
+    board3.movePiece("d4", "d6", player);
+    expect(board3.getSquare("d6")).toBeInstanceOf(Queen);
+  });
+
+  test("should capture enemy pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Queen("white", "d4"));
+    board.setSquare("g7", new Pawn("black", "g7"));
+    board.movePiece("d4", "g7", player);
+    expect(board.getSquare("g7")).toBeInstanceOf(Queen);
+    expect(player.getPieces().length).toBe(1);
+  });
+
+  test("should not move through other pieces", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Queen("white", "d4"));
+    board.setSquare("f6", new Pawn("white", "f6"));
+    expect(() => board.movePiece("d4", "g7", player)).toThrow();
+
+    board.setSquare("d6", new Pawn("black", "d6"));
+    expect(() => board.movePiece("d4", "d8", player)).toThrow();
+  });
+});
+
+describe("Revealed check", () => {
+  test("should detect revealed check with rook", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Rook("white", "d4"));
+    board.setSquare("e4", new Pawn("white", "e4"));
+    board.setSquare("h4", new King("black", "h4"));
+
+    expect(board.isSquareAttacked("h4", "black")).toBeFalsy();
+
+    board.movePiece("e4", "e5", player);
+
+    expect(board.isSquareAttacked("h4", "black")).toBeTruthy();
+  });
+
+  test("should detect revealed check with bishop", () => {
+    const board = new Board();
+    const player = new Player("black", true);
+    board.setSquare("f6", new Bishop("black", "f6"));
+    board.setSquare("e5", new Pawn("black", "e5"));
+    board.setSquare("c3", new King("white", "c3"));
+
+    expect(board.isSquareAttacked("c3", "white")).toBeFalsy();
+
+    board.movePiece("e5", "e4", player);
+
+    expect(board.isSquareAttacked("c3", "white")).toBeTruthy();
+  });
+
+  test("should detect revealed check with queen (diagonal)", () => {
+    const board = new Board();
+    const player = new Player("black", true);
+    board.setSquare("f6", new Queen("black", "f6"));
+    board.setSquare("e5", new Pawn("black", "e5"));
+    board.setSquare("c3", new King("white", "c3"));
+
+    expect(board.isSquareAttacked("c3", "white")).toBeFalsy();
+
+    board.movePiece("e5", "e4", player);
+
+    expect(board.isSquareAttacked("c3", "white")).toBeTruthy();
+  });
+
+  test("should detect revealed check with queen (horizontal)", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Queen("white", "d4"));
+    board.setSquare("e4", new Pawn("white", "e4"));
+    board.setSquare("h4", new King("black", "h4"));
+
+    expect(board.isSquareAttacked("h4", "black")).toBeFalsy();
+
+    board.movePiece("e4", "e5", player);
+
+    expect(board.isSquareAttacked("h4", "black")).toBeTruthy();
+  });
+
+  test("should detect revealed check with queen (vertical)", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+
+    board.setSquare("d3", new Queen("white", "d3"));
+    board.setSquare("d4", new Knight("white", "d4"));
+    board.setSquare("d6", new King("black", "d6"));
+
+    expect(board.isSquareAttacked("d6", "black")).toBeFalsy();
+
+    board.movePiece("d4", "f3", player);
+
+    expect(board.isSquareAttacked("d6", "black")).toBeTruthy();
+  });
+});
+
+describe("should detect pawn attacks", () => {
+  test("should detect pawn attacks from black", () => {
+    const board = new Board();
+    expect(board.isSquareAttacked("b6", "white")).toBeTruthy();
+  });
+
+  test("should detect pawn attacks from white", () => {
+    const board = new Board();
+    expect(board.isSquareAttacked("b3", "black")).toBeTruthy();
+  });
+});
+
+describe("should detect king attacks", () => {
+  test("should detect king attacks from black", () => {
+    const board = new Board();
+    board.setSquare("e4", new King("black", "e4"));
+
+    expect(board.isSquareAttacked("e5", "white")).toBeTruthy();
+    expect(board.isSquareAttacked("d5", "white")).toBeTruthy();
+    expect(board.isSquareAttacked("d4", "white")).toBeTruthy();
+    expect(board.isSquareAttacked("d3", "white")).toBeTruthy();
+    expect(board.isSquareAttacked("e3", "white")).toBeTruthy();
+    expect(board.isSquareAttacked("f3", "white")).toBeTruthy();
+    expect(board.isSquareAttacked("f4", "white")).toBeTruthy();
+    expect(board.isSquareAttacked("f5", "white")).toBeTruthy();
+  });
+
+  test("should detect king attacks from white", () => {
+    const board = new Board();
+    board.setSquare("e4", new King("white", "e4"));
+
+    expect(board.isSquareAttacked("e5", "black")).toBeTruthy();
+    expect(board.isSquareAttacked("d5", "black")).toBeTruthy();
+    expect(board.isSquareAttacked("d4", "black")).toBeTruthy();
+    expect(board.isSquareAttacked("d3", "black")).toBeTruthy();
+    expect(board.isSquareAttacked("e3", "black")).toBeTruthy();
+    expect(board.isSquareAttacked("f3", "black")).toBeTruthy();
+    expect(board.isSquareAttacked("f4", "black")).toBeTruthy();
+    expect(board.isSquareAttacked("f5", "black")).toBeTruthy();
+  });
+});

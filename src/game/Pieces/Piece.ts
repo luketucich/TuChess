@@ -4,11 +4,22 @@ export abstract class Piece {
   protected color: "white" | "black";
   protected position: string;
   protected value: number;
+  protected name: string;
 
-  constructor(color: "white" | "black", position: string, value: number) {
+  constructor(
+    color: "white" | "black",
+    position: string,
+    value: number,
+    name: string
+  ) {
     this.color = color;
     this.position = position;
     this.value = value;
+    this.name = name;
+  }
+
+  getName(): string {
+    return this.name;
   }
 
   getColor(): "white" | "black" {
@@ -31,10 +42,6 @@ export abstract class Piece {
     this.position = position;
   }
 
-  isKing(): boolean {
-    return false;
-  }
-
   isCapture(board: Board, move: [number, number]): boolean {
     const [row, col] = move;
 
@@ -43,7 +50,9 @@ export abstract class Piece {
     const square = board.getBoard()[row][col];
 
     return (
-      square !== null && square.getColor() !== this.color && !square.isKing()
+      square !== null &&
+      square.getColor() !== this.color &&
+      !square.getName().includes("king")
     );
   }
 }
