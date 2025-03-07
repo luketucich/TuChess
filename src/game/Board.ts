@@ -1,17 +1,22 @@
+// Piece imports
 import { Bishop } from "./Pieces/Bishop";
+import { King } from "./Pieces/King";
 import { Knight } from "./Pieces/Knight";
 import { Pawn } from "./Pieces/Pawn";
-import { Rook } from "./Pieces/Rook";
 import { Queen } from "./Pieces/Queen";
-import { King } from "./Pieces/King";
+import { Rook } from "./Pieces/Rook";
+
+// Move imports
 import { Move } from "./Moves/Move";
-import { Player } from "./Player";
-import { Piece } from "./Pieces/Piece";
+import { KingMove } from "./Moves/KingMove";
 import { PawnMove } from "./Moves/PawnMove";
+
+// Other imports
+import { Player } from "./Player";
 
 // Define generic type for board squares
 export type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen | King;
-export type BoardMove = Move | PawnMove;
+export type BoardMove = Move | PawnMove | KingMove;
 
 export class Board {
   private board: BoardSquare[][];
@@ -176,72 +181,79 @@ export class Board {
   }
 
   movePiece(from: string, to: string, player: Player): void {
-    // Check if it's the player's turn
-    if (player.getIsTurn() === false) {
+    // Validate basic move conditions
+    if (!player.getIsTurn()) {
       throw new Error("Not your turn");
     }
 
-    // Check if move is valid
-    if (!this.isValidSquare(from) || !this.isValidSquare(to)) {
-      throw new Error("Invalid square");
+    if (!this.isValidSquare(from) || !this.isValidSquare(to) || from === to) {
+      throw new Error("Invalid move");
     }
 
-    // Check if from square is the same as to square
-    if (from === to) {
-      throw new Error("Cannot move piece to same square");
-    }
-
-    // Check if from square is empty
     const piece: BoardSquare = this.getSquare(from);
-    if (!piece) {
-      throw new Error("No piece at from square");
+    if (!piece || piece.getColor() !== player.getColor()) {
+      throw new Error("Invalid piece selection");
     }
 
-    // Check if piece belongs to player
-    if (piece.getColor() !== player.getColor()) {
-      throw new Error("Cannot move opponent's piece");
-    }
-
+    // Find the matching move in valid moves
     const moves: BoardMove[] = piece.getMoves(this);
+    const move = moves.find((move) => move.square === to);
 
-    // Loop through valid moves to find matching move
-    for (const move of moves) {
-      if (move.square === to) {
-        // Capture piece if move is a capture
-        if (move.isCapture) {
-          const capturedPiece: Piece = this.getSquare(to)!;
+    if (!move) {
+      throw new Error("Invalid move");
+    }
 
-          // To square is null in en passant
-          if (capturedPiece !== null) {
-            player.addPiece(capturedPiece);
-          }
-        }
+    // Handle captures
+    if (move.isCapture) {
+      // Handle en passant
+      if ("isEnPassant" in move && move.isEnPassant) {
+        const rowOffset: number = move.color === "white" ? -1 : 1;
+        const [row, col]: [number, number] = this.squareToIndex(move.square);
+        const capturedPawn: BoardSquare = this.board[row - rowOffset][col];
 
-        // Capture piece if move is an en passant
-        if ("isEnPassant" in move && move.isEnPassant) {
-          const rowOffset: number = move.color === "white" ? -1 : 1;
-          const [row, col]: [number, number] = this.squareToIndex(move.square);
-          const capturedPawn: BoardSquare = this.board[row - rowOffset][
-            col
-          ] as Pawn;
+        if (capturedPawn) {
           player.addPiece(capturedPawn);
           this.board[row - rowOffset][col] = null;
         }
-
-        // Move piece to new square
-        this.setSquare(from, null);
-        this.setSquare(to, piece);
-        piece.move(to);
-
-        // Add move to history
-        this.setHistory(move);
-
-        return;
+      }
+      // Handle regular capture
+      else {
+        const capturedPiece = this.getSquare(to);
+        if (capturedPiece) {
+          player.addPiece(capturedPiece);
+        }
       }
     }
 
-    // If no valid move was found, throw an error
-    throw new Error("Invalid move");
+    // Handle castling
+    if ("isCastle" in move && move.isCastle) {
+      this.handleCastling(move.square);
+    }
+
+    // Move piece to new square
+    this.setSquare(from, null);
+    this.setSquare(to, piece);
+    piece.move(to);
+
+    // Add move to history
+    this.setHistory(move);
+  }
+
+  private handleCastling(square: string): void {
+    const castlingMoves = {
+      g1: { rookFrom: "h1", rookTo: "f1" },
+      c1: { rookFrom: "a1", rookTo: "d1" },
+      g8: { rookFrom: "h8", rookTo: "f8" },
+      c8: { rookFrom: "a8", rookTo: "d8" },
+    };
+
+    const castleMove = castlingMoves[square as keyof typeof castlingMoves];
+    if (castleMove) {
+      const rook = this.getSquare(castleMove.rookFrom) as Rook;
+      this.setSquare(castleMove.rookTo, rook);
+      this.setSquare(castleMove.rookFrom, null);
+      rook.move(castleMove.rookTo);
+    }
   }
 
   isSquareAttacked(position: string, attackedKingColor: string): boolean {

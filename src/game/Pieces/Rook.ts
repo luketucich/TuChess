@@ -4,12 +4,20 @@ import { Board } from "../Board.ts";
 import { Move } from "../Moves/Move.ts";
 
 export class Rook extends Piece {
+  private hasMoved: boolean;
+
   constructor(color: "white" | "black", position: string) {
     super(color, position, 5, "rook");
+    this.hasMoved = false;
+  }
+
+  getHasMoved(): boolean {
+    return this.hasMoved;
   }
 
   move(position: string): void {
     this.position = position;
+    this.hasMoved = true;
   }
 
   getMoves(board: Board): Move[] {
