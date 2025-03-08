@@ -103,7 +103,7 @@ export class Pawn extends Piece {
     // Check en passant (special capture rule)
     if (this.canEnPassant(board)) {
       const [lastMoveRow, lastMoveCol]: [number, number] = board.squareToIndex(
-        board.getHistory()[board.getHistory().length - 1].square
+        board.getHistory()[board.getHistory().length - 1].getMove().square
       );
 
       const move: PawnMove = {
@@ -157,7 +157,7 @@ export class Pawn extends Piece {
     if (history.length === 0) return false;
 
     // Check if last move was a pawn move and an enemy move
-    const lastMove: BoardMove = history[history.length - 1];
+    const lastMove: BoardMove = history[history.length - 1].getMove();
     if (lastMove.piece !== "pawn") return false;
     if (lastMove.color === this.color) return false;
 

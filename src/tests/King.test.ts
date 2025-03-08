@@ -41,6 +41,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -48,6 +49,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -55,6 +57,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -62,6 +65,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -69,6 +73,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -76,6 +81,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -83,6 +89,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -90,6 +97,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f3",
+        isCastle: false,
       },
     ]);
   });
@@ -108,6 +116,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -115,6 +124,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -122,6 +132,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -129,6 +140,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -136,6 +148,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f3",
+        isCastle: false,
       },
     ]);
   });
@@ -154,6 +167,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -161,6 +175,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -168,6 +183,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e3",
+        isCastle: false,
       },
     ]);
   });
@@ -186,6 +202,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -193,6 +210,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -200,6 +218,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -207,6 +226,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -214,6 +234,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -221,6 +242,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f3",
+        isCastle: false,
       },
     ]);
   });
@@ -239,6 +261,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "c5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -246,6 +269,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -253,6 +277,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "c4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -260,6 +285,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "c3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -267,6 +293,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -274,6 +301,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e3",
+        isCastle: false,
       },
     ]);
   });
@@ -293,6 +321,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -300,6 +329,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -307,6 +337,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e3",
+        isCastle: false,
       },
     ]);
   });
@@ -325,6 +356,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e5",
+        isCastle: false,
       },
       {
         color: "white",
@@ -332,6 +364,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -339,6 +372,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f4",
+        isCastle: false,
       },
       {
         color: "white",
@@ -346,6 +380,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "d3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -353,6 +388,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "e3",
+        isCastle: false,
       },
       {
         color: "white",
@@ -360,6 +396,7 @@ describe("King movement", () => {
         isCheck: false,
         piece: "king",
         square: "f3",
+        isCastle: false,
       },
     ]);
   });
@@ -368,10 +405,14 @@ describe("King movement", () => {
 describe("King castling", () => {
   test("King should be able to short castle", () => {
     const board = new Board();
-    const king = new King("white", "e1");
-    const rook = new Rook("white", "h1");
+    // Set king and rook on the board
+    board.setSquare("e1", new King("white", "e1"));
+    board.setSquare("h1", new Rook("white", "h1"));
     board.setSquare("f1", null);
     board.setSquare("g1", null);
+
+    const king = board.getSquare("e1") as King;
+    const rook = board.getSquare("h1") as Rook;
 
     expect(king.getHasMoved()).toBe(false);
     expect(rook.getHasMoved()).toBe(false);
@@ -415,7 +456,10 @@ describe("King castling", () => {
 
   test("King should not be able to castle if it has moved", () => {
     const board = new Board();
-    const king = new King("white", "e1");
+    board.setSquare("e1", new King("white", "e1"));
+    board.setSquare("h1", new Rook("white", "h1"));
+    const king = board.getSquare("e1") as King;
+
     king.move("e2");
 
     expect(king.getHasMoved()).toBe(true);
@@ -431,8 +475,11 @@ describe("King castling", () => {
 
   test("King should not be able to castle if the rook has moved", () => {
     const board = new Board();
-    const king = new King("white", "e1");
-    const rook = new Rook("white", "h1");
+    board.setSquare("e1", new King("white", "e1"));
+    board.setSquare("h1", new Rook("white", "h1"));
+    const king = board.getSquare("e1") as King;
+    const rook = board.getSquare("h1") as Rook;
+
     rook.move("h2");
 
     expect(king.getHasMoved()).toBe(false);
@@ -449,9 +496,12 @@ describe("King castling", () => {
 
   test("King should not be able to castle if the path is blocked", () => {
     const board = new Board();
-    const king = new King("white", "e1");
-    const rook = new Rook("white", "h1");
+    board.setSquare("e1", new King("white", "e1"));
+    board.setSquare("h1", new Rook("white", "h1"));
     board.setSquare("f1", new Pawn("white", "f1"));
+
+    const king = board.getSquare("e1") as King;
+    const rook = board.getSquare("h1") as Rook;
 
     expect(king.getHasMoved()).toBe(false);
     expect(rook.getHasMoved()).toBe(false);
@@ -467,9 +517,12 @@ describe("King castling", () => {
 
   test("King should not be able to castle if the path is attacked", () => {
     const board = new Board();
-    const king = new King("white", "e1");
-    const rook = new Rook("white", "h1");
-    board.setSquare("f1", new Queen("black", "f1"));
+    board.setSquare("e1", new King("white", "e1"));
+    board.setSquare("h1", new Rook("white", "h1"));
+    board.setSquare("f3", new Queen("black", "f3"));
+
+    const king = board.getSquare("e1") as King;
+    const rook = board.getSquare("h1") as Rook;
 
     expect(king.getHasMoved()).toBe(false);
     expect(rook.getHasMoved()).toBe(false);
@@ -485,10 +538,33 @@ describe("King castling", () => {
 
   test("King should not be able to castle if in check", () => {
     const board = new Board();
-    const king = new King("white", "e1");
-    const rook = new Rook("white", "h1");
-    board.setSquare("f1", new Queen("black", "f1"));
-    board.setSquare("e2", new Queen("black", "e2"));
+    board.setSquare("e1", new King("white", "e1"));
+    board.setSquare("h1", new Rook("white", "h1"));
+    board.setSquare("e8", new Queen("black", "e8"));
+
+    const king = board.getSquare("e1") as King;
+    const rook = board.getSquare("h1") as Rook;
+
+    expect(king.getHasMoved()).toBe(false);
+    expect(rook.getHasMoved()).toBe(false);
+    expect(king.getMoves(board)).not.toContainEqual({
+      color: "white",
+      isCapture: false,
+      isCheck: false,
+      piece: "king",
+      square: "g1",
+      isCastle: true,
+    });
+  });
+
+  test("King should not be able to castle through Knight's attack", () => {
+    const board = new Board();
+    board.setSquare("e1", new King("white", "e1"));
+    board.setSquare("h1", new Rook("white", "h1"));
+    board.setSquare("g3", new Knight("black", "g3"));
+
+    const king = board.getSquare("e1") as King;
+    const rook = board.getSquare("h1") as Rook;
 
     expect(king.getHasMoved()).toBe(false);
     expect(rook.getHasMoved()).toBe(false);

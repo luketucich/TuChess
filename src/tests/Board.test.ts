@@ -490,3 +490,102 @@ describe("should detect king attacks", () => {
     expect(board.isSquareAttacked("f5", "black")).toBeTruthy();
   });
 });
+
+describe("should clone board", () => {
+  test("should clone board with same pieces", () => {
+    const board = new Board();
+    const clone = board.cloneBoard();
+    const boardPieces = board.getBoard().flat();
+    const clonePieces = clone.getBoard().flat();
+    expect(boardPieces).toEqual(clonePieces);
+  });
+
+  test("modifying clone should not affect original board", () => {
+    const board = new Board();
+    const clone = board.cloneBoard();
+
+    board.movePiece("e2", "e4", new Player("white", true));
+    expect(board.getSquare("e4")).toBeInstanceOf(Pawn);
+    expect(clone.getSquare("e4")).toBe(null);
+    expect(clone.getSquare("e2")).toBeInstanceOf(Pawn);
+  });
+});
+
+describe("should undo moves", () => {
+  test("should undo double pawn move", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.movePiece("a2", "a4", player);
+    board.undoMove();
+    expect(board.getSquare("a2")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("a4")).toBe(null);
+    expect((board.getSquare("a2") as Pawn).getHasMoved()).toBeFalsy();
+  });
+
+  test("should undo pawn capture", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("e4", new Pawn("white", "e4"));
+    board.setSquare("d5", new Queen("black", "d5"));
+    board.movePiece("e4", "d5", player);
+    board.undoMove();
+    expect(board.getSquare("d5")).toBeInstanceOf(Queen);
+    expect(board.getSquare("e4")).toBeInstanceOf(Pawn);
+  });
+
+  test("should undo knight capture", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("d4", new Knight("white", "d4"));
+    board.setSquare("f5", new Pawn("black", "f5"));
+    board.movePiece("d4", "f5", player);
+    board.undoMove();
+    expect(board.getSquare("f5")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("d4")).toBeInstanceOf(Knight);
+  });
+
+  test("should undo en passant", () => {
+    const board = new Board();
+    const player1 = new Player("white", false);
+    const player2 = new Player("black", true);
+    board.setSquare("a5", new Pawn("white", "a5"));
+    board.movePiece("b7", "b5", player2);
+    player2.setIsTurn(false);
+    player1.setIsTurn(true);
+    board.movePiece("a5", "b6", player1);
+    board.undoMove();
+    expect(board.getSquare("b6")).toBe(null);
+    expect(board.getSquare("b5")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("b5")!.getColor()).toBe("black");
+    expect(board.getSquare("a5")).toBeInstanceOf(Pawn);
+    expect(board.getSquare("a5")!.getColor()).toBe("white");
+  });
+
+  test("should undo short castle (white)", () => {
+    const board = new Board();
+    const player = new Player("white", true);
+    board.setSquare("f1", null);
+    board.setSquare("g1", null);
+
+    // Original rook & king positions
+    expect(board.getSquare("e1")).toBeInstanceOf(King);
+    expect(board.getSquare("h1")).toBeInstanceOf(Rook);
+
+    // Post-castle positions
+    board.movePiece("e1", "g1", player);
+
+    expect(board.getSquare("g1")).toBeInstanceOf(King);
+    expect(board.getSquare("f1")).toBeInstanceOf(Rook);
+
+    // Undo-castle positions
+    board.undoMove();
+
+    expect(board.getSquare("g1")).toBe(null);
+    expect(board.getSquare("f1")).toBe(null);
+    expect(board.getSquare("e1")).toBeInstanceOf(King);
+    expect(board.getSquare("h1")).toBeInstanceOf(Rook);
+
+    expect((board.getSquare("e1") as King).getHasMoved()).toBeFalsy();
+    expect((board.getSquare("h1") as Rook).getHasMoved()).toBeFalsy();
+  });
+});

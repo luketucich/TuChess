@@ -1,4 +1,6 @@
 import { Board } from "../Board.ts";
+import { BoardMove } from "../Board.ts";
+import { Player } from "../Player.ts";
 
 export abstract class Piece {
   protected color: "white" | "black";
@@ -54,5 +56,25 @@ export abstract class Piece {
       square.getColor() !== this.color &&
       !square.getName().includes("king")
     );
+  }
+
+  filterSelfCheck(
+    board: Board,
+    startSquare: string,
+    moves: BoardMove[],
+    color: "white" | "black"
+  ): BoardMove[] {
+    const boardClone = board.cloneBoard();
+    const testPlayer = new Player(color, true);
+    const kingPos = boardClone.getKingPosition(color);
+
+    return moves.filter((move) => {
+      boardClone.movePiece(startSquare, move.square, testPlayer);
+
+      const selfCheck: boolean = boardClone.isSquareAttacked(kingPos, color);
+      boardClone.undoMove();
+
+      return !selfCheck;
+    });
   }
 }

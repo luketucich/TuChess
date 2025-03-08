@@ -6,9 +6,13 @@ import { Move } from "../Moves/Move.ts";
 export class Rook extends Piece {
   private hasMoved: boolean;
 
-  constructor(color: "white" | "black", position: string) {
+  constructor(
+    color: "white" | "black",
+    position: string,
+    hasMoved: boolean = false
+  ) {
     super(color, position, 5, "rook");
-    this.hasMoved = false;
+    this.hasMoved = hasMoved;
   }
 
   getHasMoved(): boolean {

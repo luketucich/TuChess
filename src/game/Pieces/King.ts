@@ -6,9 +6,13 @@ import { Rook } from "./Rook.ts";
 export class King extends Piece {
   private hasMoved: boolean;
 
-  constructor(color: "white" | "black", position: string) {
+  constructor(
+    color: "white" | "black",
+    position: string,
+    hasMoved: boolean = false
+  ) {
     super(color, position, Infinity, "king");
-    this.hasMoved = false;
+    this.hasMoved = hasMoved;
   }
 
   getHasMoved(): boolean {
@@ -48,6 +52,7 @@ export class King extends Piece {
           color: this.color,
           isCapture: this.isCapture(board, index),
           isCheck: false,
+          isCastle: false,
         };
 
         validMoves.push(move);

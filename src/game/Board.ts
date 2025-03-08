@@ -10,21 +10,26 @@ import { Rook } from "./Pieces/Rook";
 import { Move } from "./Moves/Move";
 import { KingMove } from "./Moves/KingMove";
 import { PawnMove } from "./Moves/PawnMove";
+import { HistoryMove } from "./Moves/HistoryMove";
 
 // Other imports
 import { Player } from "./Player";
 
-// Define generic type for board squares
+// Generic type for board squares & moves
 export type BoardSquare = null | Pawn | Knight | Bishop | Rook | Queen | King;
 export type BoardMove = Move | PawnMove | KingMove;
 
 export class Board {
   private board: BoardSquare[][];
-  private history: BoardMove[];
+  private history: HistoryMove[];
+  private whiteKingPosition: string;
+  private blackKingPosition: string;
 
   constructor() {
     this.board = this.initializeBoard();
     this.history = [];
+    this.whiteKingPosition = "e1";
+    this.blackKingPosition = "e8";
   }
 
   private initializeBoard(): BoardSquare[][] {
@@ -60,6 +65,18 @@ export class Board {
         new Rook("white", "h1"),
       ],
     ];
+  }
+
+  setKingPosition(color: "white" | "black", position: string): void {
+    if (color === "white") {
+      this.whiteKingPosition = position;
+    } else {
+      this.blackKingPosition = position;
+    }
+  }
+
+  getKingPosition(color: "white" | "black"): string {
+    return color === "white" ? this.whiteKingPosition : this.blackKingPosition;
   }
 
   getBoard(): BoardSquare[][] {
@@ -172,11 +189,11 @@ export class Board {
     this.board[row][col] = piece;
   }
 
-  setHistory(move: Move): void {
+  setHistory(move: HistoryMove): void {
     this.history.push(move);
   }
 
-  getHistory(): Move[] {
+  getHistory(): HistoryMove[] {
     return this.history;
   }
 
@@ -230,13 +247,25 @@ export class Board {
       this.handleCastling(move.square);
     }
 
+    // Handle king move
+    if (move.piece === "king") {
+      if (move.color === "white") {
+        this.setKingPosition("white", to);
+      }
+      if (move.color === "black") {
+        this.setKingPosition("black", to);
+      }
+    }
+
+    // Add move to history
+    const fromSquare = this.cloneSquare(this.getSquare(from));
+    const toSquare = this.cloneSquare(this.getSquare(to));
+    this.setHistory(new HistoryMove(fromSquare, toSquare, move));
+
     // Move piece to new square
     this.setSquare(from, null);
     this.setSquare(to, piece);
     piece.move(to);
-
-    // Add move to history
-    this.setHistory(move);
   }
 
   private handleCastling(square: string): void {
@@ -406,4 +435,155 @@ export class Board {
 
     return false;
   }
+
+  private cloneSquare(square: BoardSquare): BoardSquare {
+    if (square === null) return null;
+
+    const color = square.getColor(),
+      position = square.getPosition(),
+      name = square.getName();
+
+    switch (name) {
+      case "pawn":
+        return new Pawn(color, position, (square as Pawn).getHasMoved());
+      case "knight":
+        return new Knight(color, position);
+      case "bishop":
+        return new Bishop(color, position);
+      case "rook":
+        return new Rook(color, position, (square as Rook).getHasMoved());
+      case "queen":
+        return new Queen(color, position);
+      case "king":
+        return new King(color, position, (square as King).getHasMoved());
+      default:
+        throw new Error("Invalid square");
+    }
+  }
+
+  private cloneBoardMove(move: BoardMove): BoardMove {
+    const baseMove: Move = {
+      square: move.square,
+      piece: move.piece,
+      color: move.color,
+      isCapture: move.isCapture,
+      isCheck: move.isCheck,
+    };
+
+    // Check if it's a PawnMove
+    if ("isPromotion" in move) {
+      const pawnMove = move as PawnMove;
+      return {
+        ...baseMove,
+        isPromotion: pawnMove.isPromotion,
+        isDoubleMove: pawnMove.isDoubleMove,
+        isEnPassant: pawnMove.isEnPassant,
+        promotionPiece: pawnMove.promotionPiece,
+      };
+    }
+
+    // Check if it's a KingMove
+    if ("isCastle" in move) {
+      const kingMove = move as KingMove;
+      return {
+        ...baseMove,
+        isCastle: kingMove.isCastle,
+      };
+    }
+
+    // Return basic Move if not specialized
+    return baseMove;
+  }
+
+  cloneBoard(): Board {
+    const boardClone = new Board();
+    boardClone.board = this.board.map((row) =>
+      row.map((square) => this.cloneSquare(square))
+    );
+
+    boardClone.history = this.history.map(
+      (move) =>
+        new HistoryMove(
+          this.cloneSquare(move.getFrom()),
+          this.cloneSquare(move.getTo()),
+          this.cloneBoardMove(move.getMove())
+        )
+    );
+
+    boardClone.whiteKingPosition = this.whiteKingPosition;
+    boardClone.blackKingPosition = this.blackKingPosition;
+
+    return boardClone;
+  }
+
+  undoMove(): void {
+    if (this.history.length === 0) {
+      throw new Error("No moves to undo");
+    }
+
+    const lastMove = this.history.pop() as HistoryMove;
+    const fromSquare: BoardSquare = lastMove.getFrom();
+    const toSquare: BoardSquare = lastMove.getTo();
+    const move = lastMove.getMove();
+
+    // Set the origin square back to its original state
+    this.setSquare(fromSquare!.getPosition(), fromSquare);
+
+    // Set the destination square back to its original state
+    if (toSquare === null) {
+      this.setSquare(move.square, null); // Empty square
+    } else {
+      this.setSquare(move.square, toSquare); // Restore captured piece
+    }
+
+    // Reset rook position if castling
+    if ("isCastle" in move && move.isCastle) {
+      let originalRookSquare: string;
+      let newRookSquare: string;
+
+      switch (move.square) {
+        case "g1":
+          originalRookSquare = "h1";
+          newRookSquare = "f1";
+          break;
+        case "c1":
+          originalRookSquare = "a1";
+          newRookSquare = "d1";
+          break;
+        case "g8":
+          originalRookSquare = "h8";
+          newRookSquare = "f8";
+          break;
+        case "c8":
+          originalRookSquare = "a8";
+          newRookSquare = "d8";
+          break;
+        default:
+          throw new Error("Invalid castling move");
+      }
+
+      // Restore rook position
+      const originalRook = new Rook(move.color, originalRookSquare, false);
+      this.setSquare(originalRookSquare, originalRook);
+      this.setSquare(newRookSquare, null);
+    }
+
+    // Reset captured pawn if en passant
+    if ("isEnPassant" in move && move.isEnPassant) {
+      const [row, col] = this.squareToIndex(move.square);
+      const isWhite = move.color === "white";
+      const capturedPawnColor = isWhite ? "black" : "white";
+      const rowOffset = isWhite ? -1 : 1;
+      const capturedPawn = new Pawn(
+        capturedPawnColor,
+        this.indexToSquare([row - rowOffset, col]),
+        true
+      );
+
+      this.setSquare(this.indexToSquare([row - rowOffset, col]), capturedPawn);
+    }
+  }
 }
+
+// TODO: Implement isSelfCheck method
+// TODO: Implement isCheckmate method
