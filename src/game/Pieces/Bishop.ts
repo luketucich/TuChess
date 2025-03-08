@@ -4,6 +4,8 @@ import { Board } from "../Board.ts";
 import { Move } from "../Moves/Move.ts";
 
 export class Bishop extends Piece {
+  private isBeingCalculated: boolean = false;
+
   constructor(color: "white" | "black", position: string) {
     super(color, position, 3, "bishop");
   }
@@ -60,7 +62,7 @@ export class Bishop extends Piece {
       }
     }
 
-    return validMoves;
+    return this.filterSelfCheck(board, this.position, validMoves, this.color);
   }
 
   isCheck(board: Board, position: [number, number]): boolean {

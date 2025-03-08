@@ -119,7 +119,12 @@ export class Pawn extends Piece {
       validMoves.push(move);
     }
 
-    return validMoves;
+    return this.filterSelfCheck(
+      board,
+      this.position,
+      validMoves,
+      this.color
+    ) as PawnMove[];
   }
 
   private isCheck(

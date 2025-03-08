@@ -66,10 +66,12 @@ export abstract class Piece {
   ): BoardMove[] {
     const boardClone = board.cloneBoard();
     const testPlayer = new Player(color, true);
-    const kingPos = boardClone.getKingPosition(color);
 
     return moves.filter((move) => {
-      boardClone.movePiece(startSquare, move.square, testPlayer);
+      const kingPos =
+        move.piece === "king" ? move.square : boardClone.getKingPosition(color);
+
+      boardClone.moveClonedPiece(startSquare, move.square, testPlayer, move);
 
       const selfCheck: boolean = boardClone.isSquareAttacked(kingPos, color);
       boardClone.undoMove();

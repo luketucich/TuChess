@@ -3,6 +3,7 @@ import { Pawn } from "../game/Pieces/Pawn.ts";
 import { King } from "../game/Pieces/King.ts";
 import { Bishop } from "../game/Pieces/Bishop.ts";
 import { Board } from "../game/Board.ts";
+import { Rook } from "../game/Pieces/Rook.ts";
 
 describe("Bishop properties", () => {
   test("white bishop should have the correct properties", () => {
@@ -25,7 +26,7 @@ describe("Bishop properties", () => {
 });
 
 describe("Bishop movement", () => {
-  test("should allow white bishop to move on all four diagnols", () => {
+  test("should allow white bishop to move on all four diagonals", () => {
     const board = new Board();
 
     board.setSquare("e4", new Bishop("white", "e4"));
@@ -95,7 +96,7 @@ describe("Bishop movement", () => {
     );
   });
 
-  test("should allow the bishop to only move on clear diagnols", () => {
+  test("should allow the bishop to only move on clear diagonals", () => {
     const board = new Board();
 
     board.setSquare("e4", new Bishop("white", "e4"));
@@ -271,5 +272,19 @@ describe("Bishop checks", () => {
         },
       ])
     );
+  });
+});
+
+describe("should filter out self-check moves", () => {
+  test("should not allow bishop to move if pinned", () => {
+    const board = new Board();
+
+    // Move bishop in front of king, pinned by rook
+    board.setSquare("e2", new Bishop("white", "e2"));
+    board.setSquare("e6", new Rook("black", "e6"));
+
+    const filteredMoves = (board.getSquare("e2") as Bishop).getMoves(board);
+
+    expect(filteredMoves).toEqual([]);
   });
 });

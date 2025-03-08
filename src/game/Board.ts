@@ -268,6 +268,78 @@ export class Board {
     piece.move(to);
   }
 
+  moveClonedPiece(
+    from: string,
+    to: string,
+    player: Player,
+    move: BoardMove
+  ): void {
+    // Validate basic move conditions
+    if (!player.getIsTurn()) {
+      throw new Error("Not your turn");
+    }
+
+    if (!this.isValidSquare(from) || !this.isValidSquare(to) || from === to) {
+      throw new Error("Invalid move");
+    }
+
+    const piece: BoardSquare = this.getSquare(from);
+    if (!piece || piece.getColor() !== player.getColor()) {
+      throw new Error("Invalid piece selection");
+    }
+
+    if (!move) {
+      throw new Error("Invalid move");
+    }
+
+    // Handle captures
+    if (move.isCapture) {
+      // Handle en passant
+      if ("isEnPassant" in move && move.isEnPassant) {
+        const rowOffset: number = move.color === "white" ? -1 : 1;
+        const [row, col]: [number, number] = this.squareToIndex(move.square);
+        const capturedPawn: BoardSquare = this.board[row - rowOffset][col];
+
+        if (capturedPawn) {
+          player.addPiece(capturedPawn);
+          this.board[row - rowOffset][col] = null;
+        }
+      }
+      // Handle regular capture
+      else {
+        const capturedPiece = this.getSquare(to);
+        if (capturedPiece) {
+          player.addPiece(capturedPiece);
+        }
+      }
+    }
+
+    // Handle castling
+    if ("isCastle" in move && move.isCastle) {
+      this.handleCastling(move.square);
+    }
+
+    // Handle king move
+    if (move.piece === "king") {
+      if (move.color === "white") {
+        this.setKingPosition("white", to);
+      }
+      if (move.color === "black") {
+        this.setKingPosition("black", to);
+      }
+    }
+
+    // Add move to history (if needed for the clone)
+    const fromSquare = this.cloneSquare(this.getSquare(from));
+    const toSquare = this.cloneSquare(this.getSquare(to));
+    this.setHistory(new HistoryMove(fromSquare, toSquare, move));
+
+    // Move piece to new square
+    this.setSquare(from, null);
+    this.setSquare(to, piece);
+    piece.move(to);
+  }
+
   private handleCastling(square: string): void {
     const castlingMoves = {
       g1: { rookFrom: "h1", rookTo: "f1" },

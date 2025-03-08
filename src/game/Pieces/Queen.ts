@@ -64,7 +64,7 @@ export class Queen extends Piece {
       }
     }
 
-    return validMoves;
+    return this.filterSelfCheck(board, this.position, validMoves, this.color);
   }
 
   isCheck(board: Board, position: [number, number]): boolean {
