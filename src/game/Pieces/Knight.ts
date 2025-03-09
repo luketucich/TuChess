@@ -42,7 +42,12 @@ export class Knight extends Piece {
       }
     }
 
-    return this.filterSelfCheck(board, this.position, validMoves, this.color);
+    return this.filterSelfCheck(
+      board,
+      this.getPosition(),
+      validMoves,
+      this.getColor()
+    );
   }
 
   isFriendlyPiece(board: Board, position: [number, number]): boolean {

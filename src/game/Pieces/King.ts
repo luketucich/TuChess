@@ -44,13 +44,30 @@ export class King extends Piece {
 
       if (
         board.isValidIndex(index) &&
-        !board.isSquareAttacked(square, this.color)
+        !board.isSquareAttacked(square, this.color) &&
+        board.getSquare(square) === null
       ) {
         const move: KingMove = {
           square: square,
           piece: "king",
           color: this.color,
-          isCapture: this.isCapture(board, index),
+          isCapture: false,
+          isCheck: false,
+          isCastle: false,
+        };
+
+        validMoves.push(move);
+      } else if (
+        board.isValidIndex(index) &&
+        !board.isSquareAttacked(square, this.color) &&
+        board.getSquare(square) !== null &&
+        board.getSquare(square)!.getColor() !== this.color
+      ) {
+        const move: KingMove = {
+          square: square,
+          piece: "king",
+          color: this.color,
+          isCapture: true,
           isCheck: false,
           isCastle: false,
         };
@@ -82,7 +99,12 @@ export class King extends Piece {
       });
     }
 
-    return validMoves;
+    return this.filterSelfCheck(
+      board,
+      this.position,
+      validMoves,
+      this.color
+    ) as KingMove[];
   }
 
   canShortCastle(board: Board): boolean {

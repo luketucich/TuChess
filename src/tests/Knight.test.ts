@@ -72,6 +72,7 @@ describe("Knight movement", () => {
   test("should allow knight at center position to move in all 8 directions", () => {
     const board = new Board();
     const knight = new Knight("white", "d4");
+    board.setSquare("d4", knight);
 
     const validMoves = knight.getMoves(board);
     expect(validMoves).toEqual(
@@ -177,18 +178,16 @@ describe("Knight capture", () => {
   test("should allow knight to capture multiple opponent pieces", () => {
     const board = new Board();
     board.setSquare("d4", new Knight("white", "d4"));
-
-    const board2 = new Board();
-    board2.setSquare("b3", new Pawn("black", "b3"));
-    board2.setSquare("b5", new Rook("black", "b5"));
-    board2.setSquare("c6", new Knight("black", "c6"));
-    board2.setSquare("e6", new Rook("black", "e6"));
-    board2.setSquare("f5", new Knight("black", "f5"));
-    board2.setSquare("f3", new Pawn("black", "f3"));
+    board.setSquare("b3", new Pawn("black", "b3"));
+    board.setSquare("b5", new Rook("black", "b5"));
+    board.setSquare("c6", new Knight("black", "c6"));
+    board.setSquare("e6", new Rook("black", "e6"));
+    board.setSquare("f5", new Knight("black", "f5"));
+    board.setSquare("f3", new Pawn("black", "f3"));
 
     const knight = board.getSquare("d4") as Knight;
 
-    const validMoves = knight.getMoves(board2);
+    const validMoves = knight.getMoves(board);
     expect(validMoves).toEqual(
       expect.arrayContaining([
         {

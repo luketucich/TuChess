@@ -93,6 +93,18 @@ export class Board {
       King: "K",
     };
 
+    // Get king positions and check if they're under attack
+    const whiteKingPosition = this.getKingPosition("white");
+    const blackKingPosition = this.getKingPosition("black");
+    const isWhiteKingAttacked = this.isSquareAttacked(
+      whiteKingPosition,
+      "white"
+    );
+    const isBlackKingAttacked = this.isSquareAttacked(
+      blackKingPosition,
+      "black"
+    );
+
     // Display board based off player's perspective
     const board =
       player.getColor() === "black"
@@ -104,15 +116,29 @@ export class Board {
         // If square is empty, display a hyphen
         if (square === null) {
           return "-";
-
-          // If square is occupied by black piece, display piece symbol in red
+        } else if (
+          square.getName() === "king" &&
+          square.getColor() === "white" &&
+          isWhiteKingAttacked
+        ) {
+          // King in check (white) - display in red
+          return `\x1b[31m${pieceSymbols[square.constructor.name]}\x1b[0m`;
+        } else if (
+          square.getName() === "king" &&
+          square.getColor() === "black" &&
+          isBlackKingAttacked
+        ) {
+          // King in check (black) - display in red
+          return `\x1b[31m${
+            pieceSymbols[square.constructor.name]
+          }\x1b[0m`.toLowerCase();
         } else if (square.getColor() === "black") {
+          // Regular black piece
           return `\x1b[34m${
             pieceSymbols[square.constructor.name]
           }\x1b[0m`.toLowerCase();
-
-          // If square is occupied by white piece, display piece symbol in white
         } else {
+          // Regular white piece
           return `\x1b[37m${pieceSymbols[square.constructor.name]}\x1b[0m`;
         }
       });
@@ -187,6 +213,10 @@ export class Board {
 
     const [row, col]: [number, number] = this.squareToIndex(square);
     this.board[row][col] = piece;
+
+    if (piece instanceof King) {
+      this.setKingPosition(piece.getColor(), square);
+    }
   }
 
   setHistory(move: HistoryMove): void {
@@ -655,7 +685,31 @@ export class Board {
       this.setSquare(this.indexToSquare([row - rowOffset, col]), capturedPawn);
     }
   }
-}
 
-// TODO: Implement isSelfCheck method
-// TODO: Implement isCheckmate method
+  isCheckmateOrStalemate(color: "white" | "black"): string {
+    const isWhite = color === "white";
+    const isKingAttacked = this.isSquareAttacked(
+      isWhite ? this.whiteKingPosition : this.blackKingPosition,
+      isWhite ? "white" : "black"
+    );
+
+    const boardMoves = this.board
+      .map((row) =>
+        row.filter((square) => square !== null && square.getColor() === color)
+      )
+      .flat()
+      .map((square) => square!.getMoves(this))
+      .flat();
+
+    if (boardMoves.length === 0) {
+      return isKingAttacked ? "checkmate" : "stalemate";
+    }
+
+    return "none";
+  }
+
+  clear(): void {
+    this.board.forEach((row) => row.fill(null));
+    this.history = [];
+  }
+}

@@ -400,6 +400,27 @@ describe("King movement", () => {
       },
     ]);
   });
+
+  test("If king in check, it should only be able to move to squares that remove the check", () => {
+    const board = new Board();
+    board.clear();
+    board.setSquare("e6", new King("white", "e6"));
+    board.setSquare("f8", new Rook("white", "f8"));
+    board.setSquare("d8", new King("black", "d8"));
+    const king = board.getSquare("d8") as King;
+    const moves = king.getMoves(board);
+
+    expect(moves).toEqual([
+      {
+        color: "black",
+        isCapture: false,
+        isCheck: false,
+        piece: "king",
+        square: "c7",
+        isCastle: false,
+      },
+    ]);
+  });
 });
 
 describe("King castling", () => {

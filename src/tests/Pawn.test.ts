@@ -83,7 +83,7 @@ describe("Pawn movement after start", () => {
   test("should allow white pawn to move 1 square forward", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a3", true);
-
+    board.setSquare("a3", pawn);
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
       {
@@ -100,6 +100,7 @@ describe("Pawn movement after start", () => {
   test("should allow black pawn to move 1 square forward", () => {
     const board = new Board();
     const pawn = new Pawn("black", "h6", true);
+    board.setSquare("h6", pawn);
 
     const validMoves = pawn.getMoves(board);
     expect(validMoves).toEqual([
@@ -119,6 +120,7 @@ describe("Pawn capture", () => {
   test("should allow white pawn to capture diagonally", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a3", true);
+    board.setSquare("a3", pawn);
     board.setSquare("b4", new Pawn("black", "b4"));
 
     const validMoves = pawn.getMoves(board);
@@ -145,6 +147,7 @@ describe("Pawn capture", () => {
   test("should allow black pawn to capture diagonally", () => {
     const board = new Board();
     const pawn = new Pawn("black", "h6", true);
+    board.setSquare("h6", pawn);
     board.setSquare("g5", new Pawn("white", "g5"));
 
     const validMoves = pawn.getMoves(board);
@@ -171,6 +174,7 @@ describe("Pawn capture", () => {
   test("should prevent pawn from capturing its own piece", () => {
     const board = new Board();
     const pawn = new Pawn("black", "h6", true);
+    board.setSquare("h6", pawn);
     board.setSquare("g5", new Pawn("black", "g5"));
 
     const validMoves = pawn.getMoves(board);
@@ -189,6 +193,7 @@ describe("Pawn capture", () => {
   test("should prevent pawn from capturing King", () => {
     const board = new Board();
     const pawn = new Pawn("black", "h6", true);
+    board.setSquare("h6", pawn);
     board.setSquare("g5", new King("white", "g5"));
 
     const validMoves = pawn.getMoves(board);
@@ -274,6 +279,7 @@ describe("Pawn promotion", () => {
   test("should allow white pawn to promote", () => {
     const board = new Board();
     const pawn = new Pawn("white", "a7");
+    board.setSquare("a7", pawn);
     board.setSquare("a8", null);
 
     const validMoves = pawn.getMoves(board);
@@ -300,6 +306,7 @@ describe("Pawn promotion", () => {
   test("should allow black pawn to promote", () => {
     const board = new Board();
     const pawn = new Pawn("black", "h2");
+    board.setSquare("h2", pawn);
     board.setSquare("h1", null);
 
     const validMoves = pawn.getMoves(board);

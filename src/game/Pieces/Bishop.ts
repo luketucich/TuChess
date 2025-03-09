@@ -4,8 +4,6 @@ import { Board } from "../Board.ts";
 import { Move } from "../Moves/Move.ts";
 
 export class Bishop extends Piece {
-  private isBeingCalculated: boolean = false;
-
   constructor(color: "white" | "black", position: string) {
     super(color, position, 3, "bishop");
   }

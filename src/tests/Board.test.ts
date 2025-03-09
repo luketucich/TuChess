@@ -589,3 +589,62 @@ describe("should undo moves", () => {
     expect((board.getSquare("h1") as Rook).getHasMoved()).toBeFalsy();
   });
 });
+
+describe("should detect checkmate", () => {
+  test("should detect checkmate with rook", () => {
+    const board = new Board();
+    board.clear();
+
+    board.setSquare("e6", new King("white", "e6"));
+    board.setSquare("e8", new King("black", "e8"));
+    board.setSquare("g8", new Rook("white", "g8"));
+
+    expect(board.getKingPosition("black")).toBe("e8");
+    expect(board.getKingPosition("white")).toBe("e6");
+    expect(board.isSquareAttacked("e8", "black")).toBeTruthy();
+    expect(board.isCheckmateOrStalemate("black")).toEqual("checkmate");
+  });
+
+  test("should detect fools mate with queen", () => {
+    const board = new Board();
+    const player1 = new Player("white", true);
+    const player2 = new Player("black", false);
+
+    board.movePiece("e2", "e4", player1);
+
+    player1.setIsTurn(false);
+    player2.setIsTurn(true);
+
+    board.movePiece("g7", "g5", player2);
+
+    player1.setIsTurn(true);
+    player2.setIsTurn(false);
+
+    board.movePiece("d1", "e2", player1);
+
+    player1.setIsTurn(false);
+    player2.setIsTurn(true);
+
+    board.movePiece("f7", "f5", player2);
+
+    player1.setIsTurn(true);
+    player2.setIsTurn(false);
+
+    board.movePiece("e2", "h5", player1);
+
+    expect(board.isCheckmateOrStalemate("black")).toEqual("checkmate");
+  });
+});
+
+describe("should detect stalemate", () => {
+  test("should detect stalemate with king and queen", () => {
+    const board = new Board();
+    board.clear();
+
+    board.setSquare("a8", new King("black", "a8"));
+    board.setSquare("b6", new King("white", "b6"));
+    board.setSquare("c7", new Queen("white", "c7"));
+
+    expect(board.isCheckmateOrStalemate("black")).toEqual("stalemate");
+  });
+});
