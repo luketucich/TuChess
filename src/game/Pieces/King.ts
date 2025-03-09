@@ -108,7 +108,7 @@ export class King extends Piece {
   }
 
   canShortCastle(board: Board): boolean {
-    if (this.hasMoved) {
+    if (this.hasMoved || board.isSquareAttacked(this.position, this.color)) {
       return false;
     }
 
@@ -129,7 +129,7 @@ export class King extends Piece {
   }
 
   canLongCastle(board: Board): boolean {
-    if (this.hasMoved) {
+    if (this.hasMoved || board.isSquareAttacked(this.position, this.color)) {
       return false;
     }
 
