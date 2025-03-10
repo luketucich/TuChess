@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Board } from "./game/Board.ts";
-import { Player } from "./game/Player.ts";
-import { BoardMove } from "./game/Board.ts";
+import { Board } from "../game/Board.ts";
+import { Player } from "../game/Player.ts";
+import { BoardMove } from "../game/Board.ts";
+import { usePointerTracking } from "./usePointerTracking.tsx";
 
 const ChessBoard = () => {
   // Game state
@@ -71,9 +72,12 @@ const ChessBoard = () => {
     checkGameStatus(newBoard);
   };
 
+  const pointerState = usePointerTracking(movePiece);
+
   return (
     <div>
       <h1>{gameOver ? "Game Over" : `Turn: ${turn}`}</h1>
+
       <div
         className="chessboard"
         style={{
@@ -90,6 +94,7 @@ const ChessBoard = () => {
             return (
               <div
                 key={square}
+                data-square={square}
                 className={`square ${isBlack ? "black" : "white"}`}
                 style={{
                   backgroundColor: isBlack ? "#b58863" : "#f0d9b5",
@@ -98,7 +103,7 @@ const ChessBoard = () => {
                   alignItems: "center",
                   position: "relative",
                 }}
-                onClick={
+                onPointerDown={
                   !fromSquare
                     ? () => selectSquare(square)
                     : () => movePiece(square)
@@ -134,6 +139,15 @@ const ChessBoard = () => {
                       cursor: "pointer",
                       marginTop: "4px",
                       zIndex: 2,
+                      ...(pointerState.isDown && fromSquare === square
+                        ? {
+                            position: "fixed",
+                            left: `${pointerState.position.x - 25}px`,
+                            top: `${pointerState.position.y - 25}px`,
+                            zIndex: 1000,
+                            pointerEvents: "none",
+                          }
+                        : {}),
                     }}
                   >
                     <img
@@ -143,6 +157,7 @@ const ChessBoard = () => {
                       alt={`${piece.getColor()} ${piece.getName()}`}
                       width="50"
                       height="50"
+                      draggable="false"
                     />
                   </div>
                 )}
