@@ -3,6 +3,7 @@ import { Board } from "../game/Board.ts";
 import { Player } from "../game/Player.ts";
 import { BoardMove } from "../game/Board.ts";
 import { usePointerTracking } from "./usePointerTracking.tsx";
+import "./ChessBoard.css";
 
 const ChessBoard = () => {
   // Game state
@@ -123,13 +124,14 @@ const ChessBoard = () => {
                       )?.isCapture
                         ? "45px"
                         : "13px",
-                      backgroundColor: "brown",
+                      backgroundColor: "#00000045",
                       borderRadius: "50%",
                       display: "inline-block",
                       transition: "height 0.2s, width 0.2s",
                       position: "absolute",
                       zIndex: 1,
                     }}
+                    className="grow"
                   ></div>
                 )}
                 {piece && (
