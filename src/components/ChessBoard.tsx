@@ -1,83 +1,34 @@
-import { useState } from "react";
-import { Board } from "../game/Board.ts";
-import { Player } from "../game/Player.ts";
-import { BoardMove } from "../game/Board.ts";
-import { usePointerTracking } from "./usePointerTracking.tsx";
-import "./ChessBoard.css";
+import { usePointerTracking } from "../hooks/usePointerTracking.tsx";
+import useChessGameState from "../hooks/useChessGameState.tsx";
+import "../styles/ChessBoard.css";
 
 const ChessBoard = () => {
-  // Game state
-  const [board, setBoard] = useState<Board>(new Board());
-  const [turn, setTurn] = useState<"white" | "black">("white");
-  const [gameOver, setGameOver] = useState<boolean>(false);
-
-  // Selection state
-  const [availableMoves, setAvailableMoves] = useState<string[]>([]);
-  const [detailedAvailableMoves, setDetailedAvailableMoves] = useState<
-    BoardMove[]
-  >([]);
-  const [fromSquare, setFromSquare] = useState<string | null>(null);
-
-  // Handle square selection
-  const selectSquare = (square: string) => {
-    const piece = board.getSquare(square);
-
-    if (!piece || piece.getColor() !== turn) {
-      setFromSquare(null);
-      setAvailableMoves([]);
-      return;
-    }
-
-    const moves = piece.getMoves(board);
-    setFromSquare(square);
-    setAvailableMoves(moves.map((move) => move.square));
-    setDetailedAvailableMoves(moves);
-  };
-
-  // Check for game ending conditions
-  const checkGameStatus = (newBoard: Board) => {
-    if (
-      newBoard.isCheckmateOrStalemate("black") !== "none" ||
-      newBoard.isCheckmateOrStalemate("white") !== "none"
-    ) {
-      setGameOver(true);
-    }
-  };
-
-  // Handle piece movement
-  const movePiece = (square: string) => {
-    if (!fromSquare) return;
-
-    const piece = board.getSquare(fromSquare);
-    if (!piece) return;
-
-    const moves = piece.getMoves(board);
-    const validMoveSquares = moves.map((move) => move.square);
-
-    if (!validMoveSquares.includes(square)) {
-      selectSquare(square);
-      return;
-    }
-
-    // Clone the board to avoid direct state mutation
-    const newBoard = board.cloneBoard();
-    newBoard.movePiece(fromSquare, square, new Player(piece.getColor(), true));
-
-    // Update state
-    setBoard(newBoard);
-    setFromSquare(null);
-    setAvailableMoves([]);
-    setTurn(turn === "white" ? "black" : "white");
-
-    // Check for game over conditions
-    checkGameStatus(newBoard);
-  };
+  const {
+    board,
+    turn,
+    gameOver,
+    availableMoves,
+    detailedAvailableMoves,
+    fromSquare,
+    selectSquare,
+    movePiece,
+  } = useChessGameState();
 
   const pointerState = usePointerTracking(movePiece);
 
   return (
-    <div>
-      <h1>{gameOver ? "Game Over" : `Turn: ${turn}`}</h1>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <h1 style={{ textAlign: "center", fontFamily: "Arial, sans-serif" }}>
+        {gameOver ? "game over :(" : `${turn} to move`}
+      </h1>
 
       <div
         className="chessboard"
@@ -85,6 +36,7 @@ const ChessBoard = () => {
           display: "grid",
           gridTemplateColumns: "repeat(8, 50px)",
           gridTemplateRows: "repeat(8, 50px)",
+          touchAction: "none",
         }}
       >
         {board.getBoard().flatMap((row, rowIndex) =>
@@ -98,56 +50,83 @@ const ChessBoard = () => {
                 data-square={square}
                 className={`square ${isBlack ? "black" : "white"}`}
                 style={{
-                  backgroundColor: isBlack ? "#b58863" : "#f0d9b5",
+                  backgroundColor: isBlack ? "#A2B3C1" : "#E3F0F9",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                   position: "relative",
+                  cursor:
+                    availableMoves.includes(square) && !pointerState.isDown
+                      ? "pointer"
+                      : pointerState.isDown
+                      ? "grabbing"
+                      : "grab",
                 }}
                 onPointerDown={
                   !fromSquare
                     ? () => selectSquare(square)
                     : () => movePiece(square)
                 }
+                onPointerEnter={(e) => {
+                  const indicator = e.currentTarget.querySelector(
+                    ".indicator"
+                  ) as HTMLElement | null;
+                  if (indicator) {
+                    indicator.style.scale = 1.3;
+                    e.currentTarget.style.filter = "brightness(1.1)";
+                  }
+                }}
+                onPointerLeave={(e) => {
+                  const indicator = e.currentTarget.querySelector(
+                    ".indicator"
+                  ) as HTMLElement | null;
+                  if (indicator) {
+                    indicator.style.scale = 1;
+                  }
+                  e.currentTarget.style.filter = "none";
+                }}
+                onPointerUp={(e) => {
+                  e.currentTarget.style.filter = "none";
+                }}
               >
-                {/* Display dot on squares where piece can move */}
+                {/* Move indicators */}
                 {availableMoves.includes(square) && (
                   <div
+                    className="indicator"
                     style={{
-                      height: detailedAvailableMoves.find(
-                        (move) => move.square === square
-                      )?.isCapture
-                        ? "45px"
-                        : "13px",
-                      width: detailedAvailableMoves.find(
-                        (move) => move.square === square
-                      )?.isCapture
-                        ? "45px"
-                        : "13px",
-                      backgroundColor: "#00000045",
-                      borderRadius: "50%",
-                      display: "inline-block",
-                      transition: "height 0.2s, width 0.2s",
-                      position: "absolute",
-                      zIndex: 1,
+                      ...(() => {
+                        const move = detailedAvailableMoves.find(
+                          (move) => move.square === square
+                        );
+                        const isCapture = move?.isCapture;
+                        return {
+                          height: isCapture ? "41px" : "14px",
+                          width: isCapture ? "41px" : "14px",
+                          backgroundColor: isCapture
+                            ? "none"
+                            : "rgba(0, 0, 0, 0.25)",
+                          borderRadius: "50%",
+                          border: isCapture
+                            ? "4.5px solid rgba(0, 0, 0, 0.25)"
+                            : "none",
+                        };
+                      })(),
                     }}
-                    className="grow"
                   ></div>
                 )}
                 {piece && (
                   <div
                     className="piece"
                     style={{
-                      cursor: "pointer",
                       marginTop: "4px",
-                      zIndex: 2,
                       ...(pointerState.isDown && fromSquare === square
                         ? {
                             position: "fixed",
                             left: `${pointerState.position.x - 25}px`,
                             top: `${pointerState.position.y - 25}px`,
-                            zIndex: 1000,
                             pointerEvents: "none",
+                            scale: 1.3,
+                            zIndex: 10,
                           }
                         : {}),
                     }}
