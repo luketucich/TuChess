@@ -1,9 +1,4 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import ChessBoard from "./components/ChessBoard";
+import ChessRoom from "./components/ChessRoom";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ChessBoard />
-  </StrictMode>
-);
+createRoot(document.getElementById("root")!).render(<ChessRoom />);
