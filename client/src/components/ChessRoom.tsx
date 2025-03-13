@@ -16,7 +16,7 @@ function ChessRoom() {
   const [isInRoom, setIsInRoom] = useState(false);
 
   useEffect(() => {
-    socketRef.current = io("https://tuchess.onrender.com/");
+    socketRef.current = io("https://tuchess.onrender.com");
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
