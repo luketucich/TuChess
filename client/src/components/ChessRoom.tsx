@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
+import ChessBoard from "./ChessBoard";
 
 function ChessRoom() {
   const [isConnected, setIsConnected] = useState(false);
   const [username, setUsername] = useState("Anonymous");
   const [roomId, setRoomId] = useState("");
   const [rooms, setRooms] = useState<
-    { roomId: string; players: { id: string; username?: string }[] }[]
+    {
+      roomId: string;
+      players: { id: string; username?: string; color: string }[];
+    }[]
   >([]);
   const socketRef = useRef<Socket | null>(null);
   const [isInRoom, setIsInRoom] = useState(false);
@@ -32,14 +36,46 @@ function ChessRoom() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isInRoom && isRoomFull(roomId)) {
+      handleStartGame(roomId);
+    }
+  }, [isInRoom, rooms, roomId]);
+
+  const isRoomFull = (roomId: string) => {
+    const room = rooms.find((room) => room.roomId === roomId);
+    return room?.players.length === 2;
+  };
+
+  const fetchPlayerInfo = (roomId: string) => {
+    const room = rooms.find((room) => room.roomId === roomId);
+    return room?.players.find((player) => player.id === socketRef.current?.id);
+  };
+
+  const assignPlayerColor = () => {
+    const room = rooms.find((room) => room.roomId === roomId);
+    if (room) {
+      return room.players[0].color === "white" ? "black" : "white";
+    }
+    return Math.random() > 0.5 ? "white" : "black";
+  };
+
   const handleJoinRoom = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const playerColor = assignPlayerColor();
+
     if (socketRef.current) {
-      socketRef.current.emit("join-room", roomId, username);
+      socketRef.current.emit("join-room", roomId, username, playerColor);
     }
 
     setIsInRoom(true);
+  };
+
+  const handleStartGame = (roomId: string) => {
+    if (socketRef.current) {
+      socketRef.current.emit("start-game", roomId);
+    }
   };
 
   return (
@@ -91,7 +127,24 @@ function ChessRoom() {
           </div>
         </>
       ) : (
-        <h2>You are in room: {roomId}</h2>
+        <>
+          {!isRoomFull(roomId) ? (
+            <>
+              <p>You are playing as {fetchPlayerInfo(roomId)?.color}</p>
+              <p>Waiting for another player to join...</p>
+            </>
+          ) : (
+            <>
+              {fetchPlayerInfo(roomId)?.color && (
+                <ChessBoard
+                  playerColor={fetchPlayerInfo(roomId)?.color as string}
+                  socket={socketRef.current as Socket}
+                  roomId={roomId}
+                />
+              )}
+            </>
+          )}
+        </>
       )}
     </div>
   );

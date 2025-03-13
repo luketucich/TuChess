@@ -13,7 +13,7 @@ const server = http.createServer(app);
 // Create Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // React app URL (Vite default)
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -21,9 +21,17 @@ const io = new Server(server, {
 interface Player {
   id: string;
   username?: string;
+  color?: string;
+}
+
+interface Board {
+  lastMove: { from: string; to: string; color: string };
+  turn: string;
+  gameOver: boolean;
 }
 
 const rooms = new Map<string, Player[]>();
+const boards = new Map<string, Board>();
 
 // Handle connection
 io.on("connection", (socket) => {
@@ -32,12 +40,7 @@ io.on("connection", (socket) => {
   // Create a new player object
   const player: Player = { id: socket.id };
 
-  // Send current rooms ONLY to the newly connected client
-  const roomsInfo = Array.from(rooms.entries()).map(([roomId, players]) => ({
-    roomId,
-    players: players.map((p) => ({ id: p.id, username: p.username })),
-  }));
-  socket.emit("rooms-update", roomsInfo); // Only to this client
+  updateRooms();
 
   // Handle disconnection
   socket.on("disconnect", () => {
@@ -65,16 +68,22 @@ io.on("connection", (socket) => {
   function updateRooms() {
     const roomsInfo = Array.from(rooms.entries()).map(([roomId, players]) => ({
       roomId,
-      players: players.map((p) => ({ id: p.id, username: p.username })),
+      players: players.map((p) => ({
+        id: p.id,
+        username: p.username,
+        color: p.color,
+      })),
     }));
 
-    io.emit("rooms-update", roomsInfo); // To all clients
+    io.emit("rooms-update", roomsInfo);
   }
 
   // Handle user joining a room
-  socket.on("join-room", (roomId: string, username: string) => {
+  socket.on("join-room", (roomId: string, username: string, color: string) => {
     player.username = username;
+    player.color = color;
     console.log(`${player.username} joined room: ${roomId}`);
+    console.log("Player color:", player.color);
 
     // Check if room exists and add player to it
     if (rooms.has(roomId)) {
@@ -88,6 +97,46 @@ io.on("connection", (socket) => {
 
     // Send updated rooms to all clients after a change
     updateRooms();
+  });
+
+  socket.on("start-game", (roomId: string) => {
+    const board: Board = {
+      lastMove: { from: "", to: "", color: "" },
+      turn: "white",
+      gameOver: false,
+    };
+
+    // Create a new board for the room
+    boards.set(roomId, board);
+
+    console.log("Game started in room:", roomId);
+  });
+
+  socket.on("move-piece", (roomId: string, from: string, to: string) => {
+    const board = boards.get(roomId);
+
+    if (!board) {
+      console.error("Board not found for room:", roomId);
+      return;
+    }
+
+    if (board.gameOver) {
+      console.error("Game is already over in room:", roomId);
+      return;
+    }
+
+    if (board.turn !== player.color) {
+      console.error("Not your turn in room:", roomId);
+      return;
+    }
+
+    // Move piece
+    console.log(`Move piece from ${from} to ${to} in room: ${roomId}`);
+    board.lastMove = { from, to, color: player.color };
+    board.turn = player.color === "white" ? "black" : "white";
+
+    // At the end of your "move-piece" handler, after updating board.turn
+    io.to(roomId).emit("board-update", board);
   });
 });
 

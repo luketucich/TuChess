@@ -1,8 +1,17 @@
 import { usePointerTracking } from "../hooks/usePointerTracking.tsx";
 import useChessGameState from "../hooks/useChessGameState.tsx";
+import { Socket } from "socket.io-client";
 import "../styles/ChessBoard.css";
 
-const ChessBoard = () => {
+const ChessBoard = ({
+  playerColor,
+  socket,
+  roomId,
+}: {
+  playerColor: string;
+  socket: Socket;
+  roomId: string;
+}) => {
   const {
     board,
     turn,
@@ -12,9 +21,22 @@ const ChessBoard = () => {
     fromSquare,
     selectSquare,
     movePiece,
-  } = useChessGameState();
+  } = useChessGameState(playerColor, socket, roomId);
 
   const pointerState = usePointerTracking(movePiece);
+
+  const getBoard = (playerColor: string) => {
+    if (playerColor === "black") {
+      // Reverse both rows and columns for a proper 180° rotation
+      return board
+        .getBoard()
+        .slice()
+        .reverse()
+        .map((row) => row.slice().reverse());
+    }
+
+    return board.getBoard();
+  };
 
   return (
     <div
@@ -39,9 +61,12 @@ const ChessBoard = () => {
           touchAction: "none",
         }}
       >
-        {board.getBoard().flatMap((row, rowIndex) =>
+        {getBoard(playerColor).flatMap((row, rowIndex) =>
           row.map((piece, colIndex) => {
-            const square = board.indexToSquare([rowIndex, colIndex]);
+            const square =
+              playerColor === "black"
+                ? board.indexToSquare([7 - rowIndex, 7 - colIndex])
+                : board.indexToSquare([rowIndex, colIndex]);
             const isBlack = (rowIndex + colIndex) % 2 === 1;
 
             return (
@@ -72,7 +97,7 @@ const ChessBoard = () => {
                     ".indicator"
                   ) as HTMLElement | null;
                   if (indicator) {
-                    indicator.style.scale = 1.3;
+                    indicator.style.scale = "1.3";
                     e.currentTarget.style.filter = "brightness(1.1)";
                   }
                 }}
@@ -81,7 +106,7 @@ const ChessBoard = () => {
                     ".indicator"
                   ) as HTMLElement | null;
                   if (indicator) {
-                    indicator.style.scale = 1;
+                    indicator.style.scale = "1";
                   }
                   e.currentTarget.style.filter = "none";
                 }}

@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Board } from "../game/Board.ts";
 import { Player } from "../game/Player.ts";
 import { BoardMove } from "../game/Board.ts";
+import { Socket } from "socket.io-client";
 
-const useChessGameState = () => {
+const useChessGameState = (
+  playerColor: string,
+  socket: Socket | null,
+  roomId: string
+) => {
+  // Game state
   const [board, setBoard] = useState<Board>(new Board());
   const [turn, setTurn] = useState<"white" | "black">("white");
   const [gameOver, setGameOver] = useState<boolean>(false);
@@ -14,6 +20,48 @@ const useChessGameState = () => {
     BoardMove[]
   >([]);
   const [fromSquare, setFromSquare] = useState<string | null>(null);
+
+  // Set up socket listener for board updates
+  useEffect(() => {
+    if (!socket) return;
+
+    // Listen for board updates from the server
+    socket.on("board-update", (updatedBoardData) => {
+      console.log("Received board update:", updatedBoardData);
+
+      // If we received a lastMove property, apply it to our board
+      if (updatedBoardData.lastMove) {
+        const { from, to } = updatedBoardData.lastMove;
+
+        // Clone the board to avoid direct state mutation
+        const newBoard = board.cloneBoard();
+        const piece = newBoard.getSquare(from);
+
+        if (piece) {
+          // Apply the move
+          newBoard.movePiece(from, to, new Player(piece.getColor(), true));
+
+          // Update state
+          setBoard(newBoard);
+          setTurn(
+            updatedBoardData.turn || (turn === "white" ? "black" : "white")
+          );
+
+          // Check for game over conditions
+          checkGameStatus(newBoard);
+
+          // Clear selection state
+          setFromSquare(null);
+          setAvailableMoves([]);
+          setDetailedAvailableMoves([]);
+        }
+      }
+    });
+
+    return () => {
+      socket.off("board-update");
+    };
+  }, [socket, board, turn]);
 
   // Check for game ending conditions
   const checkGameStatus = (newBoard: Board) => {
@@ -29,7 +77,7 @@ const useChessGameState = () => {
   const selectSquare = (square: string) => {
     const piece = board.getSquare(square);
 
-    if (!piece || piece.getColor() !== turn) {
+    if (!piece || piece.getColor() !== playerColor || turn !== playerColor) {
       setFromSquare(null);
       setAvailableMoves([]);
       return;
@@ -56,18 +104,27 @@ const useChessGameState = () => {
       return;
     }
 
-    // Clone the board to avoid direct state mutation
-    const newBoard = board.cloneBoard();
-    newBoard.movePiece(fromSquare, square, new Player(piece.getColor(), true));
+    // If it's the player's turn and the move is valid, emit the move to the server
+    if (socket && turn === playerColor) {
+      socket.emit("move-piece", roomId, fromSquare, square);
 
-    // Update state
-    setBoard(newBoard);
-    setFromSquare(null);
-    setAvailableMoves([]);
-    setTurn(turn === "white" ? "black" : "white");
+      // Clone the board to avoid direct state mutation
+      const newBoard = board.cloneBoard();
+      newBoard.movePiece(
+        fromSquare,
+        square,
+        new Player(piece.getColor(), true)
+      );
 
-    // Check for game over conditions
-    checkGameStatus(newBoard);
+      // Update state
+      setBoard(newBoard);
+      setFromSquare(null);
+      setAvailableMoves([]);
+      setTurn(turn === "white" ? "black" : "white");
+
+      // Check for game over conditions
+      checkGameStatus(newBoard);
+    }
   };
 
   return {
