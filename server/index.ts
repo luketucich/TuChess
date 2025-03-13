@@ -13,7 +13,7 @@ const server = http.createServer(app);
 // Create Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "https://tuchess-1.onrender.com",
+    origin: "https://tuchess.onrender.com",
     methods: ["GET", "POST"],
   },
 });

@@ -39,28 +39,12 @@ const ChessBoard = ({
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <h1 style={{ textAlign: "center", fontFamily: "Arial, sans-serif" }}>
+    <div className="chessboard-container">
+      <h1 className="chessboard-heading">
         {gameOver ? "game over :(" : `${turn} to move`}
       </h1>
 
-      <div
-        className="chessboard"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(8, 50px)",
-          gridTemplateRows: "repeat(8, 50px)",
-          touchAction: "none",
-        }}
-      >
+      <div className="chessboard">
         {getBoard(playerColor).flatMap((row, rowIndex) =>
           row.map((piece, colIndex) => {
             const square =
@@ -73,20 +57,11 @@ const ChessBoard = ({
               <div
                 key={square}
                 data-square={square}
-                className={`square ${isBlack ? "black" : "white"}`}
-                style={{
-                  backgroundColor: isBlack ? "#A2B3C1" : "#E3F0F9",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  position: "relative",
-                  cursor:
-                    availableMoves.includes(square) && !pointerState.isDown
-                      ? "pointer"
-                      : pointerState.isDown
-                      ? "grabbing"
-                      : "grab",
-                }}
+                className={`square ${isBlack ? "black" : "white"} ${
+                  availableMoves.includes(square) && !pointerState.isDown
+                    ? "available-move"
+                    : ""
+                } ${pointerState.isDown ? "grabbing" : ""}`}
                 onPointerDown={
                   !fromSquare
                     ? () => selectSquare(square)
@@ -97,7 +72,7 @@ const ChessBoard = ({
                     ".indicator"
                   ) as HTMLElement | null;
                   if (indicator) {
-                    indicator.style.scale = "1.3";
+                    indicator.classList.add("hover");
                     e.currentTarget.style.filter = "brightness(1.1)";
                   }
                 }}
@@ -106,7 +81,7 @@ const ChessBoard = ({
                     ".indicator"
                   ) as HTMLElement | null;
                   if (indicator) {
-                    indicator.style.scale = "1";
+                    indicator.classList.remove("hover");
                   }
                   e.currentTarget.style.filter = "none";
                 }}
@@ -117,44 +92,30 @@ const ChessBoard = ({
                 {/* Move indicators */}
                 {availableMoves.includes(square) && (
                   <div
-                    className="indicator"
-                    style={{
-                      ...(() => {
-                        const move = detailedAvailableMoves.find(
-                          (move) => move.square === square
-                        );
-                        const isCapture = move?.isCapture;
-                        return {
-                          height: isCapture ? "41px" : "14px",
-                          width: isCapture ? "41px" : "14px",
-                          backgroundColor: isCapture
-                            ? "none"
-                            : "rgba(0, 0, 0, 0.25)",
-                          borderRadius: "50%",
-                          border: isCapture
-                            ? "4.5px solid rgba(0, 0, 0, 0.25)"
-                            : "none",
-                        };
-                      })(),
-                    }}
+                    className={`indicator ${
+                      detailedAvailableMoves.find(
+                        (move) => move.square === square
+                      )?.isCapture
+                        ? "capture"
+                        : "move"
+                    }`}
                   ></div>
                 )}
                 {piece && (
                   <div
-                    className="piece"
-                    style={{
-                      marginTop: "4px",
-                      ...(pointerState.isDown && fromSquare === square
+                    className={`piece ${
+                      pointerState.isDown && fromSquare === square
+                        ? "dragging"
+                        : ""
+                    }`}
+                    style={
+                      pointerState.isDown && fromSquare === square
                         ? {
-                            position: "fixed",
                             left: `${pointerState.position.x - 25}px`,
                             top: `${pointerState.position.y - 25}px`,
-                            pointerEvents: "none",
-                            scale: 1.3,
-                            zIndex: 10,
                           }
-                        : {}),
-                    }}
+                        : {}
+                    }
                   >
                     <img
                       src={`/assets/${piece.getColor()[0]}${piece

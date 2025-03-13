@@ -1,8 +1,98 @@
+/* ChessBoard Container */
+.chessboard-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: min(2vh, 2vw);
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-top: 2rem;
+  width: min(80vh, 80vw);
+  box-sizing: border-box;
+}
+
+/* Heading Style */
+.chessboard-heading {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: min(2vh, 2vw);
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+/* Chessboard Styles */
+.chessboard {
+  display: grid;
+  grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+  touch-action: none;
+  border: 3px solid var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
+/* Square Styles */
+.square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: grab;
+  transition: filter 0.2s ease;
+  aspect-ratio: 1 / 1;
+}
+
+.square.black {
+  background-color: #394b59;
+}
+
+.square.white {
+  background-color: #5d7185;
+}
+
+.square.available-move {
+  cursor: pointer;
+}
+
+.square.grabbing {
+  cursor: grabbing;
+}
+
+/* Indicator Styles */
 .indicator {
   animation: fadeIn 0.2s ease-in-out forwards;
   position: absolute;
   display: inline-block;
   transition: scale 0.2s ease-in-out;
+}
+
+.indicator.move {
+  height: 20%;
+  width: 20%;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+}
+
+.indicator.capture {
+  height: 90%;
+  width: 90%;
+  background-color: transparent;
+  border-radius: 50%;
+  border: 4.5px solid rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+.indicator.capture.hover {
+  border: 7px solid rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 @keyframes fadeIn {
@@ -13,5 +103,84 @@
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* Piece Styles */
+.piece {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+.piece img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: none;
+  max-height: none;
+}
+
+/* Override the fixed width/height in the component */
+.square .piece img {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.piece.dragging {
+  position: fixed;
+  pointer-events: none;
+  scale: 1.4;
+  z-index: 10;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+  width: min(10vh, 10vw);
+  height: min(10vh, 10vw);
+  aspect-ratio: 1 / 1;
+}
+
+.piece.dragging img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Game Over State */
+.chessboard-heading:contains("game over") {
+  color: var(--error-color);
+}
+
+/* Responsive adjustments for very small screens */
+@media (max-width: 500px) {
+  .chessboard-container {
+    padding: 0.75rem;
+    width: 90vw;
+  }
+
+  .chessboard-heading {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .indicator.capture {
+    border-width: 3px;
+  }
+
+  .indicator.capture.hover {
+    border-width: 5px;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 700px) {
+  .chessboard-container {
+    padding: 0.75rem;
+    width: min(75vh, 75vw);
+  }
+
+  .chessboard-heading {
+    margin-bottom: 0.75rem;
   }
 }

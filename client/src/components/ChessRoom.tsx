@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import ChessBoard from "./ChessBoard";
+import "../styles/ChessRoom.css";
 
 function ChessRoom() {
   const [isConnected, setIsConnected] = useState(false);
@@ -16,7 +17,7 @@ function ChessRoom() {
   const [isInRoom, setIsInRoom] = useState(false);
 
   useEffect(() => {
-    socketRef.current = io("https://tuchess.onrender.com");
+    socketRef.current = io("https://tuchess-1.onrender.com");
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
@@ -79,41 +80,49 @@ function ChessRoom() {
   };
 
   return (
-    <div>
-      <h1>Welcome to TuChess</h1>
-      <span className={isConnected ? "connected" : "disconnected"}>
+    <div className="chess-app">
+      <h1 className="app-title">Welcome to TuChess</h1>
+      <span
+        className={`status-indicator ${
+          isConnected ? "connected" : "disconnected"
+        }`}
+      >
         Your Status:
         {isConnected ? " Connected" : " Disconnected"}
       </span>
       {!isInRoom ? (
-        <>
-          <h2>Join a Room</h2>
-          <form onSubmit={handleJoinRoom}>
+        <div className="lobby-container">
+          <h2 className="section-title">Join a Room</h2>
+          <form className="join-form" onSubmit={handleJoinRoom}>
             <input
+              className="input-field"
               type="text"
               placeholder="Enter a username"
               onChange={(e) => setUsername(e.target.value)}
             />
             <input
+              className="input-field"
               type="text"
               placeholder="Enter a room ID"
               onChange={(e) => setRoomId(e.target.value)}
               minLength={4}
               required
             />
-            <button type="submit">Join Room</button>
+            <button className="btn btn-primary" type="submit">
+              Join Room
+            </button>
           </form>
 
-          <h2>Current Rooms</h2>
+          <h2 className="section-title">Current Rooms</h2>
           <div className="rooms-list">
             {rooms.length > 0 ? (
-              <ul>
+              <ul className="room-items">
                 {rooms.map((room) => (
-                  <li key={room.roomId}>
-                    <strong>Room: {room.roomId}</strong>
-                    <ul>
+                  <li className="room-item" key={room.roomId}>
+                    <strong className="room-id">Room: {room.roomId}</strong>
+                    <ul className="player-list">
                       {room.players.map((player) => (
-                        <li key={player.id}>
+                        <li className="player-item" key={player.id}>
                           {player.username || "Anonymous"}
                         </li>
                       ))}
@@ -122,19 +131,23 @@ function ChessRoom() {
                 ))}
               </ul>
             ) : (
-              <p>No active rooms</p>
+              <p className="no-rooms">No active rooms</p>
             )}
           </div>
-        </>
+        </div>
       ) : (
-        <>
+        <div className="game-container">
           {!isRoomFull(roomId) ? (
-            <>
-              <p>You are playing as {fetchPlayerInfo(roomId)?.color}</p>
-              <p>Waiting for another player to join...</p>
-            </>
+            <div className="waiting-room">
+              <p className="player-info">
+                You are playing as {fetchPlayerInfo(roomId)?.color}
+              </p>
+              <p className="waiting-message">
+                Waiting for another player to join...
+              </p>
+            </div>
           ) : (
-            <>
+            <div className="game-board-container">
               {fetchPlayerInfo(roomId)?.color && (
                 <ChessBoard
                   playerColor={fetchPlayerInfo(roomId)?.color as string}
@@ -142,9 +155,9 @@ function ChessRoom() {
                   roomId={roomId}
                 />
               )}
-            </>
+            </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );
