@@ -15,9 +15,18 @@ function ChessRoom() {
   >([]);
   const socketRef = useRef<Socket | null>(null);
   const [isInRoom, setIsInRoom] = useState(false);
+  const joinAudioRef = useRef(new Audio("/assets/join_room.mp3"));
+
+  const playJoinSound = () => {
+    joinAudioRef.current.currentTime = 0; // Reset audio to start
+    joinAudioRef.current
+      .play()
+      .catch((err) => console.error("Error playing audio:", err));
+  };
 
   useEffect(() => {
     socketRef.current = io("https://tuchess-1.onrender.com");
+    // socketRef.current = io("http://localhost:3001");
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
@@ -40,6 +49,7 @@ function ChessRoom() {
   useEffect(() => {
     if (isInRoom && isRoomFull(roomId)) {
       handleStartGame(roomId);
+      playJoinSound();
     }
   }, [isInRoom, rooms, roomId]);
 

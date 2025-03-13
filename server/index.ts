@@ -14,6 +14,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://tuchess.onrender.com",
+    // origin: "*",
     methods: ["GET", "POST"],
   },
 });

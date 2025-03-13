@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Board } from "../game/Board.ts";
 import { Player } from "../game/Player.ts";
 import { BoardMove } from "../game/Board.ts";
@@ -21,6 +21,17 @@ const useChessGameState = (
   >([]);
   const [fromSquare, setFromSquare] = useState<string | null>(null);
 
+  // Audio reference
+  const moveAudioRef = useRef(new Audio("/assets/move_piece.mp3"));
+
+  // Function to play the move sound
+  const playMoveSound = () => {
+    moveAudioRef.current.currentTime = 0; // Reset audio to start
+    moveAudioRef.current
+      .play()
+      .catch((err) => console.error("Error playing audio:", err));
+  };
+
   // Set up socket listener for board updates
   useEffect(() => {
     if (!socket) return;
@@ -32,6 +43,8 @@ const useChessGameState = (
       // If we received a lastMove property, apply it to our board
       if (updatedBoardData.lastMove) {
         const { from, to } = updatedBoardData.lastMove;
+
+        playMoveSound();
 
         // Clone the board to avoid direct state mutation
         const newBoard = board.cloneBoard();
@@ -106,6 +119,8 @@ const useChessGameState = (
 
     // If it's the player's turn and the move is valid, emit the move to the server
     if (socket && turn === playerColor) {
+      playMoveSound();
+
       socket.emit("move-piece", roomId, fromSquare, square);
 
       // Clone the board to avoid direct state mutation
