@@ -712,4 +712,182 @@ export class Board {
     this.board.forEach((row) => row.fill(null));
     this.history = [];
   }
+
+  simplifyMove(move: BoardMove): object {
+    const moveObject = {
+      square: move.square,
+      piece: move.piece,
+      color: move.color,
+      isCapture: move.isCapture,
+      isCheck: move.isCheck,
+      isDoubleMove: "isDoubleMove" in move ? move.isDoubleMove : undefined,
+      isPromotion: "isPromotion" in move ? move.isPromotion : undefined,
+      isEnPassant: "isEnPassant" in move ? move.isEnPassant : undefined,
+      promotionPiece:
+        "promotionPiece" in move ? move.promotionPiece : undefined,
+      isCastle: "isCastle" in move ? move.isCastle : undefined,
+    };
+
+    return moveObject;
+  }
+
+  simplifySquare(square: BoardSquare): object | null {
+    if (square === null) return null;
+
+    return {
+      type: square.getName(),
+      color: square.getColor(),
+      position: square.getPosition(),
+      hasMoved: "getHasMoved" in square ? square.getHasMoved() : undefined,
+    };
+  }
+
+  serializeBoard(): string {
+    const serializedBoard = this.board.map((row) =>
+      row.map((square) => {
+        return this.simplifySquare(square);
+      })
+    );
+
+    const serializedHistory = this.history.map((move) => ({
+      from: this.simplifySquare(move.getFrom()),
+      to: this.simplifySquare(move.getTo()),
+      move: this.simplifyMove(move.getMove()),
+    }));
+
+    return JSON.stringify({
+      board: serializedBoard,
+      whiteKingPosition: this.whiteKingPosition,
+      blackKingPosition: this.blackKingPosition,
+      history: serializedHistory,
+    });
+  }
+
+  deserializeBoard(serializedBoard: string): void {
+    const parsedBoard = JSON.parse(serializedBoard);
+
+    // Clear the current board
+    this.clear();
+
+    // Rebuild the board with the deserialized pieces
+    this.board = parsedBoard.board.map((row: any[]) =>
+      row.map((square: any) => {
+        if (square === null) return null;
+
+        switch (square.type) {
+          case "pawn":
+            return new Pawn(square.color, square.position, square.hasMoved);
+          case "knight":
+            return new Knight(square.color, square.position);
+          case "bishop":
+            return new Bishop(square.color, square.position);
+          case "rook":
+            return new Rook(square.color, square.position, square.hasMoved);
+          case "queen":
+            return new Queen(square.color, square.position);
+          case "king":
+            return new King(square.color, square.position, square.hasMoved);
+          default:
+            throw new Error("Invalid square type");
+        }
+      })
+    );
+
+    // Set king positions
+    this.whiteKingPosition = parsedBoard.whiteKingPosition;
+    this.blackKingPosition = parsedBoard.blackKingPosition;
+
+    // Recreate the history
+    this.history = parsedBoard.history.map((historyItem: any) => {
+      // Recreate 'from' piece
+      const fromSquare = historyItem.from
+        ? (() => {
+            const from = historyItem.from;
+            switch (from.type) {
+              case "pawn":
+                return new Pawn(from.color, from.position, from.hasMoved);
+              case "knight":
+                return new Knight(from.color, from.position);
+              case "bishop":
+                return new Bishop(from.color, from.position);
+              case "rook":
+                return new Rook(from.color, from.position, from.hasMoved);
+              case "queen":
+                return new Queen(from.color, from.position);
+              case "king":
+                return new King(from.color, from.position, from.hasMoved);
+              default:
+                throw new Error("Invalid piece type");
+            }
+          })()
+        : null;
+
+      // Recreate 'to' piece
+      const toSquare = historyItem.to
+        ? (() => {
+            const to = historyItem.to;
+            switch (to.type) {
+              case "pawn":
+                return new Pawn(to.color, to.position, to.hasMoved);
+              case "knight":
+                return new Knight(to.color, to.position);
+              case "bishop":
+                return new Bishop(to.color, to.position);
+              case "rook":
+                return new Rook(to.color, to.position, to.hasMoved);
+              case "queen":
+                return new Queen(to.color, to.position);
+              case "king":
+                return new King(to.color, to.position, to.hasMoved);
+              default:
+                throw new Error("Invalid piece type");
+            }
+          })()
+        : null;
+
+      // Recreate move
+      const moveData = historyItem.move;
+      let move: BoardMove;
+
+      if (
+        moveData.isPromotion !== undefined ||
+        moveData.isDoubleMove !== undefined ||
+        moveData.isEnPassant !== undefined
+      ) {
+        // This is a PawnMove
+        move = {
+          square: moveData.square,
+          piece: moveData.piece,
+          color: moveData.color,
+          isCapture: moveData.isCapture,
+          isCheck: moveData.isCheck,
+          isPromotion: moveData.isPromotion,
+          isDoubleMove: moveData.isDoubleMove,
+          isEnPassant: moveData.isEnPassant,
+          promotionPiece: moveData.promotionPiece,
+        };
+      } else if (moveData.isCastle !== undefined) {
+        // This is a KingMove
+        move = {
+          square: moveData.square,
+          piece: moveData.piece,
+          color: moveData.color,
+          isCapture: moveData.isCapture,
+          isCheck: moveData.isCheck,
+          isCastle: moveData.isCastle,
+        };
+      } else {
+        // This is a basic Move
+        move = {
+          square: moveData.square,
+          piece: moveData.piece,
+          color: moveData.color,
+          isCapture: moveData.isCapture,
+          isCheck: moveData.isCheck,
+        };
+      }
+
+      return new HistoryMove(fromSquare, toSquare, move);
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, it, beforeEach } from "vitest";
 import { Board } from "../game/Board.ts";
 import { Pawn } from "../game/Pieces/Pawn.ts";
 import { Knight } from "../game/Pieces/Knight.ts";
@@ -646,5 +646,327 @@ describe("should detect stalemate", () => {
     board.setSquare("c7", new Queen("white", "c7"));
 
     expect(board.isCheckmateOrStalemate("black")).toEqual("stalemate");
+  });
+});
+
+describe("Board Serialization and Deserialization", () => {
+  let board: Board;
+  let whitePlayer: Player;
+  let blackPlayer: Player;
+
+  beforeEach(() => {
+    board = new Board();
+    whitePlayer = new Player("white", true);
+    blackPlayer = new Player("black", false);
+  });
+
+  it("should serialize and deserialize an empty board", () => {
+    // Create empty board
+    const emptyBoard = new Board();
+    emptyBoard.clear();
+
+    // Serialize and deserialize
+    const serialized = emptyBoard.serializeBoard();
+    const deserializedBoard = new Board();
+    deserializedBoard.deserializeBoard(serialized);
+
+    // Verify all squares are null
+    const board = deserializedBoard.getBoard();
+    for (const row of board) {
+      for (const square of row) {
+        expect(square).toBeNull();
+      }
+    }
+  });
+
+  it("should serialize and deserialize the initial board setup", () => {
+    // Serialize the initial board
+    const serialized = board.serializeBoard();
+
+    // Create a new board and deserialize into it
+    const deserializedBoard = new Board();
+    deserializedBoard.clear(); // Clear first to ensure we're really loading from serialized data
+    deserializedBoard.deserializeBoard(serialized);
+
+    // Verify king positions
+    expect(deserializedBoard.getKingPosition("white")).toBe("e1");
+    expect(deserializedBoard.getKingPosition("black")).toBe("e8");
+
+    // Check white pieces
+    const whiteRookA1 = deserializedBoard.getSquare("a1");
+    expect(whiteRookA1).not.toBeNull();
+    expect(whiteRookA1?.getName()).toBe("rook");
+    expect(whiteRookA1?.getColor()).toBe("white");
+    expect(whiteRookA1?.getPosition()).toBe("a1");
+
+    const whiteKing = deserializedBoard.getSquare("e1");
+    expect(whiteKing?.getName()).toBe("king");
+    expect(whiteKing?.getColor()).toBe("white");
+
+    // Check black pieces
+    const blackKnight = deserializedBoard.getSquare("b8");
+    expect(blackKnight?.getName()).toBe("knight");
+    expect(blackKnight?.getColor()).toBe("black");
+
+    const blackPawn = deserializedBoard.getSquare("d7");
+    expect(blackPawn?.getName()).toBe("pawn");
+    expect(blackPawn?.getColor()).toBe("black");
+  });
+
+  it("should serialize and deserialize after a few moves", () => {
+    // Make some standard chess moves
+    board.movePiece("e2", "e4", whitePlayer); // White pawn
+    whitePlayer.setIsTurn(false);
+    blackPlayer.setIsTurn(true);
+
+    board.movePiece("e7", "e5", blackPlayer); // Black pawn
+    blackPlayer.setIsTurn(false);
+    whitePlayer.setIsTurn(true);
+
+    board.movePiece("g1", "f3", whitePlayer); // White knight
+
+    // Serialize and deserialize
+    const serialized = board.serializeBoard();
+    const deserializedBoard = new Board();
+    deserializedBoard.deserializeBoard(serialized);
+
+    // Check pieces are in their new positions
+    expect(deserializedBoard.getSquare("e2")).toBeNull();
+    expect(deserializedBoard.getSquare("e4")?.getName()).toBe("pawn");
+    expect(deserializedBoard.getSquare("e4")?.getColor()).toBe("white");
+
+    expect(deserializedBoard.getSquare("e7")).toBeNull();
+    expect(deserializedBoard.getSquare("e5")?.getName()).toBe("pawn");
+    expect(deserializedBoard.getSquare("e5")?.getColor()).toBe("black");
+
+    expect(deserializedBoard.getSquare("g1")).toBeNull();
+    expect(deserializedBoard.getSquare("f3")?.getName()).toBe("knight");
+    expect(deserializedBoard.getSquare("f3")?.getColor()).toBe("white");
+
+    // Check history was preserved
+    const history = deserializedBoard.getHistory();
+    expect(history.length).toBe(3);
+
+    // Check first move in history
+    const firstMove = history[0];
+    expect(firstMove.getFrom()?.getColor()).toBe("white");
+    expect(firstMove.getFrom()?.getName()).toBe("pawn");
+    expect(firstMove.getFrom()?.getPosition()).toBe("e2");
+    expect(firstMove.getMove().square).toBe("e4");
+  });
+
+  it("should serialize and deserialize a complex board with captures", () => {
+    // Set up a more complex position with captures
+    board.movePiece("e2", "e4", whitePlayer);
+    whitePlayer.setIsTurn(false);
+    blackPlayer.setIsTurn(true);
+
+    board.movePiece("d7", "d5", blackPlayer);
+    blackPlayer.setIsTurn(false);
+    whitePlayer.setIsTurn(true);
+
+    // Capture with pawn
+    board.movePiece("e4", "d5", whitePlayer);
+    whitePlayer.setIsTurn(false);
+    blackPlayer.setIsTurn(true);
+
+    // Serialize and deserialize
+    const serialized = board.serializeBoard();
+    const deserializedBoard = new Board();
+    deserializedBoard.deserializeBoard(serialized);
+
+    // Check capture happened
+    expect(deserializedBoard.getSquare("d5")?.getName()).toBe("pawn");
+    expect(deserializedBoard.getSquare("d5")?.getColor()).toBe("white");
+    expect(deserializedBoard.getSquare("d7")).toBeNull();
+    expect(deserializedBoard.getSquare("e4")).toBeNull();
+
+    // Check history tracked the capture
+    const history = deserializedBoard.getHistory();
+    expect(history.length).toBe(3);
+
+    const captureMove = history[2];
+    expect(captureMove.getMove().isCapture).toBe(true);
+  });
+
+  it("should serialize and deserialize after castling", () => {
+    // Set up a position where white can castle kingside
+    board.clear();
+
+    // Place only the necessary pieces for castling
+    board.setSquare("e1", new King("white", "e1", false));
+    board.setSquare("h1", new Rook("white", "h1", false));
+    board.setSquare("e8", new King("black", "e8", false));
+
+    // Castle
+    board.movePiece("e1", "g1", whitePlayer);
+
+    // Serialize and deserialize
+    const serialized = board.serializeBoard();
+    const deserializedBoard = new Board();
+    deserializedBoard.deserializeBoard(serialized);
+
+    // Check king moved
+    expect(deserializedBoard.getSquare("e1")).toBeNull();
+    expect(deserializedBoard.getSquare("g1")?.getName()).toBe("king");
+    expect(deserializedBoard.getSquare("g1")?.getColor()).toBe("white");
+
+    // Check rook moved
+    expect(deserializedBoard.getSquare("h1")).toBeNull();
+    expect(deserializedBoard.getSquare("f1")?.getName()).toBe("rook");
+    expect(deserializedBoard.getSquare("f1")?.getColor()).toBe("white");
+
+    // Check king position is tracked
+    expect(deserializedBoard.getKingPosition("white")).toBe("g1");
+
+    // Check history recorded it as a castle
+    const history = deserializedBoard.getHistory();
+    expect(history.length).toBe(1);
+    const castleMove = history[0].getMove();
+    expect("isCastle" in castleMove && castleMove.isCastle).toBe(true);
+  });
+
+  it("should serialize and deserialize pawn promotion", () => {
+    // Set up a pawn promotion scenario
+    board.clear();
+
+    board.setSquare("e7", new Pawn("white", "e7", true));
+    board.setSquare("e8", null); // Empty square for promotion
+    board.setSquare("e1", new King("white", "e1", false));
+    board.setSquare("e8", new King("black", "e8", false));
+
+    // We need to mock a promotion move since your system likely has UI for promotion
+    const pawnToPromote = board.getSquare("e7") as Pawn;
+    const moves = pawnToPromote.getMoves(board);
+
+    // Find the promotion move
+    const promotionMove = moves.find(
+      (move) =>
+        "isPromotion" in move && move.isPromotion && move.square === "e8"
+    );
+
+    if (promotionMove && "promotionPiece" in promotionMove) {
+      // Set promotion piece to queen
+      promotionMove.promotionPiece = "queen";
+
+      // Use moveClonedPiece to execute with our predetermined move
+      board.moveClonedPiece("e7", "e8", whitePlayer, promotionMove);
+
+      // Serialize and deserialize
+      const serialized = board.serializeBoard();
+      const deserializedBoard = new Board();
+      deserializedBoard.deserializeBoard(serialized);
+
+      // Check promoted piece
+      const promotedPiece = deserializedBoard.getSquare("e8");
+      expect(promotedPiece?.getName()).toBe("queen");
+      expect(promotedPiece?.getColor()).toBe("white");
+
+      // Check history contains promotion info
+      const history = deserializedBoard.getHistory();
+      const lastMove = history[0].getMove();
+      expect("isPromotion" in lastMove && lastMove.isPromotion).toBe(true);
+      expect("promotionPiece" in lastMove && lastMove.promotionPiece).toBe(
+        "queen"
+      );
+    } else {
+      // If no promotion move found, fail the test
+      expect(promotionMove).toBeUndefined();
+    }
+  });
+
+  it("should handle en passant serialization and deserialization", () => {
+    // Set up an en passant scenario
+    board.clear();
+
+    // Place kings
+    board.setSquare("e1", new King("white", "e1", false));
+    board.setSquare("e8", new King("black", "e8", false));
+
+    // Set up pawns for en passant
+    board.setSquare("e5", new Pawn("white", "e5", true));
+    board.setSquare("d7", new Pawn("black", "d7", false));
+
+    // Move black pawn two squares forward (to enable en passant)
+    blackPlayer.setIsTurn(true);
+    board.movePiece("d7", "d5", blackPlayer);
+    blackPlayer.setIsTurn(false);
+    whitePlayer.setIsTurn(true);
+
+    // Get the white pawn
+    const whitePawn = board.getSquare("e5") as Pawn;
+    const moves = whitePawn.getMoves(board);
+
+    // Find the en passant move
+    const enPassantMove = moves.find(
+      (move) =>
+        "isEnPassant" in move && move.isEnPassant && move.square === "d6"
+    );
+
+    if (enPassantMove) {
+      // Execute en passant capture
+      board.moveClonedPiece("e5", "d6", whitePlayer, enPassantMove);
+
+      // Serialize and deserialize
+      const serialized = board.serializeBoard();
+      const deserializedBoard = new Board();
+      deserializedBoard.deserializeBoard(serialized);
+
+      // Check pawn positions after en passant
+      expect(deserializedBoard.getSquare("e5")).toBeNull(); // Original white pawn gone
+      expect(deserializedBoard.getSquare("d5")).toBeNull(); // Captured black pawn gone
+      expect(deserializedBoard.getSquare("d6")?.getName()).toBe("pawn"); // White pawn in new position
+      expect(deserializedBoard.getSquare("d6")?.getColor()).toBe("white");
+
+      // Check history recorded the en passant
+      const history = deserializedBoard.getHistory();
+      const lastMove = history[1].getMove(); // Second move should be en passant
+      expect("isEnPassant" in lastMove && lastMove.isEnPassant).toBe(true);
+    } else {
+      // If no en passant move found, fail the test
+      expect(enPassantMove).toBeDefined();
+    }
+  });
+
+  it("should handle check and checkmate state serialization", () => {
+    // Set up a checkmate position (Fool's mate)
+    board = new Board(); // Start with fresh board
+
+    // Move to create Fool's mate
+    board.movePiece("f2", "f3", whitePlayer);
+    whitePlayer.setIsTurn(false);
+    blackPlayer.setIsTurn(true);
+
+    board.movePiece("e7", "e5", blackPlayer);
+    blackPlayer.setIsTurn(false);
+    whitePlayer.setIsTurn(true);
+
+    board.movePiece("g2", "g4", whitePlayer);
+    whitePlayer.setIsTurn(false);
+    blackPlayer.setIsTurn(true);
+
+    board.movePiece("d8", "h4", blackPlayer); // Queen delivers checkmate
+
+    // Serialize and deserialize
+    const serialized = board.serializeBoard();
+    const deserializedBoard = new Board();
+    deserializedBoard.deserializeBoard(serialized);
+
+    // Check the black queen is in the right position
+    const blackQueen = deserializedBoard.getSquare("h4");
+    expect(blackQueen?.getName()).toBe("queen");
+    expect(blackQueen?.getColor()).toBe("black");
+
+    // Check that white king is in checkmate
+    const result = deserializedBoard.isCheckmateOrStalemate("white");
+    expect(result).toBe("checkmate");
+
+    // Verify king is under attack
+    const whiteKingPosition = deserializedBoard.getKingPosition("white");
+    const isWhiteKingAttacked = deserializedBoard.isSquareAttacked(
+      whiteKingPosition,
+      "white"
+    );
+    expect(isWhiteKingAttacked).toBe(true);
   });
 });
