@@ -62,7 +62,11 @@ const ChessBoard = ({
   return (
     <div className="chessboard-container">
       <div className="player-card-left">
-        <PlayerCard name={opponentName} connected={connected} />
+        <PlayerCard
+          name={opponentName}
+          connected={connected}
+          orientation="left"
+        />
       </div>
 
       <div className="chessboard">
@@ -170,7 +174,7 @@ const ChessBoard = ({
         )}
       </div>
       <div className="player-card-right">
-        <PlayerCard name={name} connected={connected} />
+        <PlayerCard name={name} connected={connected} orientation="right" />
       </div>
     </div>
   );

@@ -4,22 +4,33 @@ import "../styles/PlayerCard.css";
 const PlayerCard = ({
   name,
   connected,
+  orientation,
 }: {
   name: string;
   connected: boolean;
+  orientation: string;
 }) => {
   return (
-    <div className="player-card">
-      <div className="player-card__icon">
+    <div
+      className="player-card"
+      style={
+        orientation === "left"
+          ? {
+              justifyContent: "flex-start",
+            }
+          : {
+              justifyContent: "flex-end",
+            }
+      }
+    >
+      <div className="player-card-info-container">
         <BarChart
-          className={`player-card__status-icon ${
+          className={`player-card-status-icon ${
             connected ? "connected" : "disconnected"
           }`}
-          size={24}
-          strokeWidth={3}
         />
+        <h3 className="player-card-name">{name}</h3>
       </div>
-      <h3 className="player-card__name">{name}</h3>
     </div>
   );
 };

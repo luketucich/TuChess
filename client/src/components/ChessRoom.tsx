@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import ChessBoard from "./ChessBoard";
 import "../styles/ChessRoom.css";
+import QueueGrid from "./QueueGrid";
 
 function ChessRoom() {
   const [isConnected, setIsConnected] = useState(false);
@@ -110,6 +111,7 @@ function ChessRoom() {
         height: "100vh",
       }}
     >
+      <QueueGrid />
       {!isInRoom ? (
         <div
           className="lobby-container"

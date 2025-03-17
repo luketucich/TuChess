@@ -1,0 +1,148 @@
+/* Add to your global CSS file */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  background-color: var(--background-color-secondary);
+  color: var(--font-color);
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+  user-select: none;
+  position: fixed;
+  top: 0; /* Changed from -0.5rem to 0 to prevent partial hiding by default */
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  height: 3.5rem;
+}
+
+.header-hidden {
+  transform: translateY(
+    -100%
+  ); /* Changed from -50% to -100% for complete hiding */
+}
+
+.header-expanded {
+  padding: 1rem 2rem;
+  height: 4.5rem;
+}
+
+/* Add padding to the top of your main content to prevent it being hidden under fixed header */
+main {
+  padding-top: 4.5rem; /* Adjust based on your header height */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  stroke-width: 0.16rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--primary-color);
+}
+
+.site-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.header-right {
+  position: relative;
+}
+
+.account-container {
+  position: relative;
+}
+
+.account-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid rgba(245, 245, 245, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--font-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-primary);
+}
+
+.account-button:hover {
+  background-color: rgba(245, 245, 245, 0.1);
+
+  border: 1px solid var(--primary-color);
+
+  /* .account-text {
+    color: var(--primary-color);
+  }
+
+  .account-icon {
+    color: var(--primary-color);
+  } */
+}
+
+.account-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 0.16rem;
+}
+
+.account-text {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: var(--background-color-secondary);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+  min-width: 150px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: var(--font-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-primary);
+}
+
+.menu-item:hover {
+  background-color: rgba(245, 245, 245, 0.1);
+}
+
+.menu-icon {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 0.16rem;
+}
