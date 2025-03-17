@@ -15,6 +15,7 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-feather": "^2.0.10",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {

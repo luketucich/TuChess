@@ -6,6 +6,7 @@ import "../styles/ChessRoom.css";
 function ChessRoom() {
   const [isConnected, setIsConnected] = useState(false);
   const [username, setUsername] = useState("Anonymous");
+  const [opponentUsername, setOpponentUsername] = useState("");
   const [roomId, setRoomId] = useState("");
   const [rooms, setRooms] = useState<
     {
@@ -25,8 +26,8 @@ function ChessRoom() {
   };
 
   useEffect(() => {
-    socketRef.current = io("https://tuchess-1.onrender.com");
-    // socketRef.current = io("http://localhost:3001");
+    // socketRef.current = io("https://tuchess-1.onrender.com");
+    socketRef.current = io("http://localhost:3001");
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
@@ -40,6 +41,15 @@ function ChessRoom() {
     socketRef.current.on("rooms-update", (updatedRooms) => {
       setRooms(updatedRooms);
     });
+
+    socketRef.current.on(
+      "send-username",
+      (opponentUsername: string, opponentId: string) => {
+        if (socketRef.current?.id !== opponentId) {
+          setOpponentUsername(opponentUsername);
+        }
+      }
+    );
 
     return () => {
       socketRef.current?.disconnect();
@@ -90,20 +100,38 @@ function ChessRoom() {
   };
 
   return (
-    <div className="chess-app">
-      <h1 className="app-title">Welcome to TuChess</h1>
-      <span
-        className={`status-indicator ${
-          isConnected ? "connected" : "disconnected"
-        }`}
-      >
-        Your Status:
-        {isConnected ? " Connected" : " Disconnected"}
-      </span>
+    <div
+      className="chess-app"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+      }}
+    >
       {!isInRoom ? (
-        <div className="lobby-container">
+        <div
+          className="lobby-container"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <h2 className="section-title">Join a Room</h2>
-          <form className="join-form" onSubmit={handleJoinRoom}>
+          <form
+            className="join-form"
+            onSubmit={handleJoinRoom}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "1rem",
+            }}
+          >
             <input
               className="input-field"
               type="text"
@@ -163,6 +191,9 @@ function ChessRoom() {
                   playerColor={fetchPlayerInfo(roomId)?.color as string}
                   socket={socketRef.current as Socket}
                   roomId={roomId}
+                  name={username}
+                  opponentName={opponentUsername}
+                  connected={isConnected}
                 />
               )}
             </div>

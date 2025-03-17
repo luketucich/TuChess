@@ -2,15 +2,22 @@ import { usePointerTracking } from "../hooks/usePointerTracking.tsx";
 import useChessGameState from "../hooks/useChessGameState.tsx";
 import { Socket } from "socket.io-client";
 import "../styles/ChessBoard.css";
+import PlayerCard from "./PlayerCard.tsx";
 
 const ChessBoard = ({
   playerColor,
   socket,
   roomId,
+  name,
+  opponentName,
+  connected,
 }: {
   playerColor: string;
   socket: Socket;
   roomId: string;
+  name: string;
+  opponentName: string;
+  connected: boolean;
 }) => {
   const {
     board,
@@ -54,9 +61,9 @@ const ChessBoard = ({
 
   return (
     <div className="chessboard-container">
-      <h1 className="chessboard-heading">
-        {gameOver ? "game over :(" : `${turn} to move`}
-      </h1>
+      <div className="player-card-left">
+        <PlayerCard name={opponentName} connected={connected} />
+      </div>
 
       <div className="chessboard">
         {getBoard(playerColor).flatMap((row, rowIndex) =>
@@ -105,14 +112,14 @@ const ChessBoard = ({
                 style={
                   isLastMove(square)
                     ? {
-                        boxShadow: "inset 0 0 4rem rgba(255, 183, 0, 0.8)",
+                        boxShadow: "inset 0 0 100rem rgba(255, 183, 0, 0.6)",
                         transition: "background-color 0.2s ease-in-out",
                       }
                     : isInCheck() &&
                       piece?.getColor() === turn &&
                       piece?.getName?.() === "king"
                     ? {
-                        boxShadow: "inset 0 0 4rem rgba(255, 0, 0, 0.8)",
+                        boxShadow: "inset 0 0 100rem rgba(255, 0, 0, 0.6)",
                         transition: "background-color 0.2s ease-in-out",
                       }
                     : {}
@@ -161,6 +168,9 @@ const ChessBoard = ({
             );
           })
         )}
+      </div>
+      <div className="player-card-right">
+        <PlayerCard name={name} connected={connected} />
       </div>
     </div>
   );

@@ -17,8 +17,8 @@ const server = http.createServer(app);
 // Create Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "https://tuchess.onrender.com",
-    // origin: "*",
+    // origin: "https://tuchess.onrender.com",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -157,6 +157,8 @@ io.on("connection", (socket) => {
 
     games.set(roomId, game);
     console.log("Game started in room:", roomId);
+
+    io.to(roomId).emit("send-username", user.username, user.id);
   });
 
   // Handle piece movement
