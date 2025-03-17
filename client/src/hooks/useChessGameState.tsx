@@ -41,7 +41,7 @@ const useChessGameState = (
       console.log("Received board update:", updatedBoardData);
 
       // If we received a lastMove property, apply it to our board
-      if (updatedBoardData.lastMove) {
+      if (updatedBoardData.lastMove && turn !== playerColor) {
         const { from, to } = updatedBoardData.lastMove;
 
         playMoveSound();

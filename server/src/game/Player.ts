@@ -1,4 +1,4 @@
-import { Piece } from "./Pieces/Piece.ts";
+import { Piece } from "./Pieces/Piece";
 
 export class Player {
   private color: "white" | "black";

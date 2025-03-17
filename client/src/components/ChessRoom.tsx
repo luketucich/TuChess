@@ -10,7 +10,7 @@ function ChessRoom() {
   const [rooms, setRooms] = useState<
     {
       roomId: string;
-      players: { id: string; username?: string; color: string }[];
+      users: { id: string; username?: string; color?: string }[];
     }[]
   >([]);
   const socketRef = useRef<Socket | null>(null);
@@ -25,8 +25,8 @@ function ChessRoom() {
   };
 
   useEffect(() => {
-    // socketRef.current = io("https://tuchess-1.onrender.com");
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io("https://tuchess-1.onrender.com");
+    // socketRef.current = io("http://localhost:3001");
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
@@ -55,18 +55,18 @@ function ChessRoom() {
 
   const isRoomFull = (roomId: string) => {
     const room = rooms.find((room) => room.roomId === roomId);
-    return room?.players.length === 2;
+    return room?.users?.length === 2;
   };
 
   const fetchPlayerInfo = (roomId: string) => {
     const room = rooms.find((room) => room.roomId === roomId);
-    return room?.players.find((player) => player.id === socketRef.current?.id);
+    return room?.users?.find((user) => user.id === socketRef.current?.id);
   };
 
   const assignPlayerColor = () => {
     const room = rooms.find((room) => room.roomId === roomId);
-    if (room) {
-      return room.players[0].color === "white" ? "black" : "white";
+    if (room && room.users && room.users.length > 0) {
+      return room.users[0].color === "white" ? "black" : "white";
     }
     return Math.random() > 0.5 ? "white" : "black";
   };
@@ -131,9 +131,9 @@ function ChessRoom() {
                   <li className="room-item" key={room.roomId}>
                     <strong className="room-id">Room: {room.roomId}</strong>
                     <ul className="player-list">
-                      {room.players.map((player) => (
-                        <li className="player-item" key={player.id}>
-                          {player.username || "Anonymous"}
+                      {room.users?.map((user) => (
+                        <li className="player-item" key={user.id}>
+                          {user.username || "Anonymous"}
                         </li>
                       ))}
                     </ul>
