@@ -38,6 +38,20 @@ const ChessBoard = ({
     return board.getBoard();
   };
 
+  const isLastMove = (square: string) => {
+    const lastMove = board.getHistory()[board.getHistory().length - 1];
+
+    if (!lastMove) return false;
+    if (lastMove.getFrom()?.getPosition() === square) return true;
+    if (lastMove.getMove()?.square === square) return true;
+  };
+
+  const isInCheck = () => {
+    const lastMove = board.getHistory()[board.getHistory().length - 1];
+
+    return lastMove?.getMove().isCheck;
+  };
+
   return (
     <div className="chessboard-container">
       <h1 className="chessboard-heading">
@@ -88,6 +102,21 @@ const ChessBoard = ({
                 onPointerUp={(e) => {
                   e.currentTarget.style.filter = "none";
                 }}
+                style={
+                  isLastMove(square)
+                    ? {
+                        boxShadow: "inset 0 0 4rem rgba(255, 183, 0, 0.8)",
+                        transition: "background-color 0.2s ease-in-out",
+                      }
+                    : isInCheck() &&
+                      piece?.getColor() === turn &&
+                      piece?.getName?.() === "king"
+                    ? {
+                        boxShadow: "inset 0 0 4rem rgba(255, 0, 0, 0.8)",
+                        transition: "background-color 0.2s ease-in-out",
+                      }
+                    : {}
+                }
               >
                 {/* Move indicators */}
                 {availableMoves.includes(square) && (

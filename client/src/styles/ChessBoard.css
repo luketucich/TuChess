@@ -50,11 +50,11 @@
 }
 
 .square.black {
-  background-color: #394b59;
+  background-color: #405464;
 }
 
 .square.white {
-  background-color: #5d7185;
+  background-color: #697f95;
 }
 
 .square.available-move {
@@ -113,7 +113,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 0.3rem 0.1rem rgba(0, 0, 0, 0.3));
 }
 
 .piece img {
