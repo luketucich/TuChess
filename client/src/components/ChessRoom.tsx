@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { Loader } from "react-feather";
 import { io, Socket } from "socket.io-client";
 import ChessBoard from "./ChessBoard";
 import "../styles/Styles.css";
 import "../styles/ChessRoom.css";
 import QueueGrid from "./QueueGrid";
+import Timer from "./Timer";
 
 function ChessRoom() {
   // State
@@ -124,13 +126,36 @@ function ChessRoom() {
       ) : (
         <div className="game-container">
           {!isRoomFull(roomId) ? (
-            <div className="waiting-room">
-              <p className="player-info">
-                You are playing as {fetchPlayerInfo(roomId)?.color}
-              </p>
-              <p className="waiting-message">
-                Waiting for another player to join...
-              </p>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                animation: "colorWave 2s infinite, slowFadeIn 0.5s linear",
+                maxWidth: "80%",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: 500,
+                  color: "var(--primary-color)",
+                  marginBottom: "1rem",
+                  textAlign: "center",
+                  textWrap: "wrap",
+                }}
+              >
+                Waiting for another player to join
+              </h2>
+              <img
+                src="/assets/logo.svg"
+                color="var(--primary-color)"
+                style={{
+                  width: "2.5rem",
+                  height: "2.5rem",
+                  animation: "spin 2s linear infinite",
+                }}
+              />
             </div>
           ) : (
             <div className="game-board-container">

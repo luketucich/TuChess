@@ -18,6 +18,8 @@
 /* ---------- Player Cards ---------- */
 .player-card-left,
 .player-card-right {
+  display: flex;
+  gap: 0.5rem;
   position: absolute;
   width: max-content;
   max-width: 20rem;

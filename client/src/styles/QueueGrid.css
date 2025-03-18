@@ -83,11 +83,17 @@
 .custom-game-container {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
   margin-top: 2rem;
   width: 100%;
 }
 
 .custom-game-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
   background-color: rgba(245, 245, 245, 0.1);
   color: var(--font-color);
   border: 2px solid rgba(245, 245, 245, 0.2);
@@ -105,6 +111,10 @@
   background-color: rgba(245, 245, 245, 0.15);
   border-color: var(--primary-color);
   box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.3);
+}
+
+.button-icon {
+  flex-shrink: 0;
 }
 
 @media (max-width: 1024px) {
@@ -136,6 +146,11 @@
   .section-icon {
     width: 3.5rem;
     height: 3.5rem;
+  }
+
+  .custom-game-container {
+    flex-direction: column;
+    gap: 1rem;
   }
 }
 

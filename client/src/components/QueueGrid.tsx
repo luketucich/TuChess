@@ -1,5 +1,6 @@
 import { FC } from "react";
 import "../styles/QueueGrid.css";
+import { Plus, LogIn } from "react-feather";
 
 interface TimeControl {
   time: number;
@@ -77,7 +78,20 @@ const QueueGrid: FC = () => {
 
       <div className="custom-game-container">
         <button className="custom-game-button">
-          <span>Custom</span>
+          <Plus
+            size={18}
+            color="var(--primary-color)"
+            className="button-icon"
+          />
+          Custom Game
+        </button>
+        <button className="custom-game-button">
+          <LogIn
+            size={18}
+            color="var(--primary-color)"
+            className="button-icon"
+          />
+          Room Code
         </button>
       </div>
     </div>

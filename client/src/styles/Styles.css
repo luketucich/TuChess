@@ -8,10 +8,54 @@
   --success-color: #91bc8c;
   --error-color: #e25f55;
   --primary-color: #8ba888;
+  --secondary-color: #f2cc8f;
   --white-square-color: #d6e1e6;
   --black-square-color: #7a8c99;
 }
 
 * {
   font-family: var(--font-primary);
+}
+
+@keyframes colorWave {
+  0% {
+    scale: 1;
+    filter: hue-rotate(0deg);
+  }
+
+  25% {
+    filter: hue-rotate(90deg);
+  }
+
+  50% {
+    scale: 1.025;
+    filter: hue-rotate(180deg);
+  }
+
+  75% {
+    filter: hue-rotate(270deg);
+  }
+
+  100% {
+    scale: 1;
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes slowFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

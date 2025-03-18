@@ -3,6 +3,7 @@ import useChessGameState from "../hooks/useChessGameState.tsx";
 import { Socket } from "socket.io-client";
 import "../styles/ChessBoard.css";
 import PlayerCard from "./PlayerCard.tsx";
+import Timer from "./Timer.tsx";
 
 const ChessBoard = ({
   playerColor,
@@ -61,11 +62,8 @@ const ChessBoard = ({
   return (
     <div className="chessboard-container">
       <div className="player-card-left">
-        <PlayerCard
-          name={opponentName}
-          connected={connected}
-          orientation="left"
-        />
+        <PlayerCard name={opponentName} connected={connected} />
+        <Timer time={600} increment={0} socket={socket} />
       </div>
 
       <div className="chessboard">
@@ -175,7 +173,8 @@ const ChessBoard = ({
       </div>
 
       <div className="player-card-right">
-        <PlayerCard name={name} connected={connected} orientation="right" />
+        <PlayerCard name={name} connected={connected} />
+        <Timer />
       </div>
     </div>
   );
