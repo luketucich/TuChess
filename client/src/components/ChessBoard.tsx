@@ -12,6 +12,7 @@ const ChessBoard = ({
   name,
   opponentName,
   connected,
+  timeControl,
 }: {
   playerColor: string;
   socket: Socket;
@@ -19,10 +20,13 @@ const ChessBoard = ({
   name: string;
   opponentName: string;
   connected: boolean;
+  timeControl: { time: number; increment: number };
 }) => {
   const {
     board,
     turn,
+    gameOver,
+    gameResult,
     availableMoves,
     detailedAvailableMoves,
     fromSquare,
@@ -63,10 +67,27 @@ const ChessBoard = ({
     <div className="chessboard-container">
       <div className="player-card-left">
         <PlayerCard name={opponentName} connected={connected} />
-        <Timer time={600} increment={0} socket={socket} />
+        <Timer
+          time={timeControl.time * 60}
+          increment={timeControl.increment}
+          socket={socket}
+          isTurn={turn !== playerColor}
+          roomId={roomId}
+          playerColor={playerColor === "white" ? "black" : "white"}
+          gameOver={gameOver}
+        />
       </div>
 
       <div className="chessboard">
+        {gameOver && (
+          <div className="game-over-overlay">
+            <div className="game-over-message">
+              <h2>Game Over</h2>
+              <p>{gameResult}</p>
+            </div>
+          </div>
+        )}
+
         {getBoard(playerColor).flatMap((row, rowIndex) =>
           row.map((piece, colIndex) => {
             const square =
@@ -105,11 +126,12 @@ const ChessBoard = ({
                     : ""
                 } ${pointerState.isDown ? "grabbing" : ""}`}
                 onPointerDown={
-                  !fromSquare
+                  !fromSquare && !gameOver
                     ? () => selectSquare(square)
                     : () => movePiece(square)
                 }
                 onPointerEnter={(e) => {
+                  if (gameOver) return;
                   const indicator = e.currentTarget.querySelector(
                     ".indicator"
                   ) as HTMLElement | null;
@@ -133,7 +155,7 @@ const ChessBoard = ({
                 style={squareStyle}
               >
                 {/* Move indicators */}
-                {availableMoves.includes(square) && (
+                {availableMoves.includes(square) && !gameOver && (
                   <div
                     className={`indicator ${isCapture ? "capture" : "move"}`}
                   ></div>
@@ -142,12 +164,12 @@ const ChessBoard = ({
                 {piece && (
                   <div
                     className={`piece ${
-                      pointerState.isDown && fromSquare === square
+                      pointerState.isDown && fromSquare === square && !gameOver
                         ? "dragging"
                         : ""
                     }`}
                     style={
-                      pointerState.isDown && fromSquare === square
+                      pointerState.isDown && fromSquare === square && !gameOver
                         ? {
                             left: `${pointerState.position.x - 25}px`,
                             top: `${pointerState.position.y - 25}px`,
@@ -174,7 +196,15 @@ const ChessBoard = ({
 
       <div className="player-card-right">
         <PlayerCard name={name} connected={connected} />
-        <Timer />
+        <Timer
+          time={timeControl.time * 60}
+          increment={timeControl.increment}
+          socket={socket}
+          isTurn={turn === playerColor}
+          roomId={roomId}
+          playerColor={playerColor}
+          gameOver={gameOver}
+        />
       </div>
     </div>
   );

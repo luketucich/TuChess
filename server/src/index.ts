@@ -17,8 +17,8 @@ const server = http.createServer(app);
 // Create Socket.io server
 const io = new Server(server, {
   cors: {
-    // origin: "https://tuchess.onrender.com",
-    origin: "*",
+    origin: "https://tuchess.onrender.com",
+    // origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -38,6 +38,10 @@ interface Game {
   gameOver: boolean;
   white: Player;
   black: Player;
+  timeControl: {
+    time: number;
+    increment: number;
+  };
 }
 
 const rooms = new Map<string, User[]>();
@@ -157,22 +161,32 @@ io.on("connection", (socket) => {
   });
 
   // Handle game start
-  socket.on("start-game", (roomId: string) => {
-    const newBoard = new Board();
-    const game: Game = {
-      board: newBoard,
-      serializedBoard: newBoard.serializeBoard(),
-      turn: "white",
-      gameOver: false,
-      white: new Player("white", true),
-      black: new Player("black", false),
-    };
+  socket.on(
+    "start-game",
+    (
+      roomId: string,
+      timeControl: {
+        time: number;
+        increment: number;
+      }
+    ) => {
+      const newBoard = new Board();
+      const game: Game = {
+        board: newBoard,
+        serializedBoard: newBoard.serializeBoard(),
+        turn: "white",
+        gameOver: false,
+        white: new Player("white", true),
+        black: new Player("black", false),
+        timeControl: timeControl,
+      };
 
-    games.set(roomId, game);
-    console.log("Game started in room:", roomId);
+      games.set(roomId, game);
+      console.log("Game started in room:", roomId);
 
-    io.to(roomId).emit("send-username", user.username, user.id);
-  });
+      io.to(roomId).emit("send-username", user.username, user.id);
+    }
+  );
 
   // Handle piece movement
   socket.on("move-piece", (roomId: string, from: string, to: string) => {
@@ -210,9 +224,52 @@ io.on("connection", (socket) => {
     // Check for game end conditions
     if (game.board.isCheckmateOrStalemate("black") !== "none") {
       game.gameOver = true;
+      io.to(roomId).emit("game-over", {
+        message:
+          game.board.isCheckmateOrStalemate("black") === "checkmate"
+            ? "White wins by checkmate"
+            : "Game drawn by stalemate",
+      });
     } else if (game.board.isCheckmateOrStalemate("white") !== "none") {
       game.gameOver = true;
+      io.to(roomId).emit("game-over", {
+        message:
+          game.board.isCheckmateOrStalemate("white") === "checkmate"
+            ? "Black wins by checkmate"
+            : "Game drawn by stalemate",
+      });
     }
+  });
+
+  // Handle timeout
+  socket.on("timeout", (roomId: string, playerColor: string) => {
+    const game = games.get(roomId);
+
+    if (!game) {
+      console.error("Game not found for room:", roomId);
+      return;
+    }
+
+    if (game.gameOver) {
+      console.error("Game is already over in room:", roomId);
+      return;
+    }
+
+    // Mark the game as over
+    game.gameOver = true;
+
+    // The player whose time ran out loses
+    const winner = playerColor === "white" ? "black" : "white";
+    console.log(
+      `${playerColor}'s time ran out. ${winner} wins in room: ${roomId}`
+    );
+
+    // Notify all clients in the room about the game result
+    io.to(roomId).emit("game-over", {
+      message: `${
+        winner.charAt(0).toUpperCase() + winner.slice(1)
+      } wins by timeout`,
+    });
   });
 });
 

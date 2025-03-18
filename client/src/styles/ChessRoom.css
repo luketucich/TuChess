@@ -46,3 +46,10 @@ form {
   gap: 1rem;
   padding: 1rem;
 }
+
+@media (max-width: 768px) {
+  .chess-room-container {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}

@@ -6,54 +6,90 @@ const Timer = ({
   time,
   increment,
   socket,
+  isTurn,
+  roomId,
+  playerColor,
+  gameOver,
 }: {
   time: number;
   increment: number;
   socket: Socket;
+  isTurn: boolean;
+  roomId: string;
+  playerColor: string;
+  gameOver: boolean;
 }) => {
   const [timeLeft, setTimeLeft] = useState(time);
-  const [isTurn, setIsTurn] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const prevTurnRef = useRef(isTurn);
 
+  // Format time as minutes:seconds
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
+  // Reset the timer when a new game starts
   useEffect(() => {
-    // Handle turn changes
-    if (!isTurn) {
-      // Add increment when turn ends
+    setTimeLeft(time);
+  }, [time]);
+
+  // Watch for turn changes and update the timer accordingly
+  useEffect(() => {
+    // Check if turn just ended - only then add the increment
+    if (prevTurnRef.current && !isTurn) {
       setTimeLeft((prevTime) => prevTime + increment);
-    } else if (isTurn && timeLeft > 0) {
-      // Start the timer when it's the player's turn
-      timerRef.current = setTimeout(() => {
-        setTimeLeft((prevTime) => prevTime - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
-      // Time ran out
-      socket.emit("timeOut");
     }
 
-    // Cleanup function
+    // Update the previous turn reference
+    prevTurnRef.current = isTurn;
+
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    // If it's this player's turn, start counting down
+    if (isTurn && timeLeft > 0 && !gameOver) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          const newTime = prevTime - 1;
+          if (newTime <= 0) {
+            // Time's up - clear the interval to prevent multiple emissions
+            if (timerRef.current) {
+              clearInterval(timerRef.current);
+              timerRef.current = null;
+            }
+            // Emit the timeout event with required information
+            socket.emit("timeout", roomId, playerColor);
+            return 0;
+          }
+          return newTime;
+        });
+      }, 1000);
+    }
+
+    // Cleanup on unmount or when dependencies change
     return () => {
       if (timerRef.current) {
-        clearTimeout(timerRef.current);
+        clearInterval(timerRef.current);
       }
     };
-  }, [timeLeft, isTurn, increment, socket]);
+  }, [isTurn, increment, socket, timeLeft, roomId, playerColor]);
 
   return (
     <div className="player-card">
       <div className="player-card-info-container">
-        <h3 className="player-card-name">{formatTime(timeLeft)}</h3>
+        <h3
+          className={`player-card-name ${isTurn ? "active-timer" : ""} ${
+            timeLeft <= 10 ? "low-time" : ""
+          }`}
+        >
+          {formatTime(timeLeft)}
+        </h3>
       </div>
-
-      <button onClick={() => setIsTurn((prevIsTurn) => !prevIsTurn)}>
-        click me
-      </button>
     </div>
   );
 };

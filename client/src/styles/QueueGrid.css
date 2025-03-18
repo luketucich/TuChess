@@ -147,14 +147,13 @@
     width: 3.5rem;
     height: 3.5rem;
   }
+}
 
+@media (max-width: 480px) {
   .custom-game-container {
     flex-direction: column;
     gap: 1rem;
   }
-}
-
-@media (max-width: 480px) {
   .time-options {
     grid-template-columns: repeat(2, 1fr);
   }

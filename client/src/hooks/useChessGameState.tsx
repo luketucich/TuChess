@@ -13,6 +13,7 @@ const useChessGameState = (
   const [board, setBoard] = useState<Board>(new Board());
   const [turn, setTurn] = useState<"white" | "black">("white");
   const [gameOver, setGameOver] = useState<boolean>(false);
+  const [gameResult, setGameResult] = useState<string>("");
 
   // Selection state
   const [availableMoves, setAvailableMoves] = useState<string[]>([]);
@@ -23,6 +24,7 @@ const useChessGameState = (
 
   // Audio reference
   const moveAudioRef = useRef(new Audio("/assets/move_piece.mp3"));
+  const gameOverAudioRef = useRef(new Audio("/assets/game_over.mp3"));
 
   // Function to play the move sound
   const playMoveSound = () => {
@@ -32,7 +34,15 @@ const useChessGameState = (
       .catch((err) => console.error("Error playing audio:", err));
   };
 
-  // Set up socket listener for board updates
+  // Function to play game over sound
+  const playGameOverSound = () => {
+    gameOverAudioRef.current.currentTime = 0;
+    gameOverAudioRef.current
+      .play()
+      .catch((err) => console.error("Error playing audio:", err));
+  };
+
+  // Set up socket listener for board updates and game over conditions
   useEffect(() => {
     if (!socket) return;
 
@@ -71,23 +81,48 @@ const useChessGameState = (
       }
     });
 
+    // Listen for game over due to timeout
+    socket.on("game-over", (result) => {
+      console.log("Game over:", result);
+      setGameOver(true);
+      setGameResult(result.message);
+      playGameOverSound();
+    });
+
     return () => {
       socket.off("board-update");
+      socket.off("game-over");
     };
-  }, [socket, board, turn]);
+  }, [socket, board, turn, playerColor]);
 
   // Check for game ending conditions
   const checkGameStatus = (newBoard: Board) => {
-    if (
-      newBoard.isCheckmateOrStalemate("black") !== "none" ||
-      newBoard.isCheckmateOrStalemate("white") !== "none"
-    ) {
+    const whiteStatus = newBoard.isCheckmateOrStalemate("white");
+    const blackStatus = newBoard.isCheckmateOrStalemate("black");
+
+    if (whiteStatus !== "none") {
       setGameOver(true);
+      setGameResult(
+        whiteStatus === "checkmate"
+          ? "Black wins by checkmate"
+          : "Game drawn by stalemate"
+      );
+      playGameOverSound();
+    } else if (blackStatus !== "none") {
+      setGameOver(true);
+      setGameResult(
+        blackStatus === "checkmate"
+          ? "White wins by checkmate"
+          : "Game drawn by stalemate"
+      );
+      playGameOverSound();
     }
   };
 
   // Handle square selection
   const selectSquare = (square: string) => {
+    if (gameOver) return;
+
     const piece = board.getSquare(square);
 
     if (!piece || piece.getColor() !== playerColor || turn !== playerColor) {
@@ -104,7 +139,7 @@ const useChessGameState = (
 
   // Handle piece movement
   const movePiece = (square: string) => {
-    if (!fromSquare) return;
+    if (gameOver || !fromSquare) return;
 
     const piece = board.getSquare(fromSquare);
     if (!piece) return;
@@ -146,6 +181,7 @@ const useChessGameState = (
     board,
     turn,
     gameOver,
+    gameResult,
     availableMoves,
     detailedAvailableMoves,
     fromSquare,

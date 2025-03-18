@@ -35,3 +35,8 @@
   text-overflow: ellipsis;
   font-weight: 500;
 }
+
+.active-timer {
+  font-weight: 600;
+  color: var(--primary-color);
+}

@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader } from "react-feather";
 import { io, Socket } from "socket.io-client";
 import ChessBoard from "./ChessBoard";
 import "../styles/Styles.css";
 import "../styles/ChessRoom.css";
 import QueueGrid from "./QueueGrid";
-import Timer from "./Timer";
 
 function ChessRoom() {
   // State
@@ -13,6 +11,7 @@ function ChessRoom() {
   const [username, setUsername] = useState("Anonymous");
   const [opponentUsername, setOpponentUsername] = useState("");
   const [roomId, setRoomId] = useState("");
+  const [timeControl, setTimeControl] = useState({ time: 0, increment: 0 });
   const [isInRoom, setIsInRoom] = useState(false);
   const [rooms, setRooms] = useState<
     {
@@ -34,7 +33,8 @@ function ChessRoom() {
 
   // Socket connection setup
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001");
+    // socketRef.current = io("http://localhost:3001");
+    socketRef.current = io("https://tuchess-1.onrender.com");
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
@@ -65,7 +65,7 @@ function ChessRoom() {
   // Handle starting game when room is full
   useEffect(() => {
     if (isInRoom && isRoomFull(roomId)) {
-      handleStartGame(roomId);
+      handleStartGame(roomId, timeControl);
       playJoinSound();
     }
   }, [isInRoom, rooms, roomId]);
@@ -84,45 +84,25 @@ function ChessRoom() {
     return playerInfo;
   };
 
-  const handleJoinRoom = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (socketRef.current) {
-      // Send join request without pre-assigning color
-      socketRef.current.emit("join-room", roomId, username);
-    }
-    setIsInRoom(true);
-  };
-
-  const handleStartGame = (roomId: string) => {
-    socketRef.current?.emit("start-game", roomId);
+  const handleStartGame = (
+    roomId: string,
+    timeControl: { time: number; increment: number }
+  ) => {
+    socketRef.current?.emit("start-game", roomId, timeControl);
   };
 
   return (
     <div className="chess-room-container">
       {!isInRoom ? (
-        <>
-          <QueueGrid />
-          <form onSubmit={handleJoinRoom}>
-            <input
-              className="input-field"
-              type="text"
-              placeholder="Enter a username"
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              className="input-field"
-              type="text"
-              placeholder="Enter a room ID"
-              onChange={(e) => setRoomId(e.target.value)}
-              minLength={4}
-              required
-            />
-            <button className="btn btn-primary" type="submit">
-              Join Room
-            </button>
-          </form>
-        </>
+        <QueueGrid
+          socket={socketRef.current}
+          setIsInRoom={setIsInRoom}
+          setRoomId={setRoomId}
+          setUsername={setUsername}
+          defaultUsername={username}
+          rooms={rooms}
+          setTimeControl={setTimeControl}
+        />
       ) : (
         <div className="game-container">
           {!isRoomFull(roomId) ? (
@@ -149,7 +129,7 @@ function ChessRoom() {
               </h2>
               <img
                 src="/assets/logo.svg"
-                color="var(--primary-color)"
+                alt="Loading"
                 style={{
                   width: "2.5rem",
                   height: "2.5rem",
@@ -167,6 +147,7 @@ function ChessRoom() {
                   name={username}
                   opponentName={opponentUsername}
                   connected={isConnected}
+                  timeControl={timeControl}
                 />
               )}
             </div>
