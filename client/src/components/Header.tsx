@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Zap, User, Settings } from "react-feather";
+import { User, Settings } from "react-feather";
 import "../styles/Header.css";
 
 const Header: React.FC = () => {

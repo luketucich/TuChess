@@ -2,7 +2,6 @@ import { FC } from "react";
 import "../styles/QueueGrid.css";
 import { Plus, LogIn } from "react-feather";
 import { Socket } from "socket.io-client";
-import { time } from "console";
 
 interface TimeControl {
   time: number;
