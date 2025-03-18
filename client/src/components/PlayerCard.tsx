@@ -13,15 +13,9 @@ const PlayerCard = ({
   return (
     <div
       className="player-card"
-      style={
-        orientation === "left"
-          ? {
-              justifyContent: "flex-start",
-            }
-          : {
-              justifyContent: "flex-end",
-            }
-      }
+      style={{
+        justifyContent: orientation === "left" ? "flex-start" : "flex-end",
+      }}
     >
       <div className="player-card-info-container">
         <BarChart

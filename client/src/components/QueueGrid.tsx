@@ -14,7 +14,6 @@ interface TimeControls {
 }
 
 const QueueGrid: FC = () => {
-  // Time control options for each category
   const timeControls: TimeControls = {
     bullet: [
       { time: 1, increment: 0 },
@@ -38,84 +37,44 @@ const QueueGrid: FC = () => {
     ],
   };
 
-  // Format time display
-  const formatTimeControl = (time: number, increment: number): string => {
-    return `${time} + ${increment}`;
-  };
+  const formatTimeControl = (time: number, increment: number): string =>
+    `${time} + ${increment}`;
+
+  const renderTimeControlSection = (title: string, controls: TimeControl[]) => (
+    <div className="queue-section">
+      <div className="section-header">
+        <img
+          src={`/assets/${title.toLowerCase()}.svg`}
+          alt={`${title} icon`}
+          className="section-icon"
+          color="white"
+        />
+        <h2>{title}</h2>
+      </div>
+      <div className="time-options">
+        {controls.map((control, index) => (
+          <button
+            key={`${title.toLowerCase()}-${index}`}
+            className="time-option"
+          >
+            <span className="time-display">
+              {formatTimeControl(control.time, control.increment)}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="queue-grid-container">
       <div className="queue-grid">
-        {/* Bullet Section */}
-        <div className="queue-section">
-          <div className="section-header">
-            <div className="section-icon-placeholder"></div>
-            <h2>Bullet</h2>
-          </div>
-          <div className="time-options">
-            {timeControls.bullet.map((control, index) => (
-              <button key={`bullet-${index}`} className="time-option">
-                <span className="time-display">
-                  {formatTimeControl(control.time, control.increment)}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Blitz Section */}
-        <div className="queue-section">
-          <div className="section-header">
-            <div className="section-icon-placeholder"></div>
-            <h2>Blitz</h2>
-          </div>
-          <div className="time-options">
-            {timeControls.blitz.map((control, index) => (
-              <button key={`blitz-${index}`} className="time-option">
-                <span className="time-display">
-                  {formatTimeControl(control.time, control.increment)}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Rapid Section */}
-        <div className="queue-section">
-          <div className="section-header">
-            <div className="section-icon-placeholder"></div>
-            <h2>Rapid</h2>
-          </div>
-          <div className="time-options">
-            {timeControls.rapid.map((control, index) => (
-              <button key={`rapid-${index}`} className="time-option">
-                <span className="time-display">
-                  {formatTimeControl(control.time, control.increment)}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Classical Section */}
-        <div className="queue-section">
-          <div className="section-header">
-            <div className="section-icon-placeholder"></div>
-            <h2>Classical</h2>
-          </div>
-          <div className="time-options">
-            {timeControls.classical.map((control, index) => (
-              <button key={`classical-${index}`} className="time-option">
-                <span className="time-display">
-                  {formatTimeControl(control.time, control.increment)}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+        {renderTimeControlSection("Bullet", timeControls.bullet)}
+        {renderTimeControlSection("Blitz", timeControls.blitz)}
+        {renderTimeControlSection("Rapid", timeControls.rapid)}
+        {renderTimeControlSection("Classical", timeControls.classical)}
       </div>
 
-      {/* Custom Button */}
       <div className="custom-game-container">
         <button className="custom-game-button">
           <span>Custom</span>

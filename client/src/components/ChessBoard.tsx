@@ -22,7 +22,6 @@ const ChessBoard = ({
   const {
     board,
     turn,
-    gameOver,
     availableMoves,
     detailedAvailableMoves,
     fromSquare,
@@ -41,21 +40,21 @@ const ChessBoard = ({
         .reverse()
         .map((row) => row.slice().reverse());
     }
-
     return board.getBoard();
   };
 
   const isLastMove = (square: string) => {
     const lastMove = board.getHistory()[board.getHistory().length - 1];
-
     if (!lastMove) return false;
-    if (lastMove.getFrom()?.getPosition() === square) return true;
-    if (lastMove.getMove()?.square === square) return true;
+
+    return (
+      lastMove.getFrom()?.getPosition() === square ||
+      lastMove.getMove()?.square === square
+    );
   };
 
   const isInCheck = () => {
     const lastMove = board.getHistory()[board.getHistory().length - 1];
-
     return lastMove?.getMove().isCheck;
   };
 
@@ -77,6 +76,26 @@ const ChessBoard = ({
                 ? board.indexToSquare([7 - rowIndex, 7 - colIndex])
                 : board.indexToSquare([rowIndex, colIndex]);
             const isBlack = (rowIndex + colIndex) % 2 === 1;
+
+            // Determine square style based on game state
+            const squareStyle = isLastMove(square)
+              ? {
+                  boxShadow: "inset 0 0 100rem rgba(255, 183, 0, 0.6)",
+                  transition: "background-color 0.2s ease-in-out",
+                }
+              : isInCheck() &&
+                piece?.getColor() === turn &&
+                piece?.getName?.() === "king"
+              ? {
+                  boxShadow: "inset 0 0 100rem rgba(255, 0, 0, 0.6)",
+                  transition: "background-color 0.2s ease-in-out",
+                }
+              : {};
+
+            // Find if current move is a capture
+            const isCapture = detailedAvailableMoves.find(
+              (move) => move.square === square
+            )?.isCapture;
 
             return (
               <div
@@ -113,34 +132,15 @@ const ChessBoard = ({
                 onPointerUp={(e) => {
                   e.currentTarget.style.filter = "none";
                 }}
-                style={
-                  isLastMove(square)
-                    ? {
-                        boxShadow: "inset 0 0 100rem rgba(255, 183, 0, 0.6)",
-                        transition: "background-color 0.2s ease-in-out",
-                      }
-                    : isInCheck() &&
-                      piece?.getColor() === turn &&
-                      piece?.getName?.() === "king"
-                    ? {
-                        boxShadow: "inset 0 0 100rem rgba(255, 0, 0, 0.6)",
-                        transition: "background-color 0.2s ease-in-out",
-                      }
-                    : {}
-                }
+                style={squareStyle}
               >
                 {/* Move indicators */}
                 {availableMoves.includes(square) && (
                   <div
-                    className={`indicator ${
-                      detailedAvailableMoves.find(
-                        (move) => move.square === square
-                      )?.isCapture
-                        ? "capture"
-                        : "move"
-                    }`}
+                    className={`indicator ${isCapture ? "capture" : "move"}`}
                   ></div>
                 )}
+
                 {piece && (
                   <div
                     className={`piece ${
@@ -173,6 +173,7 @@ const ChessBoard = ({
           })
         )}
       </div>
+
       <div className="player-card-right">
         <PlayerCard name={name} connected={connected} orientation="right" />
       </div>

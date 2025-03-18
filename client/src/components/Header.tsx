@@ -2,22 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { Zap, User, Settings } from "react-feather";
 import "../styles/Header.css";
 
-const Header = () => {
-  const [showAccountMenu, setShowAccountMenu] = useState(false);
-  const [visible, setVisible] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
-  const prevScrollPos = useRef(window.scrollY);
-  const accountMenuRef = useRef(null);
-  const accountContainerRef = useRef(null);
+const Header: React.FC = () => {
+  const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(true);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const prevScrollPos = useRef<number>(window.scrollY);
+  const accountMenuRef = useRef<HTMLDivElement | null>(null);
+  const accountContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Handle scroll to hide/show header
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       const currentScrollPos = window.scrollY;
-      const isScrollingDown = prevScrollPos.current < currentScrollPos;
-
-      // Only hide header if scrolling down and not at the top
-      setVisible(!isScrollingDown || currentScrollPos < 10);
+      setVisible(
+        prevScrollPos.current > currentScrollPos || currentScrollPos < 10
+      );
       prevScrollPos.current = currentScrollPos;
     };
 
@@ -27,12 +26,12 @@ const Header = () => {
 
   // Handle clicks outside to close the menu
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (
         accountMenuRef.current &&
         accountContainerRef.current &&
-        !accountMenuRef.current.contains(event.target) &&
-        !accountContainerRef.current.contains(event.target)
+        !accountMenuRef.current.contains(event.target as Node) &&
+        !accountContainerRef.current.contains(event.target as Node)
       ) {
         setShowAccountMenu(false);
       }

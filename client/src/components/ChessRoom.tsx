@@ -1,33 +1,37 @@
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import ChessBoard from "./ChessBoard";
+import "../styles/Styles.css";
 import "../styles/ChessRoom.css";
 import QueueGrid from "./QueueGrid";
 
 function ChessRoom() {
+  // State
   const [isConnected, setIsConnected] = useState(false);
   const [username, setUsername] = useState("Anonymous");
   const [opponentUsername, setOpponentUsername] = useState("");
   const [roomId, setRoomId] = useState("");
+  const [isInRoom, setIsInRoom] = useState(false);
   const [rooms, setRooms] = useState<
     {
       roomId: string;
       users: { id: string; username?: string; color?: string }[];
     }[]
   >([]);
+
+  // Refs
   const socketRef = useRef<Socket | null>(null);
-  const [isInRoom, setIsInRoom] = useState(false);
   const joinAudioRef = useRef(new Audio("/assets/join_room.mp3"));
 
   const playJoinSound = () => {
-    joinAudioRef.current.currentTime = 0; // Reset audio to start
+    joinAudioRef.current.currentTime = 0;
     joinAudioRef.current
       .play()
       .catch((err) => console.error("Error playing audio:", err));
   };
 
+  // Socket connection setup
   useEffect(() => {
-    // socketRef.current = io("https://tuchess-1.onrender.com");
     socketRef.current = io("http://localhost:3001");
 
     socketRef.current.on("connect", () => {
@@ -38,7 +42,6 @@ function ChessRoom() {
       setIsConnected(false);
     });
 
-    // Listen for room updates
     socketRef.current.on("rooms-update", (updatedRooms) => {
       setRooms(updatedRooms);
     });
@@ -57,6 +60,7 @@ function ChessRoom() {
     };
   }, []);
 
+  // Handle starting game when room is full
   useEffect(() => {
     if (isInRoom && isRoomFull(roomId)) {
       handleStartGame(roomId);
@@ -76,7 +80,10 @@ function ChessRoom() {
 
   const assignPlayerColor = () => {
     const room = rooms.find((room) => room.roomId === roomId);
-    if (room && room.users && room.users.length > 0) {
+
+    if (!room) return;
+
+    if (room.users.length > 0) {
       return room.users[0].color === "white" ? "black" : "white";
     }
     return Math.random() > 0.5 ? "white" : "black";
@@ -84,56 +91,24 @@ function ChessRoom() {
 
   const handleJoinRoom = (e: React.FormEvent) => {
     e.preventDefault();
-
     const playerColor = assignPlayerColor();
 
     if (socketRef.current) {
       socketRef.current.emit("join-room", roomId, username, playerColor);
     }
-
     setIsInRoom(true);
   };
 
   const handleStartGame = (roomId: string) => {
-    if (socketRef.current) {
-      socketRef.current.emit("start-game", roomId);
-    }
+    socketRef.current?.emit("start-game", roomId);
   };
 
   return (
-    <div
-      className="chess-app"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-      }}
-    >
-      <QueueGrid />
+    <div className="chess-room-container">
       {!isInRoom ? (
-        <div
-          className="lobby-container"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <h2 className="section-title">Join a Room</h2>
-          <form
-            className="join-form"
-            onSubmit={handleJoinRoom}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "1rem",
-            }}
-          >
+        <>
+          <QueueGrid />
+          <form onSubmit={handleJoinRoom}>
             <input
               className="input-field"
               type="text"
@@ -152,29 +127,7 @@ function ChessRoom() {
               Join Room
             </button>
           </form>
-
-          <h2 className="section-title">Current Rooms</h2>
-          <div className="rooms-list">
-            {rooms.length > 0 ? (
-              <ul className="room-items">
-                {rooms.map((room) => (
-                  <li className="room-item" key={room.roomId}>
-                    <strong className="room-id">Room: {room.roomId}</strong>
-                    <ul className="player-list">
-                      {room.users?.map((user) => (
-                        <li className="player-item" key={user.id}>
-                          {user.username || "Anonymous"}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="no-rooms">No active rooms</p>
-            )}
-          </div>
-        </div>
+        </>
       ) : (
         <div className="game-container">
           {!isRoomFull(roomId) ? (

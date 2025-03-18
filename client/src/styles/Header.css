@@ -1,9 +1,3 @@
-/* Add to your global CSS file */
-body {
-  margin: 0;
-  padding: 0;
-}
-
 /* Header styles */
 .header {
   display: flex;
@@ -15,7 +9,7 @@ body {
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
   user-select: none;
   position: fixed;
-  top: 0; /* Changed from -0.5rem to 0 to prevent partial hiding by default */
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
@@ -26,9 +20,7 @@ body {
 }
 
 .header-hidden {
-  transform: translateY(
-    -100%
-  ); /* Changed from -50% to -100% for complete hiding */
+  transform: translateY(-100%); /* Complete hiding of header */
 }
 
 .header-expanded {
@@ -36,11 +28,12 @@ body {
   height: 4.5rem;
 }
 
-/* Add padding to the top of your main content to prevent it being hidden under fixed header */
+/* Main content spacing adjustment */
 main {
-  padding-top: 4.5rem; /* Adjust based on your header height */
+  padding-top: 4.5rem; /* Prevents content from being hidden under fixed header */
 }
 
+/* Left section of header */
 .header-left {
   display: flex;
   align-items: center;
@@ -52,15 +45,31 @@ main {
   width: 1.75rem;
   height: 1.75rem;
   color: var(--primary-color);
+  filter: drop-shadow(0 0 3px rgba(var(--primary-color-rgb), 0.5));
+  transition: transform 0.3s ease;
+}
+
+.logo-icon:hover {
+  transform: scale(1.1);
 }
 
 .site-title {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
-  color: var(--primary-color);
+  background-image: linear-gradient(135deg, var(--primary-color), #f5f5f5);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
 }
 
+.site-title:hover {
+  transform: scale(1.1);
+}
+
+/* Right section of header */
 .header-right {
   position: relative;
 }
@@ -85,16 +94,7 @@ main {
 
 .account-button:hover {
   background-color: rgba(245, 245, 245, 0.1);
-
   border: 1px solid var(--primary-color);
-
-  /* .account-text {
-    color: var(--primary-color);
-  }
-
-  .account-icon {
-    color: var(--primary-color);
-  } */
 }
 
 .account-icon {
@@ -109,6 +109,7 @@ main {
   text-overflow: ellipsis;
 }
 
+/* Dropdown menu */
 .account-menu {
   position: absolute;
   top: 100%;
