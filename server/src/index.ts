@@ -123,8 +123,21 @@ io.on("connection", (socket) => {
   });
 
   // Handle user joining a room
-  socket.on("join-room", (roomId: string, username: string, color: string) => {
+  socket.on("join-room", (roomId: string, username: string) => {
     user.username = username;
+
+    // Assign color based on room state
+    let color = "white"; // Default for first player
+
+    if (rooms.has(roomId)) {
+      const existingUsers = rooms.get(roomId);
+      if (existingUsers && existingUsers.length > 0) {
+        // If there's already a player, assign opposite color
+        const existingColor = existingUsers[0].color;
+        color = existingColor === "white" ? "black" : "white";
+      }
+    }
+
     user.color = color;
     console.log(`${user.username} joined room: ${roomId}`);
     console.log("User color:", user.color);

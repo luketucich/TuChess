@@ -1,65 +1,65 @@
 .queue-grid-container {
   width: 100%;
-  max-width: 1000px;
-  margin: 0 auto; /* Centers horizontally */
-  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.75rem;
   color: var(--font-color);
   font-family: var(--font-primary);
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centers content vertically */
+  align-items: center;
 }
 
 .queue-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-gap: 2rem;
+  grid-gap: 1.5rem;
   width: 100%;
 }
 
 .queue-section {
   background-color: var(--background-color-secondary);
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.4rem;
+  padding: 1.25rem;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .queue-section:hover {
-  transform: translateY(-0.25rem);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.3);
 }
 
 .section-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
-  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  gap: 1.25rem;
 }
 
 .section-icon {
-  width: 5rem;
-  height: 5rem;
+  width: 4.5rem;
+  height: 4.5rem;
   flex-shrink: 0;
 }
 
 .section-header h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.35rem;
+  font-weight: 500;
   margin: 0;
 }
 
 .time-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1rem;
+  grid-gap: 0.85rem;
 }
 
 .time-option {
   background-color: rgba(245, 245, 245, 0.05);
   border: 1px solid rgba(245, 245, 245, 0.2);
-  border-radius: 0.5rem;
-  padding: 1rem 0.5rem;
+  border-radius: 0.4rem;
+  padding: 0.85rem 0.4rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -75,15 +75,15 @@
 }
 
 .time-display {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 500;
-  letter-spacing: 0.05rem;
+  letter-spacing: 0.04rem;
 }
 
 .custom-game-container {
   display: flex;
   justify-content: center;
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   width: 100%;
 }
 
@@ -91,51 +91,51 @@
   background-color: rgba(245, 245, 245, 0.1);
   color: var(--font-color);
   border: 2px solid rgba(245, 245, 245, 0.2);
-  border-radius: 0.5rem;
-  padding: 0.75rem 2.5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
+  border-radius: 0.4rem;
+  padding: 0.65rem 2.25rem;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
   font-family: var(--font-primary);
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.2);
 }
 
 .custom-game-button:hover {
   background-color: rgba(245, 245, 245, 0.15);
   border-color: var(--primary-color);
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 1024px) {
   .queue-grid-container {
-    padding: 1.5rem;
-    max-width: 900px;
+    padding: 1.25rem;
+    max-width: 850px;
   }
 
   .section-icon {
-    width: 4.5rem;
-    height: 4.5rem;
+    width: 4rem;
+    height: 4rem;
   }
 }
 
 @media (max-width: 768px) {
   .queue-grid {
     grid-template-columns: 1fr;
-    grid-gap: 1.5rem;
+    grid-gap: 1.25rem;
   }
 
   .queue-grid-container {
-    padding: 1rem;
+    padding: 0.85rem;
   }
 
   .section-header h2 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .section-icon {
-    width: 4rem;
-    height: 4rem;
+    width: 3.5rem;
+    height: 3.5rem;
   }
 }
 
@@ -145,25 +145,25 @@
   }
 
   .queue-section {
-    padding: 1rem;
+    padding: 0.85rem;
   }
 
   .section-header {
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
   }
 
   .custom-game-button {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 0.65rem 0.85rem;
   }
 
   .time-display {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .section-icon {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3.25rem;
+    height: 3.25rem;
   }
 }
 
@@ -173,11 +173,11 @@
   }
 
   .queue-grid-container {
-    padding: 0.75rem;
+    padding: 0.65rem;
   }
 
   .section-icon {
-    width: 3rem;
-    height: 3rem;
+    width: 2.75rem;
+    height: 2.75rem;
   }
 }

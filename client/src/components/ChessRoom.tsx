@@ -75,26 +75,19 @@ function ChessRoom() {
 
   const fetchPlayerInfo = (roomId: string) => {
     const room = rooms.find((room) => room.roomId === roomId);
-    return room?.users?.find((user) => user.id === socketRef.current?.id);
-  };
+    const playerInfo = room?.users?.find(
+      (user) => user.id === socketRef.current?.id
+    );
 
-  const assignPlayerColor = () => {
-    const room = rooms.find((room) => room.roomId === roomId);
-
-    if (!room) return;
-
-    if (room.users.length > 0) {
-      return room.users[0].color === "white" ? "black" : "white";
-    }
-    return Math.random() > 0.5 ? "white" : "black";
+    return playerInfo;
   };
 
   const handleJoinRoom = (e: React.FormEvent) => {
     e.preventDefault();
-    const playerColor = assignPlayerColor();
 
     if (socketRef.current) {
-      socketRef.current.emit("join-room", roomId, username, playerColor);
+      // Send join request without pre-assigning color
+      socketRef.current.emit("join-room", roomId, username);
     }
     setIsInRoom(true);
   };

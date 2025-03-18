@@ -50,7 +50,7 @@ const Header: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="header-left">
-        <Zap className="logo-icon" />
+        {/* <Zap className="logo-icon" /> */}
         <h1 className="site-title">TuChess</h1>
       </div>
 
