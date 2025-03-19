@@ -5,16 +5,14 @@ import cors from "cors";
 import { Board } from "./game/Board";
 import { Player } from "./game/Player";
 
-// SERVER SETUP
-
-// Create Express app
+// Initialize Express app with CORS support
 const app = express();
 app.use(cors());
 
 // Create HTTP server
 const server = http.createServer(app);
 
-// Create Socket.io server
+// Initialize Socket.IO with CORS configuration
 const io = new Server(server, {
   cors: {
     // origin: "https://tuchess.onrender.com",
@@ -23,14 +21,14 @@ const io = new Server(server, {
   },
 });
 
-// DATA STRUCTURES
-
+// User interface definition
 interface User {
   id: string;
   username?: string;
   color?: string;
 }
 
+// Game state interface definition
 interface Game {
   board: Board;
   serializedBoard: string;
@@ -44,22 +42,19 @@ interface Game {
   };
 }
 
+// Storage for active rooms and games
 const rooms = new Map<string, User[]>();
 const games = new Map<string, Game>();
 
-// SOCKET CONNECTION HANDLING
-
+// Handle new socket connections
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  // Create a new user object
   const user: User = { id: socket.id };
 
   updateRooms();
 
-  // Helper Functions
-
-  // Update rooms for all clients
+  // Broadcast current rooms to all clients
   function updateRooms() {
     const roomsInfo = Array.from(rooms.entries()).map(([roomId, users]) => ({
       roomId,
@@ -73,7 +68,7 @@ io.on("connection", (socket) => {
     io.emit("rooms-update", roomsInfo);
   }
 
-  // Validate move and update game state
+  // Validate and execute a chess move
   function validateMove(roomId: string, from: string, to: string): boolean {
     const board = games.get(roomId)?.board;
 
@@ -90,9 +85,9 @@ io.on("connection", (socket) => {
     try {
       board?.movePiece(from, to, player!);
 
-      // Update player's piece display if a capture was made
       const move = board?.getHistory()[board.getHistory().length - 1];
 
+      // Update pieces if a capture occurred
       if (move!.getMove().isCapture) {
         const playerPieces = player
           ?.getPieces()
@@ -101,6 +96,7 @@ io.on("connection", (socket) => {
         io.emit("update-pieces", playerPieces, player!.getColor());
       }
 
+      // Switch turns after successful move
       player?.setIsTurn(false);
       opponent?.setIsTurn(true);
       return true;
@@ -114,41 +110,40 @@ io.on("connection", (socket) => {
     }
   }
 
-  // Event Handlers
-
-  // Handle disconnection
+  // Handle user disconnection
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
 
-    // Check all rooms for this user and remove them
+    // Remove user from any room they were in
     for (const [roomId, users] of rooms.entries()) {
       const index = users.findIndex((p) => p.id === socket.id);
       if (index !== -1) {
         users.splice(index, 1);
 
-        // Remove room if empty
+        // Clean up empty rooms
         if (users.length === 0) {
           rooms.delete(roomId);
+          games.delete(roomId);
+
+          console.log("Room deleted:", roomId);
         }
 
-        // Update all clients about the room change
         updateRooms();
-        break; // Assuming a player can only be in one room
+        break;
       }
     }
   });
 
-  // Handle user joining a room
+  // Handle room joining request
   socket.on("join-room", (roomId: string, username: string) => {
     user.username = username;
 
-    // Assign color based on room state
-    let color = "white"; // Default for first player
+    // Assign color (white for first player, black for second)
+    let color = "white";
 
     if (rooms.has(roomId)) {
       const existingUsers = rooms.get(roomId);
       if (existingUsers && existingUsers.length > 0) {
-        // If there's already a player, assign opposite color
         const existingColor = existingUsers[0].color;
         color = existingColor === "white" ? "black" : "white";
       }
@@ -158,21 +153,19 @@ io.on("connection", (socket) => {
     console.log(`${user.username} joined room: ${roomId}`);
     console.log("User color:", user.color);
 
-    // Check if room exists and add player to it
+    // Add user to room
     if (rooms.has(roomId)) {
       rooms.get(roomId)?.push(user);
     } else {
       rooms.set(roomId, [user]);
     }
 
-    // Join the socket to the room
     socket.join(roomId);
 
-    // Send updated rooms to all clients after a change
     updateRooms();
   });
 
-  // Handle game start
+  // Handle game start request
   socket.on(
     "start-game",
     (
@@ -182,6 +175,7 @@ io.on("connection", (socket) => {
         increment: number;
       }
     ) => {
+      // Initialize new game with starting board
       const newBoard = new Board();
       const game: Game = {
         board: newBoard,
@@ -219,6 +213,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+    // Validate and execute the move
     if (validateMove(roomId, from, to) === false) {
       console.error("Invalid move in room:", roomId);
       return;
@@ -226,14 +221,14 @@ io.on("connection", (socket) => {
       console.log(`Move piece from ${from} to ${to} in room: ${roomId}`);
       game.turn = user.color === "white" ? "black" : "white";
 
-      // Send updated board to all clients in the room
+      // Notify clients about board update
       io.to(roomId).emit("board-update", {
         lastMove: { from, to },
         turn: game.turn,
       });
     }
 
-    // Check for game end conditions
+    // Check for game ending conditions
     if (game.board.isCheckmateOrStalemate("black") !== "none") {
       game.gameOver = true;
       io.to(roomId).emit("game-over", {
@@ -253,7 +248,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Handle timeout
+  // Handle timeout (when a player's clock reaches zero)
   socket.on("timeout", (roomId: string, playerColor: string) => {
     const game = games.get(roomId);
 
@@ -267,16 +262,13 @@ io.on("connection", (socket) => {
       return;
     }
 
-    // Mark the game as over
     game.gameOver = true;
 
-    // The player whose time ran out loses
     const winner = playerColor === "white" ? "black" : "white";
     console.log(
       `${playerColor}'s time ran out. ${winner} wins in room: ${roomId}`
     );
 
-    // Notify all clients in the room about the game result
     io.to(roomId).emit("game-over", {
       message: `${
         winner.charAt(0).toUpperCase() + winner.slice(1)
@@ -285,8 +277,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// SERVER STARTUP
-
+// Start the server
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

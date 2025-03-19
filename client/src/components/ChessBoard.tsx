@@ -5,6 +5,8 @@ import "../styles/ChessBoard.css";
 import PlayerCard from "./PlayerCard.tsx";
 import Timer from "./Timer.tsx";
 import PieceDisplay from "./PieceDisplay.tsx";
+import PromotionMenu from "./PromotionMenu.tsx";
+import { PawnMove } from "../game/Moves/PawnMove.ts";
 
 const ChessBoard = ({
   playerColor,
@@ -62,6 +64,18 @@ const ChessBoard = ({
   const isInCheck = () => {
     const lastMove = board.getHistory()[board.getHistory().length - 1];
     return lastMove?.getMove().isCheck;
+  };
+
+  const isPromotion = (square: string) => {
+    const lastMove = board.getHistory()[board.getHistory().length - 1];
+
+    if (!lastMove) return false;
+
+    return (
+      lastMove.getMove().square === square &&
+      lastMove.getMove().piece === "pawn" &&
+      (lastMove.getMove() as PawnMove).isPromotion
+    );
   };
 
   return (
@@ -192,6 +206,15 @@ const ChessBoard = ({
                       draggable="false"
                     />
                   </div>
+                )}
+                {/* Display promotion menu when last move is a promotion */}
+                {isPromotion(square) && !gameOver && turn !== playerColor && (
+                  <PromotionMenu
+                    onSelect={(piece: string) => {
+                      console.log("Promote to:", piece);
+                    }}
+                    color={turn === "white" ? "w" : "b"}
+                  />
                 )}
               </div>
             );
