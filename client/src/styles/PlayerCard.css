@@ -40,3 +40,37 @@
   font-weight: 600;
   color: var(--primary-color);
 }
+
+@media (max-width: 375px) {
+  .player-card {
+    height: max(2.5rem, 4vh);
+    padding: 0rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .player-card-info-container {
+    gap: 0.25rem;
+  }
+
+  .player-card-name {
+    font-size: 0.75rem;
+  }
+
+  .active-timer {
+    font-size: 0.75rem;
+  }
+
+  .player-card-status-icon.connected {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .player-card-status-icon.disconnected {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .player-card-status-icon {
+    stroke-width: 0.1rem;
+  }
+}

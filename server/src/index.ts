@@ -17,8 +17,8 @@ const server = http.createServer(app);
 // Create Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "https://tuchess.onrender.com",
-    // origin: "*",
+    // origin: "https://tuchess.onrender.com",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -89,6 +89,18 @@ io.on("connection", (socket) => {
 
     try {
       board?.movePiece(from, to, player!);
+
+      // Update player's piece display if a capture was made
+      const move = board?.getHistory()[board.getHistory().length - 1];
+
+      if (move!.getMove().isCapture) {
+        const playerPieces = player
+          ?.getPieces()
+          .map((piece) => piece.getName());
+
+        io.emit("update-pieces", playerPieces, player!.getColor());
+      }
+
       player?.setIsTurn(false);
       opponent?.setIsTurn(true);
       return true;

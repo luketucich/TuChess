@@ -1,0 +1,76 @@
+.piece-display-container {
+  background-color: var(--background-color-secondary);
+  color: var(--font-color);
+  border-radius: 0.5rem;
+  z-index: 1;
+  padding: 0 0.5rem;
+  height: max(3rem, 5vh);
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  /* Make the width fit content */
+  width: auto;
+  max-width: 100%;
+  min-width: unset;
+  animation: fadeIn 0.5s;
+}
+
+/* Optional: Make the container itself feel more compact */
+.player-card-left .piece-display-container,
+.player-card-right .piece-display-container {
+  flex-grow: 0;
+}
+
+.piece-item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.4rem;
+  width: 2.4rem;
+  margin-right: -0.6rem; /* Changed from -0.8rem to -0.6rem */
+  transition: transform 0.2s;
+  position: relative;
+}
+
+/* Create a stacking effect */
+.piece-item:not(:first-child) {
+  margin-left: -0.6rem; /* Changed from -0.8rem to -0.6rem */
+}
+
+/* Add padding to the last item to account for the negative margin */
+.piece-item:last-child {
+  margin-right: 0.5rem;
+}
+
+/* Make pieces more visible on hover */
+.piece-item:hover {
+  transform: translateY(-4px);
+  z-index: 2;
+}
+
+.piece-item img {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 375px) {
+  .piece-display-container {
+    height: max(2.5rem, 4vh);
+  }
+
+  .piece-item {
+    height: 1.8rem;
+    width: 1.8rem;
+    margin-right: -0.6rem;
+  }
+
+  .piece-item:not(:first-child) {
+    margin-left: -0.6rem;
+  }
+
+  .piece-item:last-child {
+    margin-right: 0.4rem;
+  }
+}

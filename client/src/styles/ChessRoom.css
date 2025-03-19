@@ -2,7 +2,7 @@
 .chess-room-container {
   background-color: var(--background-color);
   width: 100%;
-  min-height: 100vh;
+  max-height: fit-content;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -49,7 +49,10 @@ form {
 
 @media (max-width: 768px) {
   .chess-room-container {
-    padding-top: 6rem;
-    padding-bottom: 6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5rem 2rem;
   }
 }

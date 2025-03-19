@@ -4,6 +4,7 @@ import { Socket } from "socket.io-client";
 import "../styles/ChessBoard.css";
 import PlayerCard from "./PlayerCard.tsx";
 import Timer from "./Timer.tsx";
+import PieceDisplay from "./PieceDisplay.tsx";
 
 const ChessBoard = ({
   playerColor,
@@ -75,6 +76,10 @@ const ChessBoard = ({
           roomId={roomId}
           playerColor={playerColor === "white" ? "black" : "white"}
           gameOver={gameOver}
+        />
+        <PieceDisplay
+          socket={socket}
+          playerColor={playerColor === "white" ? "black" : "white"}
         />
       </div>
 
@@ -205,6 +210,7 @@ const ChessBoard = ({
           playerColor={playerColor}
           gameOver={gameOver}
         />
+        <PieceDisplay socket={socket} playerColor={playerColor} />
       </div>
     </div>
   );
