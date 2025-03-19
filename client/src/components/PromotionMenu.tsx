@@ -4,7 +4,7 @@ const PromotionMenu = ({
   onSelect,
   color,
 }: {
-  onSelect: (piece: string) => void;
+  onSelect: (piece: "queen" | "rook" | "bishop" | "knight") => void;
   color: string;
 }) => {
   const pieces = [
@@ -20,7 +20,9 @@ const PromotionMenu = ({
         <button
           key={piece.value}
           className="promotion-piece"
-          onClick={() => onSelect(piece.value)}
+          onClick={() =>
+            onSelect(piece.value as "queen" | "rook" | "bishop" | "knight")
+          }
         >
           <img
             src={`/assets/${color}${piece.code}.svg`}

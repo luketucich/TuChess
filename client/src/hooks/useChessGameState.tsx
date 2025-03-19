@@ -3,6 +3,8 @@ import { Board } from "../game/Board.ts";
 import { Player } from "../game/Player.ts";
 import { BoardMove } from "../game/Board.ts";
 import { Socket } from "socket.io-client";
+import { Pawn } from "../game/Pieces/Pawn.ts";
+import { PawnMove } from "../game/Moves/PawnMove.ts";
 
 const useChessGameState = (
   playerColor: string,
@@ -22,22 +24,21 @@ const useChessGameState = (
   >([]);
   const [fromSquare, setFromSquare] = useState<string | null>(null);
 
+  // Promotion state
+  const [promotionSquare, setPromotionSquare] = useState<string | null>(null);
+  const [pendingPromotion, setPendingPromotion] = useState<{
+    from: string;
+    to: string;
+    color: "white" | "black";
+  } | null>(null);
+
   // Audio reference
   const moveAudioRef = useRef(new Audio("/assets/move_piece.mp3"));
-  const gameOverAudioRef = useRef(new Audio("/assets/game_over.mp3"));
 
   // Function to play the move sound
   const playMoveSound = () => {
     moveAudioRef.current.currentTime = 0; // Reset audio to start
     moveAudioRef.current
-      .play()
-      .catch((err) => console.error("Error playing audio:", err));
-  };
-
-  // Function to play game over sound
-  const playGameOverSound = () => {
-    gameOverAudioRef.current.currentTime = 0;
-    gameOverAudioRef.current
       .play()
       .catch((err) => console.error("Error playing audio:", err));
   };
@@ -61,8 +62,18 @@ const useChessGameState = (
         const piece = newBoard.getSquare(from);
 
         if (piece) {
-          // Apply the move
-          newBoard.movePiece(from, to, new Player(piece.getColor(), true));
+          if (updatedBoardData.promotionPiece !== undefined) {
+            // Promotion move
+            newBoard.movePiece(
+              from,
+              to,
+              new Player(piece.getColor(), true),
+              updatedBoardData.promotionPiece
+            );
+          } else {
+            // Apply the move
+            newBoard.movePiece(from, to, new Player(piece.getColor(), true));
+          }
 
           // Update state
           setBoard(newBoard);
@@ -86,7 +97,6 @@ const useChessGameState = (
       console.log("Game over:", result);
       setGameOver(true);
       setGameResult(result.message);
-      playGameOverSound();
     });
 
     return () => {
@@ -107,7 +117,6 @@ const useChessGameState = (
           ? "Black wins by checkmate"
           : "Game drawn by stalemate"
       );
-      playGameOverSound();
     } else if (blackStatus !== "none") {
       setGameOver(true);
       setGameResult(
@@ -115,7 +124,6 @@ const useChessGameState = (
           ? "White wins by checkmate"
           : "Game drawn by stalemate"
       );
-      playGameOverSound();
     }
   };
 
@@ -152,8 +160,22 @@ const useChessGameState = (
       return;
     }
 
-    // If it's the player's turn and the move is valid, emit the move to the server
     if (socket && turn === playerColor) {
+      if (piece instanceof Pawn) {
+        const move = moves.find((move) => move.square === square) as PawnMove;
+
+        if (move?.isPromotion) {
+          // Defer the move until promotion piece is selected
+          setPendingPromotion({
+            from: fromSquare,
+            to: square,
+            color: move.color,
+          });
+          setPromotionSquare(square);
+          return; // Exit without moving the piece yet
+        }
+      }
+
       playMoveSound();
 
       socket.emit("move-piece", roomId, fromSquare, square);
@@ -170,11 +192,43 @@ const useChessGameState = (
       setBoard(newBoard);
       setFromSquare(null);
       setAvailableMoves([]);
+      setDetailedAvailableMoves([]);
       setTurn(turn === "white" ? "black" : "white");
 
       // Check for game over conditions
       checkGameStatus(newBoard);
     }
+  };
+  const confirmPromotion = (
+    promotionPiece: "queen" | "rook" | "bishop" | "knight"
+  ) => {
+    if (!pendingPromotion || !socket) return;
+
+    const { from, to, color } = pendingPromotion;
+
+    // Clone the board
+    const newBoard = board.cloneBoard();
+
+    // Perform the move with the selected promotion piece
+    newBoard.movePiece(from, to, new Player(color, true), promotionPiece);
+
+    // Emit the move to the server, including the promotion piece
+    socket.emit("move-piece", roomId, from, to, promotionPiece);
+
+    // Update state
+    setBoard(newBoard);
+    setFromSquare(null);
+    setAvailableMoves([]);
+    setDetailedAvailableMoves([]);
+    setTurn(turn === "white" ? "black" : "white");
+    setPendingPromotion(null);
+    setPromotionSquare(null);
+
+    // Check game status
+    checkGameStatus(newBoard);
+
+    // Play move sound
+    playMoveSound();
   };
 
   return {
@@ -187,6 +241,9 @@ const useChessGameState = (
     fromSquare,
     selectSquare,
     movePiece,
+    promotionSquare,
+    pendingPromotion,
+    confirmPromotion,
   };
 };
 

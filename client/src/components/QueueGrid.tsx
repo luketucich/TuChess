@@ -172,7 +172,16 @@ const QueueGrid: FC<QueueGridProps> = ({
           src={`/assets/${title.toLowerCase()}.svg`}
           alt={`${title} icon`}
           className="section-icon"
-          color="white"
+          style={{
+            filter:
+              title === "Bullet"
+                ? "hue-rotate(0deg)"
+                : title === "Blitz"
+                ? "hue-rotate(120deg) brightness(1.2)"
+                : title === "Rapid"
+                ? "hue-rotate(200deg) contrast(1.2)"
+                : "hue-rotate(280deg) sepia(0.3)",
+          }}
         />
         <h2>{title}</h2>
       </div>

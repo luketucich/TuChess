@@ -227,7 +227,12 @@ export class Board {
     return this.history;
   }
 
-  movePiece(from: string, to: string, player: Player): void {
+  movePiece(
+    from: string,
+    to: string,
+    player: Player,
+    promotionPiece?: "queen" | "rook" | "bishop" | "knight"
+  ): void {
     // Validate basic move conditions
     if (!player.getIsTurn()) {
       throw new Error("Not your turn");
@@ -285,6 +290,30 @@ export class Board {
       if (move.color === "black") {
         this.setKingPosition("black", to);
       }
+    }
+
+    // Handle pawn promotion
+    if ("isPromotion" in move && move.isPromotion) {
+      // Add move to history
+      move.promotionPiece = promotionPiece;
+
+      const fromSquare = this.cloneSquare(this.getSquare(from));
+
+      const toSquare = this.cloneSquare(this.getSquare(to));
+
+      this.setHistory(new HistoryMove(fromSquare, toSquare, move));
+
+      // Move piece to new square
+      const promotionPieceObject = this.promotePawn(
+        promotionPiece!,
+        move.color,
+        to
+      );
+
+      this.setSquare(from, null);
+      this.setSquare(to, promotionPieceObject);
+
+      return;
     }
 
     // Add move to history
@@ -889,5 +918,20 @@ export class Board {
 
       return new HistoryMove(fromSquare, toSquare, move);
     });
+  }
+
+  promotePawn(
+    promotionPiece: "queen" | "rook" | "bishop" | "knight",
+    color: "white" | "black",
+    square: string
+  ): BoardSquare {
+    const promotedPiece = {
+      queen: new Queen(color, square),
+      rook: new Rook(color, square),
+      bishop: new Bishop(color, square),
+      knight: new Knight(color, square),
+    }[promotionPiece];
+
+    return promotedPiece;
   }
 }

@@ -6,7 +6,6 @@ import PlayerCard from "./PlayerCard.tsx";
 import Timer from "./Timer.tsx";
 import PieceDisplay from "./PieceDisplay.tsx";
 import PromotionMenu from "./PromotionMenu.tsx";
-import { PawnMove } from "../game/Moves/PawnMove.ts";
 
 const ChessBoard = ({
   playerColor,
@@ -35,6 +34,8 @@ const ChessBoard = ({
     fromSquare,
     selectSquare,
     movePiece,
+    promotionSquare,
+    confirmPromotion,
   } = useChessGameState(playerColor, socket, roomId);
 
   const pointerState = usePointerTracking(movePiece);
@@ -64,18 +65,6 @@ const ChessBoard = ({
   const isInCheck = () => {
     const lastMove = board.getHistory()[board.getHistory().length - 1];
     return lastMove?.getMove().isCheck;
-  };
-
-  const isPromotion = (square: string) => {
-    const lastMove = board.getHistory()[board.getHistory().length - 1];
-
-    if (!lastMove) return false;
-
-    return (
-      lastMove.getMove().square === square &&
-      lastMove.getMove().piece === "pawn" &&
-      (lastMove.getMove() as PawnMove).isPromotion
-    );
   };
 
   return (
@@ -135,6 +124,9 @@ const ChessBoard = ({
               (move) => move.square === square
             )?.isCapture;
 
+            // Check if this square is the promotion square
+            const isPromotionSquare = square === promotionSquare;
+
             return (
               <div
                 key={square}
@@ -143,7 +135,11 @@ const ChessBoard = ({
                   availableMoves.includes(square) && !pointerState.isDown
                     ? "available-move"
                     : ""
-                } ${pointerState.isDown ? "grabbing" : ""}`}
+                } ${
+                  pointerState.isDown && promotionSquare !== null
+                    ? "grabbing"
+                    : ""
+                }`}
                 onPointerDown={
                   !fromSquare && !gameOver
                     ? () => selectSquare(square)
@@ -174,21 +170,29 @@ const ChessBoard = ({
                 style={squareStyle}
               >
                 {/* Move indicators */}
-                {availableMoves.includes(square) && !gameOver && (
-                  <div
-                    className={`indicator ${isCapture ? "capture" : "move"}`}
-                  ></div>
-                )}
+                {availableMoves.includes(square) &&
+                  !gameOver &&
+                  promotionSquare === null && (
+                    <div
+                      className={`indicator ${isCapture ? "capture" : "move"}`}
+                    ></div>
+                  )}
 
                 {piece && (
                   <div
                     className={`piece ${
-                      pointerState.isDown && fromSquare === square && !gameOver
+                      pointerState.isDown &&
+                      fromSquare === square &&
+                      !gameOver &&
+                      promotionSquare === null
                         ? "dragging"
                         : ""
                     }`}
                     style={
-                      pointerState.isDown && fromSquare === square && !gameOver
+                      pointerState.isDown &&
+                      fromSquare === square &&
+                      !gameOver &&
+                      promotionSquare === null
                         ? {
                             left: `${pointerState.position.x - 25}px`,
                             top: `${pointerState.position.y - 25}px`,
@@ -207,13 +211,14 @@ const ChessBoard = ({
                     />
                   </div>
                 )}
-                {/* Display promotion menu when last move is a promotion */}
-                {isPromotion(square) && !gameOver && turn !== playerColor && (
+
+                {/* Only display promotion menu on the promotion square */}
+                {isPromotionSquare && (
                   <PromotionMenu
-                    onSelect={(piece: string) => {
-                      console.log("Promote to:", piece);
+                    onSelect={(promotionPiece) => {
+                      confirmPromotion(promotionPiece);
                     }}
-                    color={turn === "white" ? "w" : "b"}
+                    color={playerColor === "white" ? "w" : "b"}
                   />
                 )}
               </div>

@@ -4,9 +4,10 @@
   display: flex;
   background-color: transparent;
   border-radius: 0.5rem;
-  z-index: 10000;
-  animation: fadeIn 0.2s ease-in-out forwards;
+  z-index: 100010;
+  animation: fadeIn 0.5s forwards;
   filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.5));
+  pointer-events: auto; /* Ensures the menu captures hover events */
 }
 
 .promotion-piece {
@@ -19,7 +20,7 @@
   background-color: var(--primary-color);
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease; /* Smooth hover transition */
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
   border-radius: 0.5rem;
 }
@@ -35,21 +36,34 @@
 }
 
 /* Mobile responsive adjustments */
+@media (max-width: 1024px) {
+  .promotion-menu {
+    flex-direction: column;
+  }
+}
 @media (max-width: 768px) {
   .promotion-menu {
-    flex-direction: row;
-    transform: translateY(-15px); /* Move it slightly more up on mobile */
+    transform: translateY(-15px); /* Adjust position for mobile */
   }
-
   .promotion-piece {
-    width: min(12vh, 12vw); /* Increased from 8vh/8vw */
-    height: min(12vh, 12vw); /* Increased from 8vh/8vw */
+    width: min(12vh, 12vw);
+    height: min(12vh, 12vw);
   }
 }
 
 @media (max-width: 375px) {
   .promotion-piece {
-    width: min(10vh, 10vw); /* Increased from 6vh/6vw */
-    height: min(10vh, 10vw); /* Increased from 6vh/6vw */
+    width: min(10vh, 10vw);
+    height: min(10vh, 10vw);
+  }
+}
+
+/* Define the fadeIn animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

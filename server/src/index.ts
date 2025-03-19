@@ -69,7 +69,12 @@ io.on("connection", (socket) => {
   }
 
   // Validate and execute a chess move
-  function validateMove(roomId: string, from: string, to: string): boolean {
+  function validateMove(
+    roomId: string,
+    from: string,
+    to: string,
+    promotionType?: "queen" | "rook" | "bishop" | "knight" | undefined
+  ): boolean {
     const board = games.get(roomId)?.board;
 
     const player =
@@ -83,7 +88,11 @@ io.on("connection", (socket) => {
         : games.get(roomId)?.white;
 
     try {
-      board?.movePiece(from, to, player!);
+      if (promotionType !== undefined) {
+        board?.movePiece(from, to, player!, promotionType);
+      } else {
+        board?.movePiece(from, to, player!);
+      }
 
       const move = board?.getHistory()[board.getHistory().length - 1];
 
@@ -195,58 +204,67 @@ io.on("connection", (socket) => {
   );
 
   // Handle piece movement
-  socket.on("move-piece", (roomId: string, from: string, to: string) => {
-    const game = games.get(roomId);
+  socket.on(
+    "move-piece",
+    (
+      roomId: string,
+      from: string,
+      to: string,
+      promotionPiece?: "queen" | "rook" | "bishop" | "knight"
+    ) => {
+      const game = games.get(roomId);
 
-    if (!game) {
-      console.error("Board not found for room:", roomId);
-      return;
+      if (!game) {
+        console.error("Board not found for room:", roomId);
+        return;
+      }
+
+      if (game.gameOver) {
+        console.error("Game is already over in room:", roomId);
+        return;
+      }
+
+      if (game.turn !== user.color) {
+        console.error("Not your turn in room:", roomId);
+        return;
+      }
+
+      // Validate and execute the move
+      if (validateMove(roomId, from, to, promotionPiece) === false) {
+        console.error("Invalid move in room:", roomId);
+        return;
+      } else {
+        console.log(`Move piece from ${from} to ${to} in room: ${roomId}`);
+        game.turn = user.color === "white" ? "black" : "white";
+
+        // Notify clients about board update
+        io.to(roomId).emit("board-update", {
+          lastMove: { from, to },
+          turn: game.turn,
+          promotionPiece: promotionPiece,
+        });
+      }
+
+      // Check for game ending conditions
+      if (game.board.isCheckmateOrStalemate("black") !== "none") {
+        game.gameOver = true;
+        io.to(roomId).emit("game-over", {
+          message:
+            game.board.isCheckmateOrStalemate("black") === "checkmate"
+              ? "White wins by checkmate"
+              : "Game drawn by stalemate",
+        });
+      } else if (game.board.isCheckmateOrStalemate("white") !== "none") {
+        game.gameOver = true;
+        io.to(roomId).emit("game-over", {
+          message:
+            game.board.isCheckmateOrStalemate("white") === "checkmate"
+              ? "Black wins by checkmate"
+              : "Game drawn by stalemate",
+        });
+      }
     }
-
-    if (game.gameOver) {
-      console.error("Game is already over in room:", roomId);
-      return;
-    }
-
-    if (game.turn !== user.color) {
-      console.error("Not your turn in room:", roomId);
-      return;
-    }
-
-    // Validate and execute the move
-    if (validateMove(roomId, from, to) === false) {
-      console.error("Invalid move in room:", roomId);
-      return;
-    } else {
-      console.log(`Move piece from ${from} to ${to} in room: ${roomId}`);
-      game.turn = user.color === "white" ? "black" : "white";
-
-      // Notify clients about board update
-      io.to(roomId).emit("board-update", {
-        lastMove: { from, to },
-        turn: game.turn,
-      });
-    }
-
-    // Check for game ending conditions
-    if (game.board.isCheckmateOrStalemate("black") !== "none") {
-      game.gameOver = true;
-      io.to(roomId).emit("game-over", {
-        message:
-          game.board.isCheckmateOrStalemate("black") === "checkmate"
-            ? "White wins by checkmate"
-            : "Game drawn by stalemate",
-      });
-    } else if (game.board.isCheckmateOrStalemate("white") !== "none") {
-      game.gameOver = true;
-      io.to(roomId).emit("game-over", {
-        message:
-          game.board.isCheckmateOrStalemate("white") === "checkmate"
-            ? "Black wins by checkmate"
-            : "Game drawn by stalemate",
-      });
-    }
-  });
+  );
 
   // Handle timeout (when a player's clock reaches zero)
   socket.on("timeout", (roomId: string, playerColor: string) => {
