@@ -1,5 +1,6 @@
 .promotion-menu {
-  top: 110%;
+  flex-direction: column;
+  top: 0%;
   position: absolute;
   display: flex;
   background-color: transparent;
@@ -18,47 +19,35 @@
   height: min(10vh, 10vw);
   aspect-ratio: 1 / 1;
   background-color: var(--primary-color);
-  border: none;
+  border: 0.25rem solid var(--primary-color-darker);
   cursor: pointer;
-  transition: background-color 0.2s ease; /* Smooth hover transition */
+  transition: background-color 0.3s ease;
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
   border-radius: 0.5rem;
 }
 
 .promotion-piece:hover {
-  background-color: var(--background-color-secondary);
+  background-color: var(--primary-color-darker);
+}
+
+.promotion-piece:hover img {
+  filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.5));
 }
 
 .promotion-piece img {
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  transition: filter 0.3s ease;
 }
 
-/* Mobile responsive adjustments */
-@media (max-width: 1024px) {
-  .promotion-menu {
-    flex-direction: column;
-  }
-}
 @media (max-width: 768px) {
-  .promotion-menu {
-    transform: translateY(-15px); /* Adjust position for mobile */
-  }
   .promotion-piece {
     width: min(12vh, 12vw);
     height: min(12vh, 12vw);
   }
 }
 
-@media (max-width: 375px) {
-  .promotion-piece {
-    width: min(10vh, 10vw);
-    height: min(10vh, 10vw);
-  }
-}
-
-/* Define the fadeIn animation */
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -175,12 +175,12 @@ const QueueGrid: FC<QueueGridProps> = ({
           style={{
             filter:
               title === "Bullet"
-                ? "hue-rotate(0deg)"
+                ? "hue-rotate(280deg) sepia(0.9)"
                 : title === "Blitz"
                 ? "hue-rotate(120deg) brightness(1.2)"
                 : title === "Rapid"
                 ? "hue-rotate(200deg) contrast(1.2)"
-                : "hue-rotate(280deg) sepia(0.3)",
+                : "",
           }}
         />
         <h2>{title}</h2>

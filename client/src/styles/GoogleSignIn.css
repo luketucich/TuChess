@@ -1,0 +1,30 @@
+.sign-in-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid rgba(245, 245, 245, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--font-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-primary);
+}
+
+.sign-in-button:hover {
+  background-color: rgba(245, 245, 245, 0.1);
+  border: 1px solid var(--primary-color);
+}
+
+.sign-in-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 0.16rem;
+}
+
+.sign-in-text {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

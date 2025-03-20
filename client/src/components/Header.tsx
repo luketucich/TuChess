@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { User, Settings } from "react-feather";
+import { User, LogOut, Settings } from "react-feather";
 import "../styles/Header.css";
+import GoogleSignIn from "./googleSignIn";
+import { supabase } from "../hooks/supabase";
+
+type UserType = {
+  email: string;
+  id?: string;
+} | null;
 
 const Header: React.FC = () => {
+  const [user, setUser] = useState<UserType>(null);
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -10,7 +18,7 @@ const Header: React.FC = () => {
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
   const accountContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Handle scroll to hide/show header
+  // Hide/show header on scroll
   useEffect(() => {
     const handleScroll = (): void => {
       const currentScrollPos = window.scrollY;
@@ -24,7 +32,7 @@ const Header: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle clicks outside to close the menu
+  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
       if (
@@ -41,6 +49,32 @@ const Header: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Track authentication state
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN") {
+          setUser(
+            session?.user
+              ? { email: session.user.email || "", id: session.user.id }
+              : null
+          );
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setShowAccountMenu(false);
+  };
+
   return (
     <header
       className={`header ${visible ? "" : "header-hidden"} ${
@@ -50,35 +84,44 @@ const Header: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="header-left">
-        {/* <Zap className="logo-icon" /> */}
         <h1 className="site-title">TuChess</h1>
       </div>
 
-      <div className="header-right">
-        <div
-          ref={accountContainerRef}
-          className="account-container"
-          onClick={() => setShowAccountMenu(!showAccountMenu)}
-        >
-          <button className="account-button">
-            <User className="account-icon" />
-            <span className="account-text">Guest</span>
-          </button>
+      {user ? (
+        <div className="header-right">
+          <div
+            ref={accountContainerRef}
+            className="account-container"
+            onClick={() => setShowAccountMenu(!showAccountMenu)}
+          >
+            <button className="account-button">
+              <User className="account-icon" />
+              <span className="account-text">
+                Hi, {user.email.split("@gmail.com")[0]}!
+              </span>
+            </button>
 
-          {showAccountMenu && (
-            <div ref={accountMenuRef} className="account-menu">
-              <button className="menu-item">
-                <User className="menu-icon" />
-                <span>Sign In</span>
-              </button>
-              <button className="menu-item">
-                <Settings className="menu-icon" />
-                <span>Settings</span>
-              </button>
-            </div>
-          )}
+            {showAccountMenu && user && (
+              <div ref={accountMenuRef} className="account-menu">
+                <>
+                  <button className="menu-item" onClick={handleLogout}>
+                    <LogOut className="menu-icon" />
+                    Log out
+                  </button>
+                  <button className="menu-item">
+                    <Settings className="menu-icon" />
+                    <span>Settings</span>
+                  </button>
+                </>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="header-right">
+          <GoogleSignIn />
+        </div>
+      )}
     </header>
   );
 };

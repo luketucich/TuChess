@@ -15,8 +15,8 @@ const server = http.createServer(app);
 // Initialize Socket.IO with CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: "https://tuchess.onrender.com",
-    // origin: "*",
+    // origin: "https://tuchess.onrender.com",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });

@@ -1,6 +1,10 @@
 /* Add to Styles.css */
 .chess-room-container {
-  background-color: var(--background-color);
+  background: linear-gradient(
+    to bottom,
+    var(--background-color),
+    shade(var(--background-color), 50%)
+  );
   width: 100%;
   max-height: fit-content;
   margin: 0;
