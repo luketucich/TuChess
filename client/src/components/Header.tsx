@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { User, LogOut, Settings } from "react-feather";
 import "../styles/Header.css";
-import GoogleSignIn from "./googleSignIn";
+import GoogleSignIn from "./GoogleSignIn";
 import { supabase } from "../hooks/supabase";
 
 type UserType = {
