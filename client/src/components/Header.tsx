@@ -3,6 +3,7 @@ import { User, LogOut, Settings } from "react-feather";
 import "../styles/Header.css";
 import { useAppContext } from "../context/AppContext";
 import GoogleSignIn from "./GoogleSignIn";
+import SettingsMenu from "./SettingsMenu";
 
 const Header: React.FC = () => {
   // Context and state
@@ -10,6 +11,7 @@ const Header: React.FC = () => {
   const [showAccountMenu, setShowAccountMenu] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState<boolean>(false);
 
   // Refs
   const prevScrollPos = useRef<number>(window.scrollY);
@@ -47,8 +49,8 @@ const Header: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
-    await signOut();
+  const handleLogout = () => {
+    signOut();
     setShowAccountMenu(false);
   };
 
@@ -82,13 +84,19 @@ const Header: React.FC = () => {
               {showAccountMenu && user && (
                 <div ref={accountMenuRef} className="account-menu">
                   <>
+                    <button
+                      className="menu-item"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowSettingsMenu(!showSettingsMenu);
+                      }}
+                    >
+                      <Settings className="menu-icon" />
+                      <span>Settings</span>
+                    </button>
                     <button className="menu-item" onClick={handleLogout}>
                       <LogOut className="menu-icon" />
                       Log out
-                    </button>
-                    <button className="menu-item">
-                      <Settings className="menu-icon" />
-                      <span>Settings</span>
                     </button>
                   </>
                 </div>
@@ -118,6 +126,10 @@ const Header: React.FC = () => {
         >
           {errorMessage}
         </div>
+      )}
+
+      {showSettingsMenu && (
+        <SettingsMenu setShowSettingsMenu={setShowSettingsMenu} />
       )}
     </>
   );

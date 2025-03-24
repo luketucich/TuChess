@@ -21,6 +21,8 @@ interface AppContextType {
   signOut: () => void;
   errorMessage: string;
   setErrorMessage: (message: string) => void;
+  boardTheme?: string;
+  setBoardTheme?: (theme: string) => void;
 }
 
 const defaultContext: AppContextType = {
@@ -31,6 +33,8 @@ const defaultContext: AppContextType = {
   signOut: () => {},
   errorMessage: "",
   setErrorMessage: () => {},
+  boardTheme: "",
+  setBoardTheme: () => {},
 };
 
 const AppContext = createContext<AppContextType>(defaultContext);
@@ -46,6 +50,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState<User>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [boardTheme, setBoardTheme] = useState("");
 
   // Initialize socket connection
   useEffect(() => {
@@ -72,27 +77,60 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     // Get initial auth state
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
-      setUser(
-        data.user
-          ? {
-              email: data.user.email || "",
-              id: data.user.id,
-            }
-          : null
-      );
+      const user = data.user
+        ? {
+            email: data.user.email || "",
+            id: data.user.id,
+          }
+        : null;
+
+      setUser(user);
+
+      // Fetch user preferences if logged in
+      if (user?.id) {
+        fetchUserPreferences(user.id);
+      }
+    };
+
+    // Function to fetch user preferences
+    const fetchUserPreferences = async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from("user_preferences")
+          .select("board_theme")
+          .eq("user_id", userId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching user preferences:", error);
+          return;
+        }
+
+        if (data?.board_theme !== null) {
+          console.log("Setting board theme from database:", data.board_theme);
+          setBoardTheme(data.board_theme);
+        }
+      } catch (err) {
+        console.error("Error fetching user preferences:", err);
+      }
     };
 
     fetchUser();
 
     // Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         if (event === "SIGNED_IN") {
-          setUser(
-            session?.user
-              ? { email: session.user.email || "", id: session.user.id }
-              : null
-          );
+          const user = session?.user
+            ? { email: session.user.email || "", id: session.user.id }
+            : null;
+
+          setUser(user);
+
+          // Fetch preferences when user signs in
+          if (user?.id) {
+            fetchUserPreferences(user.id);
+          }
         } else if (event === "SIGNED_OUT") {
           setUser(null);
         }
@@ -110,6 +148,96 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       socket.emit("authenticate", user.id);
     }
   }, [user, socket]);
+
+  // Update user theme preference
+  useEffect(() => {
+    const updateBoardTheme = async () => {
+      console.log("Updating board theme:", boardTheme);
+      if (!user?.id) return;
+      console.log("User ID:", user.id);
+
+      try {
+        // Update database with new board theme
+        const { error } = await supabase
+          .from("user_preferences")
+          .upsert({
+            user_id: user.id,
+            board_theme: boardTheme,
+          })
+          .select();
+
+        if (error) {
+          console.error("Error updating board theme:", error);
+          return;
+        }
+
+        // Update root variables based on board theme
+        switch (boardTheme) {
+          // Mocha
+          case "mocha":
+            document.documentElement.style.setProperty(
+              "--white-square-color",
+              "#E5D5C5"
+            );
+            document.documentElement.style.setProperty(
+              "--black-square-color",
+              "#9A8070"
+            );
+            break;
+
+          // Blueberry
+          case "blueberry":
+            document.documentElement.style.setProperty(
+              "--white-square-color",
+              "#C0D0DA"
+            );
+            document.documentElement.style.setProperty(
+              "--black-square-color",
+              "#6A7A8A"
+            );
+            break;
+
+          // Pistachio
+          case "pistachio":
+            document.documentElement.style.setProperty(
+              "--white-square-color",
+              "#E0EBCF"
+            );
+            document.documentElement.style.setProperty(
+              "--black-square-color",
+              "#A5B28C"
+            );
+            break;
+          // Sakura
+          case "sakura":
+            document.documentElement.style.setProperty(
+              "--white-square-color",
+              "#FCE8E8"
+            );
+            document.documentElement.style.setProperty(
+              "--black-square-color",
+              "#C0A0A0"
+            );
+            break;
+          default:
+            document.documentElement.style.setProperty(
+              "--white-square-color",
+              "#E5D5C5"
+            );
+            document.documentElement.style.setProperty(
+              "--black-square-color",
+              "#9A8070"
+            );
+        }
+      } catch (err) {
+        console.error("Unexpected error updating board theme:", err);
+      }
+    };
+
+    if (boardTheme) {
+      updateBoardTheme();
+    }
+  }, [boardTheme, user?.id]);
 
   const signIn = async () => {
     await supabase.auth.signInWithOAuth({
@@ -131,6 +259,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         signIn,
         signOut,
         setErrorMessage,
+        boardTheme,
+        setBoardTheme,
       }}
     >
       {children}
