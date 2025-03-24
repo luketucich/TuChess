@@ -1,8 +1,9 @@
 import { FC } from "react";
 import "../styles/QueueGrid.css";
 import { Plus, LogIn } from "react-feather";
-import { Socket } from "socket.io-client";
+import { useAppContext } from "../context/AppContext";
 
+// Type definitions
 interface TimeControl {
   time: number;
   increment: number;
@@ -16,7 +17,6 @@ interface TimeControls {
 }
 
 interface QueueGridProps {
-  socket: Socket | null;
   setIsInRoom: (isInRoom: boolean) => void;
   setRoomId: (roomId: string) => void;
   setUsername: (username: string) => void;
@@ -29,7 +29,6 @@ interface QueueGridProps {
 }
 
 const QueueGrid: FC<QueueGridProps> = ({
-  socket,
   setIsInRoom,
   setRoomId,
   setUsername,
@@ -37,6 +36,11 @@ const QueueGrid: FC<QueueGridProps> = ({
   rooms,
   setTimeControl,
 }) => {
+  const { socket, user } = useAppContext();
+
+  const suggestedUsername = user?.email?.split("@")[0] || defaultUsername;
+
+  // Define all available time controls by category
   const timeControls: TimeControls = {
     bullet: [
       { time: 1, increment: 0 },
@@ -60,9 +64,11 @@ const QueueGrid: FC<QueueGridProps> = ({
     ],
   };
 
+  // Format time control display (e.g., "5 + 0")
   const formatTimeControl = (time: number, increment: number): string =>
     `${time} + ${increment}`;
 
+  //Find an existing room for the specified time control or generate a new room code
   const retrieveTimeControlRoomCode = (
     category: string,
     time: number,
@@ -89,54 +95,13 @@ const QueueGrid: FC<QueueGridProps> = ({
     return generatedRoomCode;
   };
 
+  // Handler for joining a room via room code (currently disabled)
   const handleJoinRoom = () => {
-    // const roomCode = prompt("Enter the room code:");
-    // if (!roomCode) return;
-
-    // const enteredUsername = prompt("Enter your username:", defaultUsername);
-    // if (!enteredUsername) return;
-
-    // // Update parent component state
-    // setRoomId(roomCode);
-    // setUsername(enteredUsername);
-
-    // // Emit join event to socket server
-    // if (socket) {
-    //   socket.emit("join-room", roomCode, enteredUsername);
-    //   setIsInRoom(true);
-    // }
     alert("Coming soon!");
   };
 
+  // Handler for creating a custom game (currently disabled)
   const handleCreateRoom = () => {
-    // const roomCode = prompt("Create a room code:");
-    // if (!roomCode) return;
-
-    // // Ask user to specify time control for custom game
-    // const timeControlInput = prompt(
-    //   "Enter time control (minutes + increment):",
-    //   "5+0"
-    // );
-
-    // if (!timeControlInput) return;
-    // const timeControl = timeControlInput.split("+");
-
-    // const enteredUsername = prompt("Enter your username:", defaultUsername);
-    // if (!enteredUsername) return;
-
-    // // Update parent component state
-    // setRoomId(roomCode);
-    // setUsername(enteredUsername);
-    // setTimeControl({
-    //   time: parseInt(timeControl[0]),
-    //   increment: parseInt(timeControl[1]),
-    // });
-
-    // // Emit join event to socket server
-    // if (socket) {
-    //   socket.emit("join-room", roomCode, enteredUsername);
-    //   setIsInRoom(true);
-    // }
     alert("Coming soon!");
   };
 
@@ -150,7 +115,7 @@ const QueueGrid: FC<QueueGridProps> = ({
       time,
       increment
     );
-    const enteredUsername = prompt("Enter your username:", defaultUsername);
+    const enteredUsername = prompt("Enter your username:", suggestedUsername);
     if (!enteredUsername) return;
 
     // Update parent component state

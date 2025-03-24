@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
+import { useAppContext } from "../context/AppContext";
 import "../styles/PieceDisplay.css";
 
-interface PieceDisplayProps {
-  socket: Socket;
-  playerColor: string;
-}
-
-const PieceDisplay = ({ socket, playerColor }: PieceDisplayProps) => {
+const PieceDisplay = ({ playerColor }: { playerColor: string }) => {
+  const { socket } = useAppContext();
   const [pieces, setPieces] = useState<string[]>([]);
   const opponentColor = playerColor === "white" ? "black" : "white";
   const getPieceValue = (pieceName: string) => {
@@ -30,7 +26,7 @@ const PieceDisplay = ({ socket, playerColor }: PieceDisplayProps) => {
   };
 
   useEffect(() => {
-    socket.on("update-pieces", (updatedPieces: string[], color: string) => {
+    socket?.on("update-pieces", (updatedPieces: string[], color: string) => {
       if (color === playerColor)
         setPieces(
           [...updatedPieces].sort((a, b) => getPieceValue(a) - getPieceValue(b))
@@ -38,7 +34,7 @@ const PieceDisplay = ({ socket, playerColor }: PieceDisplayProps) => {
     });
 
     return () => {
-      socket.off("update-pieces");
+      socket?.off("update-pieces");
     };
   }, [socket, playerColor]);
 

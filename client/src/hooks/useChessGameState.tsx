@@ -9,7 +9,12 @@ import { PawnMove } from "../game/Moves/PawnMove.ts";
 const useChessGameState = (
   playerColor: string,
   socket: Socket | null,
-  roomId: string
+  roomId: string,
+  receivedGameState: {
+    serializedBoard: string;
+    turn: "white" | "black";
+    gameOver: boolean;
+  } | null
 ) => {
   // Game state
   const [board, setBoard] = useState<Board>(new Board());
@@ -42,6 +47,20 @@ const useChessGameState = (
       .play()
       .catch((err) => console.error("Error playing audio:", err));
   };
+
+  useEffect(() => {
+    if (receivedGameState) {
+      console.log("Game state hook received message:", receivedGameState);
+
+      const newBoard = new Board();
+      newBoard.deserializeBoard(receivedGameState.serializedBoard);
+      setBoard(newBoard);
+      setTurn(receivedGameState.turn);
+      setGameOver(receivedGameState.gameOver);
+
+      // Do whatever you need with the message
+    }
+  }, [receivedGameState]);
 
   // Set up socket listener for board updates and game over conditions
   useEffect(() => {

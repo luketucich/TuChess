@@ -1,29 +1,38 @@
 import { usePointerTracking } from "../hooks/usePointerTracking.tsx";
 import useChessGameState from "../hooks/useChessGameState.tsx";
-import { Socket } from "socket.io-client";
 import "../styles/ChessBoard.css";
 import PlayerCard from "./PlayerCard.tsx";
 import Timer from "./Timer.tsx";
 import PieceDisplay from "./PieceDisplay.tsx";
 import PromotionMenu from "./PromotionMenu.tsx";
+import { useAppContext } from "../context/AppContext";
 
 const ChessBoard = ({
   playerColor,
-  socket,
   roomId,
   name,
   opponentName,
-  connected,
   timeControl,
+  receivedGameState,
 }: {
   playerColor: string;
-  socket: Socket;
   roomId: string;
   name: string;
   opponentName: string;
-  connected: boolean;
   timeControl: { time: number; increment: number };
+  receivedGameState: {
+    serializedBoard: string;
+    turn: "white" | "black";
+    gameOver: boolean;
+    whiteTime: number;
+    blackTime: number;
+    increment: number;
+  } | null;
 }) => {
+  // Access socket from context
+  const { socket } = useAppContext();
+
+  // Game state and controls
   const {
     board,
     turn,
@@ -36,9 +45,12 @@ const ChessBoard = ({
     movePiece,
     promotionSquare,
     confirmPromotion,
-  } = useChessGameState(playerColor, socket, roomId);
+  } = useChessGameState(playerColor, socket, roomId, receivedGameState);
 
+  // Track pointer for drag and drop functionality
   const pointerState = usePointerTracking(movePiece);
+
+  //Returns board representation rotated according to player's perspective
 
   const getBoard = (playerColor: string) => {
     if (playerColor === "black") {
@@ -69,24 +81,29 @@ const ChessBoard = ({
 
   return (
     <div className="chessboard-container">
+      {/* Opponent information */}
       <div className="player-card-left">
-        <PlayerCard name={opponentName} connected={connected} />
+        <PlayerCard
+          name={opponentName}
+          playerColor={playerColor === "white" ? "black" : "white"}
+        />
         <Timer
           time={timeControl.time * 60}
           increment={timeControl.increment}
-          socket={socket}
           isTurn={turn !== playerColor}
           roomId={roomId}
           playerColor={playerColor === "white" ? "black" : "white"}
           gameOver={gameOver}
+          receivedGameState={receivedGameState}
         />
         <PieceDisplay
-          socket={socket}
           playerColor={playerColor === "white" ? "black" : "white"}
         />
       </div>
 
+      {/* Chess board */}
       <div className="chessboard">
+        {/* Game over overlay */}
         {gameOver && (
           <div className="game-over-overlay">
             <div className="game-over-message">
@@ -96,6 +113,7 @@ const ChessBoard = ({
           </div>
         )}
 
+        {/* Render board squares */}
         {getBoard(playerColor).flatMap((row, rowIndex) =>
           row.map((piece, colIndex) => {
             const square =
@@ -119,7 +137,7 @@ const ChessBoard = ({
                 }
               : {};
 
-            // Find if current move is a capture
+            // Check if move to this square would be a capture
             const isCapture = detailedAvailableMoves.find(
               (move) => move.square === square
             )?.isCapture;
@@ -178,6 +196,7 @@ const ChessBoard = ({
                     ></div>
                   )}
 
+                {/* Chess piece */}
                 {piece && (
                   <div
                     className={`piece ${
@@ -212,7 +231,7 @@ const ChessBoard = ({
                   </div>
                 )}
 
-                {/* Only display promotion menu on the promotion square */}
+                {/* Promotion menu */}
                 {isPromotionSquare && (
                   <PromotionMenu
                     onSelect={(promotionPiece) => {
@@ -227,18 +246,19 @@ const ChessBoard = ({
         )}
       </div>
 
+      {/* Player information */}
       <div className="player-card-right">
-        <PlayerCard name={name} connected={connected} />
+        <PlayerCard name={name} playerColor={playerColor} />
         <Timer
           time={timeControl.time * 60}
           increment={timeControl.increment}
-          socket={socket}
           isTurn={turn === playerColor}
           roomId={roomId}
           playerColor={playerColor}
           gameOver={gameOver}
+          receivedGameState={receivedGameState}
         />
-        <PieceDisplay socket={socket} playerColor={playerColor} />
+        <PieceDisplay playerColor={playerColor} />
       </div>
     </div>
   );

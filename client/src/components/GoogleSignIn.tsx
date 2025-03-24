@@ -1,16 +1,11 @@
-import { supabase } from "../hooks/supabase";
 import "../styles/GoogleSignIn.css";
+import { useAppContext } from "../context/AppContext";
 
 const GoogleSignIn = () => {
+  const { signIn } = useAppContext();
+
   return (
-    <button
-      className="sign-in-button"
-      onClick={() => {
-        supabase.auth.signInWithOAuth({
-          provider: "google",
-        });
-      }}
-    >
+    <button className="sign-in-button" onClick={signIn}>
       <svg
         className="sign-in-icon"
         xmlns="http://www.w3.org/2000/svg"
