@@ -212,11 +212,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
           case "sakura":
             document.documentElement.style.setProperty(
               "--white-square-color",
-              "#FCE8E8"
+              "#FFE0ED"
             );
             document.documentElement.style.setProperty(
               "--black-square-color",
-              "#C0A0A0"
+              "#D5A0B0"
             );
             break;
           default:
