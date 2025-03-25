@@ -54,8 +54,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   // Initialize socket connection
   useEffect(() => {
-    const socketInstance = io("https://tuchess-1.onrender.com");
-    // const socketInstance = io("http://localhost:3001");
+    // const socketInstance = io("https://tuchess-1.onrender.com");
+    const socketInstance = io("http://localhost:3001");
 
     socketInstance.on("connect", () => {
       setIsConnected(true);
