@@ -54,8 +54,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   // Initialize socket connection
   useEffect(() => {
-    // const socketInstance = io("https://tuchess-1.onrender.com");
-    const socketInstance = io("http://localhost:3001");
+    const socketInstance = io("https://tuchess-1.onrender.com");
+    // const socketInstance = io("http://localhost:3001");
 
     socketInstance.on("connect", () => {
       setIsConnected(true);
@@ -107,7 +107,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         }
 
         if (data?.board_theme !== null) {
-          console.log("Setting board theme from database:", data.board_theme);
           setBoardTheme(data.board_theme);
         }
       } catch (err) {
@@ -152,9 +151,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   // Update user theme preference
   useEffect(() => {
     const updateBoardTheme = async () => {
-      console.log("Updating board theme:", boardTheme);
       if (!user?.id) return;
-      console.log("User ID:", user.id);
 
       try {
         // Update database with new board theme

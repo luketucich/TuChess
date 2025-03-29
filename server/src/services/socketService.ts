@@ -68,9 +68,9 @@ export function setupSocketHandlers(io: Server) {
                 );
                 rooms.set(roomId, updatedUsers);
                 io.to(roomId).emit("game-over", {
-                  message: `You win. ${
+                  message: `${
                     userStillThere.username || "Opponent"
-                  } has disconnected`,
+                  } has abandoned the match. You win!`,
                 });
 
                 const game = games.get(roomId);

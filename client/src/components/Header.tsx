@@ -63,7 +63,10 @@ const Header: React.FC = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="header-left">
+        <div
+          className="header-left"
+          onClick={() => (window.location.href = "https://tuchess.com")}
+        >
           <h1 className="site-title">TuChess</h1>
         </div>
 

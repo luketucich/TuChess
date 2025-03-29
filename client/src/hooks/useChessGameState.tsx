@@ -50,8 +50,6 @@ const useChessGameState = (
 
   useEffect(() => {
     if (receivedGameState) {
-      console.log("Game state hook received message:", receivedGameState);
-
       const newBoard = new Board();
       newBoard.deserializeBoard(receivedGameState.serializedBoard);
       setBoard(newBoard);
@@ -68,8 +66,6 @@ const useChessGameState = (
 
     // Listen for board updates from the server
     socket.on("board-update", (updatedBoardData) => {
-      console.log("Received board update:", updatedBoardData);
-
       // If we received a lastMove property, apply it to our board
       if (updatedBoardData.lastMove && turn !== playerColor) {
         const { from, to } = updatedBoardData.lastMove;
@@ -113,7 +109,6 @@ const useChessGameState = (
 
     // Listen for game over due to timeout
     socket.on("game-over", (result) => {
-      console.log("Game over:", result);
       setGameOver(true);
       setGameResult(result.message);
     });

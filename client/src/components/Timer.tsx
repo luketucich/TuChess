@@ -46,19 +46,11 @@ const Timer = ({
         playerColor === "white" &&
         receivedGameState.whiteTime !== undefined
       ) {
-        console.log(
-          "Setting time for white player:",
-          receivedGameState.whiteTime
-        );
         setTimeLeft(receivedGameState.whiteTime);
       } else if (
         playerColor === "black" &&
         receivedGameState.blackTime !== undefined
       ) {
-        console.log(
-          "Setting time for black player:",
-          receivedGameState.blackTime
-        );
         setTimeLeft(receivedGameState.blackTime);
       }
     }
@@ -81,7 +73,6 @@ const Timer = ({
         }
 
         setTimeLeft(serverTime);
-        console.log("Synced time with server:", serverTime);
       }
     });
 

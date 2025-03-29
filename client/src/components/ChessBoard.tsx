@@ -6,6 +6,7 @@ import Timer from "./Timer.tsx";
 import PieceDisplay from "./PieceDisplay.tsx";
 import PromotionMenu from "./PromotionMenu.tsx";
 import { useAppContext } from "../context/AppContext";
+import { Home } from "react-feather";
 
 const ChessBoard = ({
   playerColor,
@@ -109,6 +110,13 @@ const ChessBoard = ({
             <div className="game-over-message">
               <h2>Game Over</h2>
               <p>{gameResult}</p>
+              <button
+                className="return-home-button"
+                onClick={() => (window.location.href = "https://tuchess.com")}
+              >
+                <Home className="return-home-icon" />
+                <span className="return-home-text">Return Home</span>
+              </button>
             </div>
           </div>
         )}

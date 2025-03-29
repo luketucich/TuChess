@@ -13,12 +13,12 @@ const server = http.createServer(app);
 // Configure Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    // origin: [
-    //   "https://tuchess.onrender.com",
-    //   "https://tuchess.com",
-    //   "https://www.tuchess.com",
-    // ],
+    // origin: "*",
+    origin: [
+      "https://tuchess.onrender.com",
+      "https://tuchess.com",
+      "https://www.tuchess.com",
+    ],
     methods: ["GET", "POST"],
   },
 });
