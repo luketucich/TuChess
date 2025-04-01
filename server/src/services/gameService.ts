@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import { saveGameToSupabase } from "./supabaseService";
 import { startClock, stopClock, stopAllClocks } from "../utils/clockManager";
 import { validateMove } from "../utils/moveValidator";
+import { games } from "./socketService";
 
 export function createGame(timeControl: TimeControl): Game {
   const newBoard = new Board();
@@ -95,6 +96,7 @@ export function checkGameEnd(
           : "Game drawn by stalemate",
     });
     stopAllClocks(game);
+    deleteGame(roomId);
     return true;
   } else if (game.board.isCheckmateOrStalemate("white") !== "none") {
     game.gameOver = true;
@@ -106,6 +108,7 @@ export function checkGameEnd(
           : "Game drawn by stalemate",
     });
     stopAllClocks(game);
+    deleteGame(roomId);
     return true;
   }
 
@@ -144,5 +147,15 @@ export function handleTimeout(
   });
 
   stopAllClocks(game);
+  deleteGame(roomId);
   return true;
+}
+
+export function deleteGame(roomId: string): void {
+  if (games.has(roomId)) {
+    console.log(`Deleting game in room: ${roomId}`);
+    games.delete(roomId);
+  } else {
+    console.log(`No game found to delete in room: ${roomId}`);
+  }
 }
